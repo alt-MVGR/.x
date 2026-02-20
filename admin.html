@@ -78,6 +78,37 @@
             </div>
         </div>
 
+        <!-- Quiz Data Viewer -->
+        <div class="glass-table-container mb-8">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h2 class="font-bold text-lg">Quiz Cache Data</h2>
+                <div class="flex gap-2">
+                    <select id="date-filter" class="p-2 border border-slate-200 rounded-lg text-sm font-medium">
+                        <option value="all">All Dates</option>
+                    </select>
+                    <button onclick="loadQuizData()" class="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider">
+                            <th class="p-5 font-bold">Date</th>
+                            <th class="p-5 font-bold">Question Preview</th>
+                            <th class="p-5 font-bold">Answer</th>
+                            <th class="p-5 font-bold">Confidence</th>
+                            <th class="p-5 font-bold">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quiz-rows" class="divide-y divide-slate-100 text-sm font-medium">
+                        <tr><td colspan="5" class="p-6 text-center text-slate-400">Loading quiz data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Table -->
         <div class="glass-table-container">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -208,6 +239,93 @@
             await updateDoc(doc(db, "users", uid), { isBlocked: state });
             loadUsers();
         }
+
+        window.loadQuizData = async () => {
+            const tbody = document.getElementById('quiz-rows');
+            tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">Syncing quiz cache...</td></tr>';
+            
+            try {
+                const dateFilter = document.getElementById('date-filter').value;
+                let quizQuery = collection(db, "quiz_cache");
+                
+                if (dateFilter !== 'all') {
+                    quizQuery = query(quizQuery, where("date", "==", dateFilter));
+                }
+                
+                const snapshot = await getDocs(quizQuery);
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">No quiz data found</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                const dates = new Set();
+
+                snapshot.forEach(docSnap => {
+                    const q = docSnap.data();
+                    dates.add(q.date);
+                    
+                    const questionPreview = q.questionText 
+                        ? q.questionText.substring(0, 80) + (q.questionText.length > 80 ? '...' : '')
+                        : '[Image-based question]';
+                    
+                    const hasImage = q.imageHash ? '📷' : '📝';
+                    const confidence = q.confidence || 100;
+                    const confColor = confidence >= 80 ? 'text-green-600' : confidence >= 60 ? 'text-yellow-600' : 'text-red-600';
+                    
+                    html += `
+                        <tr class="transition hover:bg-slate-50">
+                            <td class="p-5">
+                                <span class="text-slate-700 font-bold">${q.date || 'N/A'}</span>
+                            </td>
+                            <td class="p-5">
+                                <div class="text-slate-600" style="max-width: 400px;">
+                                    ${questionPreview}
+                                </div>
+                            </td>
+                            <td class="p-5">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black text-white font-bold text-sm">
+                                    ${q.correct}
+                                </span>
+                            </td>
+                            <td class="p-5">
+                                <span class="${confColor} font-bold">${confidence}%</span>
+                            </td>
+                            <td class="p-5">
+                                <span class="text-2xl">${hasImage}</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+
+                // Update date filter options
+                const dateFilterSelect = document.getElementById('date-filter');
+                const currentValue = dateFilterSelect.value;
+                dateFilterSelect.innerHTML = '<option value="all">All Dates</option>';
+                
+                Array.from(dates).sort().reverse().forEach(date => {
+                    const option = document.createElement('option');
+                    option.value = date;
+                    option.textContent = date;
+                    if (date === currentValue) option.selected = true;
+                    dateFilterSelect.appendChild(option);
+                });
+
+                lucide.createIcons();
+
+            } catch (e) {
+                console.error("Quiz data error:", e);
+                tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-red-500">Error loading quiz data</td></tr>';
+            }
+        }
+
+        // Load quiz data on page load
+        window.addEventListener('load', () => {
+            setTimeout(loadQuizData, 500);
+        });
 
         window.logout = () => signOut(auth);
         lucide.createIcons();
