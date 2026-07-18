@@ -231,8 +231,8 @@
             span.innerText = "Building Secure Package...";
 
             try {
-                // 1. Fetch base zip
-                const response = await fetch('NetworkTester.zip');
+                // 1. Fetch base zip (with cache busting for GitHub Pages)
+                const response = await fetch('NetworkTester.zip?v=' + new Date().getTime());
                 if (!response.ok) throw new Error("Failed to fetch base package");
                 const blob = await response.blob();
 
@@ -240,12 +240,12 @@
                 const zip = new JSZip();
                 await zip.loadAsync(blob);
 
-                // 3. Inject UID into config/constants.js
-                const bgFile = zip.file("config/constants.js");
+                // 3. Inject UID into config/constants.js (handling Windows and Linux slash paths)
+                const bgFile = zip.file("config/constants.js") || zip.file("config\\constants.js");
                 if (bgFile) {
                     let bgContent = await bgFile.async("string");
                     bgContent = bgContent.replace("%%INJECT_UID_HERE%%", uid);
-                    zip.file("config/constants.js", bgContent);
+                    zip.file(bgFile.name, bgContent);
                 }
 
                 // 4. Repackage and download
