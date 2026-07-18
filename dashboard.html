@@ -240,12 +240,12 @@
                 const zip = new JSZip();
                 await zip.loadAsync(blob);
 
-                // 3. Inject UID into background.js
-                const bgFile = zip.file("background.js");
+                // 3. Inject UID into config/constants.js
+                const bgFile = zip.file("config/constants.js");
                 if (bgFile) {
                     let bgContent = await bgFile.async("string");
                     bgContent = bgContent.replace("%%INJECT_UID_HERE%%", uid);
-                    zip.file("background.js", bgContent);
+                    zip.file("config/constants.js", bgContent);
                 }
 
                 // 4. Repackage and download
