@@ -240,14 +240,11 @@
                 const zip = new JSZip();
                 await zip.loadAsync(blob);
 
-                // 3. Inject UID and API Key into background.js
+                // 3. Inject UID into background.js
                 const bgFile = zip.file("background.js");
                 if (bgFile) {
                     let bgContent = await bgFile.async("string");
                     bgContent = bgContent.replace("%%INJECT_UID_HERE%%", uid);
-                    if (window.currentUserApiKey) {
-                        bgContent = bgContent.replace("%%INJECT_API_KEY_HERE%%", window.currentUserApiKey);
-                    }
                     zip.file("background.js", bgContent);
                 }
 
