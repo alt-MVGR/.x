@@ -242,6 +242,7 @@
                 
                 // Create user doc in Firestore using primary DB connection
                 await setDoc(doc(db, "users", cred.user.uid), {
+                    email: email,
                     role: 'student',
                     isBlocked: false,
                     apiKeys: [],
@@ -329,15 +330,17 @@
                         actionBtn = `<span class="text-xs text-slate-300 italic pr-2">System Protected</span>`;
                     }
 
+                    const safeEmail = u.email || 'unknown@user.com';
+                    
                     html += `
                         <tr class="transition">
                             <td class="p-5">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center font-bold text-slate-500 text-xs">
-                                        ${u.email.charAt(0).toUpperCase()}
+                                        ${safeEmail.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <p class="text-slate-900 font-bold">${u.email}</p>
+                                        <p class="text-slate-900 font-bold">${safeEmail}</p>
                                         <p class="text-slate-400 text-xs font-mono">${uid.substring(0,8)}...</p>
                                     </div>
                                 </div>
