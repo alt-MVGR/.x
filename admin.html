@@ -237,7 +237,7 @@
             
             <div class="p-6 bg-white">
                 <div class="flex gap-2 mb-6">
-                    <input type="text" id="new-key-input" placeholder="gsk_..." class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    <input type="text" id="new-key-input" placeholder="sk-..." class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
                     <button onclick="addKey()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i> Add
                     </button>
@@ -471,9 +471,8 @@
         window.addKey = () => {
             const input = document.getElementById('new-key-input');
             const key = input.value.trim();
-            if (!key) return;
-            if (!key.startsWith('gsk_')) {
-                alert("Groq API keys must start with 'gsk_'");
+            if (key.length < 10) {
+                alert("Please enter a valid API key");
                 return;
             }
             if (window.currentManagingKeys.includes(key)) {
