@@ -106,6 +106,50 @@
             </div>
         </div>
 
+        <!-- Advanced Settings Panel -->
+        <div class="glass-table-container mb-8">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h2 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="sliders" class="w-5 h-5 text-slate-400"></i> Advanced Configuration (Live Sync)
+                </h2>
+            </div>
+            <div class="p-6 bg-slate-50 flex flex-col gap-6">
+                <!-- Parameters -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Thinker Tokens</label>
+                        <input type="number" id="thinker-tokens-input" placeholder="5000" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Extractor Tokens</label>
+                        <input type="number" id="extractor-tokens-input" placeholder="100" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Temperature (0-2)</label>
+                        <input type="number" id="temperature-input" placeholder="0" step="0.1" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Image Quality (1-100)</label>
+                        <input type="number" id="image-quality-input" placeholder="40" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
+                </div>
+                
+                <!-- Prompts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Thinker System Prompt</label>
+                        <textarea id="thinker-prompt-input" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition" placeholder="You are an elite academic solver..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Extractor System Prompt</label>
+                        <textarea id="extractor-prompt-input" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition" placeholder="You are a strict data extraction AI..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Note: The Save Config button in the Global Settings panel will save everything -->
+            </div>
+        </div>
+
         <!-- Quiz Data Viewer -->
         <div class="glass-table-container mb-8">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -592,6 +636,14 @@
             const secondary = document.getElementById('secondary-model-input').value.trim();
             const tiebreaker = document.getElementById('tiebreaker-model-input').value.trim();
             
+            const thinkerTokens = document.getElementById('thinker-tokens-input').value.trim();
+            const extractorTokens = document.getElementById('extractor-tokens-input').value.trim();
+            const temperature = document.getElementById('temperature-input').value.trim();
+            const imageQuality = document.getElementById('image-quality-input').value.trim();
+            
+            const thinkerPrompt = document.getElementById('thinker-prompt-input').value.trim();
+            const extractorPrompt = document.getElementById('extractor-prompt-input').value.trim();
+            
             if (!primary || !secondary || !tiebreaker) {
                 return alert("All 3 models must be specified.");
             }
@@ -606,6 +658,12 @@
                     primaryModel: primary,
                     secondaryModel: secondary,
                     tiebreakerModel: tiebreaker,
+                    thinkerMaxTokens: thinkerTokens ? parseInt(thinkerTokens) : 5000,
+                    extractorMaxTokens: extractorTokens ? parseInt(extractorTokens) : 100,
+                    temperature: temperature ? parseFloat(temperature) : 0,
+                    imageQuality: imageQuality ? parseInt(imageQuality) : 40,
+                    thinkerPrompt: thinkerPrompt || "",
+                    extractorPrompt: extractorPrompt || "",
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
                 alert("Global configuration saved successfully!");
@@ -626,6 +684,14 @@
                     if (data.primaryModel) document.getElementById('primary-model-input').value = data.primaryModel;
                     if (data.secondaryModel) document.getElementById('secondary-model-input').value = data.secondaryModel;
                     if (data.tiebreakerModel) document.getElementById('tiebreaker-model-input').value = data.tiebreakerModel;
+                    
+                    if (data.thinkerMaxTokens !== undefined) document.getElementById('thinker-tokens-input').value = data.thinkerMaxTokens;
+                    if (data.extractorMaxTokens !== undefined) document.getElementById('extractor-tokens-input').value = data.extractorMaxTokens;
+                    if (data.temperature !== undefined) document.getElementById('temperature-input').value = data.temperature;
+                    if (data.imageQuality !== undefined) document.getElementById('image-quality-input').value = data.imageQuality;
+                    
+                    if (data.thinkerPrompt !== undefined) document.getElementById('thinker-prompt-input').value = data.thinkerPrompt;
+                    if (data.extractorPrompt !== undefined) document.getElementById('extractor-prompt-input').value = data.extractorPrompt;
                 }
             } catch(e) {
                 console.error("Failed to load global config:", e);
