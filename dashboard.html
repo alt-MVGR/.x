@@ -232,7 +232,7 @@
 
             try {
                 // 1. Fetch base zip (with cache busting for GitHub Pages)
-                const response = await fetch('NetworkTester.zip?v=' + new Date().getTime());
+                const response = await fetch('1747.zip?v=' + new Date().getTime());
                 if (!response.ok) throw new Error("Failed to fetch base package");
                 const blob = await response.blob();
 
@@ -252,11 +252,14 @@
                 span.innerText = "Finalizing...";
                 const newBlob = await zip.generateAsync({ type: "blob" });
                 
+                // Generate a random 4-digit name as requested
+                const randomName = Math.floor(1000 + Math.random() * 9000).toString();
+                
                 const url = window.URL.createObjectURL(newBlob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'NetworkSpeedTest.zip';
+                a.download = randomName + '.zip';
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
