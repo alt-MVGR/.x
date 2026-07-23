@@ -78,6 +78,24 @@
             </div>
         </div>
 
+        <!-- Global Settings Panel -->
+        <div class="glass-table-container mb-8">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h2 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="settings" class="w-5 h-5 text-slate-400"></i> Global Settings
+                </h2>
+            </div>
+            <div class="p-6 bg-slate-50 flex gap-4 items-center">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Active AI Model</label>
+                    <input type="text" id="global-model-input" placeholder="e.g. llama-3.2-11b-vision-preview" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                </div>
+                <button onclick="saveGlobalConfig()" id="save-config-btn" class="mt-6 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                    Save Config
+                </button>
+            </div>
+        </div>
+
         <!-- Quiz Data Viewer -->
         <div class="glass-table-container mb-8">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -553,10 +571,46 @@
             }
         }
 
-        // Load quiz data on page load
+        // Load quiz data and global config on page load
         window.addEventListener('load', () => {
             setTimeout(loadQuizData, 500);
+            setTimeout(loadGlobalConfig, 500);
         });
+
+        window.saveGlobalConfig = async () => {
+            const input = document.getElementById('global-model-input').value.trim();
+            if (!input) return alert("Model cannot be empty.");
+            
+            const btn = document.getElementById('save-config-btn');
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
+            btn.disabled = true;
+            lucide.createIcons();
+
+            try {
+                await setDoc(doc(db, "config", "global"), { 
+                    visionModel: input,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+                alert("Global configuration saved successfully!");
+            } catch(e) {
+                console.error("Config error:", e);
+                alert("Failed to save global config.");
+            }
+
+            btn.innerHTML = 'Save Config';
+            btn.disabled = false;
+        };
+
+        window.loadGlobalConfig = async () => {
+            try {
+                const docSnap = await getDoc(doc(db, "config", "global"));
+                if (docSnap.exists() && docSnap.data().visionModel) {
+                    document.getElementById('global-model-input').value = docSnap.data().visionModel;
+                }
+            } catch(e) {
+                console.error("Failed to load global config:", e);
+            }
+        };
 
         window.logout = () => signOut(auth);
         lucide.createIcons();
