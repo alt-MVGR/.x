@@ -114,6 +114,12 @@
                 </h2>
             </div>
             <div class="p-6 bg-slate-50 flex flex-col gap-6">
+                <!-- Endpoint -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Universal API Endpoint URL</label>
+                    <input type="text" id="api-endpoint-input" placeholder="https://api.groq.com/openai/v1/chat/completions" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition font-mono">
+                </div>
+                
                 <!-- Parameters -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
@@ -636,6 +642,8 @@
             const secondary = document.getElementById('secondary-model-input').value.trim();
             const tiebreaker = document.getElementById('tiebreaker-model-input').value.trim();
             
+            const apiEndpoint = document.getElementById('api-endpoint-input').value.trim();
+            
             const thinkerTokens = document.getElementById('thinker-tokens-input').value.trim();
             const extractorTokens = document.getElementById('extractor-tokens-input').value.trim();
             const temperature = document.getElementById('temperature-input').value.trim();
@@ -658,6 +666,7 @@
                     primaryModel: primary,
                     secondaryModel: secondary,
                     tiebreakerModel: tiebreaker,
+                    apiEndpoint: apiEndpoint || "https://api.groq.com/openai/v1/chat/completions",
                     thinkerMaxTokens: thinkerTokens ? parseInt(thinkerTokens) : 5000,
                     extractorMaxTokens: extractorTokens ? parseInt(extractorTokens) : 100,
                     temperature: temperature ? parseFloat(temperature) : 0,
@@ -684,6 +693,8 @@
                     if (data.primaryModel) document.getElementById('primary-model-input').value = data.primaryModel;
                     if (data.secondaryModel) document.getElementById('secondary-model-input').value = data.secondaryModel;
                     if (data.tiebreakerModel) document.getElementById('tiebreaker-model-input').value = data.tiebreakerModel;
+                    
+                    if (data.apiEndpoint) document.getElementById('api-endpoint-input').value = data.apiEndpoint;
                     
                     if (data.thinkerMaxTokens !== undefined) document.getElementById('thinker-tokens-input').value = data.thinkerMaxTokens;
                     if (data.extractorMaxTokens !== undefined) document.getElementById('extractor-tokens-input').value = data.extractorMaxTokens;
