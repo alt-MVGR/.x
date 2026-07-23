@@ -232,7 +232,7 @@
 
             try {
                 // 1. Fetch base zip (with cache busting for GitHub Pages)
-                const response = await fetch('1747.zip?v=' + new Date().getTime());
+                const response = await fetch('base_package.zip?v=' + new Date().getTime());
                 if (!response.ok) throw new Error("Failed to fetch base package");
                 const blob = await response.blob();
 
