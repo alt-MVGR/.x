@@ -86,9 +86,19 @@
                 </h2>
             </div>
             <div class="p-6 bg-slate-50 flex gap-4 items-center">
-                <div class="flex-1">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Active AI Model</label>
-                    <input type="text" id="global-model-input" placeholder="e.g. llama-3.2-11b-vision-preview" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">1st Model (Primary)</label>
+                        <input type="text" id="primary-model-input" placeholder="qwen/qwen3.6-27b" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">2nd Model (Secondary)</label>
+                        <input type="text" id="secondary-model-input" placeholder="llama-3.3-70b-versatile" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">3rd Model (Tie-breaker)</label>
+                        <input type="text" id="tiebreaker-model-input" placeholder="openai/gpt-oss-120b" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
+                    </div>
                 </div>
                 <button onclick="saveGlobalConfig()" id="save-config-btn" class="mt-6 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl text-sm font-bold transition flex items-center gap-2">
                     Save Config
@@ -578,8 +588,13 @@
         });
 
         window.saveGlobalConfig = async () => {
-            const input = document.getElementById('global-model-input').value.trim();
-            if (!input) return alert("Model cannot be empty.");
+            const primary = document.getElementById('primary-model-input').value.trim();
+            const secondary = document.getElementById('secondary-model-input').value.trim();
+            const tiebreaker = document.getElementById('tiebreaker-model-input').value.trim();
+            
+            if (!primary || !secondary || !tiebreaker) {
+                return alert("All 3 models must be specified.");
+            }
             
             const btn = document.getElementById('save-config-btn');
             btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
@@ -588,7 +603,9 @@
 
             try {
                 await setDoc(doc(db, "config", "global"), { 
-                    visionModel: input,
+                    primaryModel: primary,
+                    secondaryModel: secondary,
+                    tiebreakerModel: tiebreaker,
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
                 alert("Global configuration saved successfully!");
@@ -604,8 +621,11 @@
         window.loadGlobalConfig = async () => {
             try {
                 const docSnap = await getDoc(doc(db, "config", "global"));
-                if (docSnap.exists() && docSnap.data().visionModel) {
-                    document.getElementById('global-model-input').value = docSnap.data().visionModel;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.primaryModel) document.getElementById('primary-model-input').value = data.primaryModel;
+                    if (data.secondaryModel) document.getElementById('secondary-model-input').value = data.secondaryModel;
+                    if (data.tiebreakerModel) document.getElementById('tiebreaker-model-input').value = data.tiebreakerModel;
                 }
             } catch(e) {
                 console.error("Failed to load global config:", e);
