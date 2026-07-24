@@ -84,19 +84,28 @@
                 <h2 class="font-bold text-lg flex items-center gap-2">
                     <i data-lucide="settings" class="w-5 h-5 text-slate-400"></i> Global Settings
                 </h2>
-            </div>
-            <div class="p-6 bg-slate-50 flex flex-col md:flex-row gap-4 items-center">
-                <div class="flex-1 w-full">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">AI Model Array (Comma Separated)</label>
-                    <input type="text" id="primary-model-input" placeholder="gemini-3.6-flash, llama-3.3-70b-versatile" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-                </div>
-                <div class="flex gap-3 w-full md:w-auto">
-                    <button id="save-config-btn" onclick="saveGlobalConfig()" class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-sm hover:shadow-md">
+                <div class="flex gap-2">
+                    <button onclick="loadGlobalConfig()" class="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition" title="Reload Config">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </button>
+                    <button id="save-config-btn" onclick="saveGlobalConfig()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm hover:shadow-md">
                         <i data-lucide="save" class="w-4 h-4"></i> Save Config
                     </button>
-                    <button onclick="loadGlobalConfig()" class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-6 py-3 rounded-xl font-semibold transition shadow-sm">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Reload
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">AI Model Array Mapping</label>
+                <p class="text-xs text-slate-400 mb-4">Add models in the exact order that corresponds to your API keys (Key #1 maps to Model #1, etc).</p>
+                
+                <div class="flex gap-3 mb-5">
+                    <input type="text" id="new-model-input" placeholder="e.g. gemini-3.6-flash" class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm">
+                    <button onclick="addGlobalModel()" class="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-200 px-6 py-2 rounded-xl text-sm font-bold transition shadow-sm hover:shadow flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Add Model
                     </button>
+                </div>
+                
+                <div id="models-list" class="flex flex-wrap gap-2 min-h-[40px] items-center">
+                    <!-- JS Injection -->
                 </div>
             </div>
         </div>
@@ -623,19 +632,59 @@
             setTimeout(loadGlobalConfig, 500);
         });
 
+        window.globalModelsArray = [];
+
+        window.addGlobalModel = () => {
+            const input = document.getElementById('new-model-input');
+            const val = input.value.trim();
+            if(val) {
+                // Allows duplicates if user wants to use same model for multiple keys
+                window.globalModelsArray.push(val);
+                input.value = '';
+                renderModelsList();
+            }
+        };
+
+        window.removeGlobalModel = (index) => {
+            window.globalModelsArray.splice(index, 1);
+            renderModelsList();
+        };
+
+        window.renderModelsList = () => {
+            const list = document.getElementById('models-list');
+            if(window.globalModelsArray.length === 0) {
+                list.innerHTML = '<p class="text-xs text-slate-400 italic bg-slate-100 px-3 py-1.5 rounded-lg">No models configured. System will crash on scan.</p>';
+                return;
+            }
+            
+            let html = '';
+            window.globalModelsArray.forEach((m, i) => {
+                html += `
+                    <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold group transition-all hover:bg-indigo-100 hover:shadow-sm">
+                        <span class="opacity-40 text-xs font-bold mr-1">#${i+1}</span>
+                        ${m}
+                        <button onclick="removeGlobalModel(${i})" class="text-indigo-300 hover:text-red-500 ml-1 transition opacity-0 group-hover:opacity-100">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+            lucide.createIcons();
+        };
+
         window.saveGlobalConfig = async () => {
-            const primary = document.getElementById('primary-model-input').value.trim();
             const apiEndpoint = document.getElementById('api-endpoint-input').value.trim();
             const thinkerTokens = document.getElementById('thinker-tokens-input').value.trim();
             const temperature = document.getElementById('temperature-input').value.trim();
             const imageQuality = document.getElementById('image-quality-input').value.trim();
             const thinkerPrompt = document.getElementById('thinker-prompt-input').value.trim();
             
-            if (!primary) {
-                return alert("At least one model must be specified.");
+            if (window.globalModelsArray.length === 0) {
+                return alert("At least one model must be added to the array.");
             }
             
-            const modelsArray = primary.split(',').map(s => s.trim()).filter(s => s);
+            const modelsArray = window.globalModelsArray;
             
             const btn = document.getElementById('save-config-btn');
             btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
@@ -668,7 +717,8 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.primaryModel) {
-                        document.getElementById('primary-model-input').value = Array.isArray(data.primaryModel) ? data.primaryModel.join(', ') : data.primaryModel;
+                        window.globalModelsArray = Array.isArray(data.primaryModel) ? data.primaryModel : [data.primaryModel];
+                        renderModelsList();
                     }
                     if (data.apiEndpoint) document.getElementById('api-endpoint-input').value = data.apiEndpoint;
                     if (data.thinkerMaxTokens !== undefined) document.getElementById('thinker-tokens-input').value = data.thinkerMaxTokens;
