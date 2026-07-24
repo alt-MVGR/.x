@@ -97,11 +97,33 @@
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">AI Model Array Mapping</label>
                 <p class="text-xs text-slate-400 mb-4">Add models in the exact order that corresponds to your API keys (Key #1 maps to Model #1, etc).</p>
                 
-                <div class="flex gap-3 mb-5">
-                    <input type="text" id="new-model-input" placeholder="e.g. gemini-3.6-flash" class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm">
-                    <button onclick="addGlobalModel()" class="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-200 px-6 py-2 rounded-xl text-sm font-bold transition shadow-sm hover:shadow flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Add Model
-                    </button>
+                <div class="flex flex-col gap-2 mb-5">
+                    <div class="flex gap-3">
+                        <select id="new-model-select" onchange="handleModelSelectChange()" class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm bg-white cursor-pointer appearance-none">
+                            <option value="" disabled selected>Select a Model to Add...</option>
+                            <optgroup label="Groq (Keys starting with gsk_)">
+                                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Recommended)</option>
+                                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fastest)</option>
+                                <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                            </optgroup>
+                            <optgroup label="Google (Keys starting with AIzaSy)">
+                                <option value="gemini-2.5-flash">gemini-2.5-flash (Recommended)</option>
+                                <option value="gemini-2.0-flash-lite-preview-02-05">gemini-2.0-flash-lite</option>
+                                <option value="gemini-2.5-pro">gemini-2.5-pro (Smartest)</option>
+                            </optgroup>
+                            <optgroup label="OpenRouter (Keys starting with sk-or-)">
+                                <option value="qwen/qwen-2.5-72b-instruct">qwen/qwen-2.5-72b-instruct</option>
+                                <option value="meta-llama/llama-3.3-70b-instruct">meta-llama/llama-3.3-70b-instruct</option>
+                            </optgroup>
+                            <optgroup label="Other">
+                                <option value="custom">Custom Model (Type Manually)...</option>
+                            </optgroup>
+                        </select>
+                        <button onclick="addGlobalModel()" class="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-200 px-6 py-2 rounded-xl text-sm font-bold transition shadow-sm hover:shadow flex items-center gap-2 shrink-0">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Model
+                        </button>
+                    </div>
+                    <input type="text" id="new-model-input" placeholder="Type custom model name exactly as required by the API..." class="hidden w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm">
                 </div>
                 
                 <div id="models-list" class="flex flex-wrap gap-2 min-h-[40px] items-center">
@@ -634,13 +656,34 @@
 
         window.globalModelsArray = [];
 
+        window.handleModelSelectChange = () => {
+            const select = document.getElementById('new-model-select');
+            const customInput = document.getElementById('new-model-input');
+            if (select.value === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+            }
+        };
+
         window.addGlobalModel = () => {
-            const input = document.getElementById('new-model-input');
-            const val = input.value.trim();
+            const select = document.getElementById('new-model-select');
+            const customInput = document.getElementById('new-model-input');
+            
+            let val = "";
+            if (select.value === 'custom') {
+                val = customInput.value.trim();
+            } else {
+                val = select.value;
+            }
+            
             if(val) {
                 // Allows duplicates if user wants to use same model for multiple keys
                 window.globalModelsArray.push(val);
-                input.value = '';
+                select.value = "";
+                customInput.value = "";
+                customInput.classList.add('hidden');
                 renderModelsList();
             }
         };
