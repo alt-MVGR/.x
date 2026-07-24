@@ -167,7 +167,12 @@
                 <div class="grid grid-cols-1 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">System Prompt</label>
-                        <textarea id="thinker-prompt-input" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition" placeholder="You are an elite solver..."></textarea>
+                        <textarea id="thinker-prompt-input" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition" placeholder="You are an elite academic solver. You are given the OCR extracted text of a multiple-choice question.
+Your task is to analyze the problem and arrive at the correct option.
+CRITICAL: You MUST be concise. Do not write massive paragraphs. Solve the problem directly and quickly to save time.
+CRITICAL: You MUST ONLY select from the options explicitly provided in the OCR text. Never hallucinate or select an option letter (like E) if it is not listed.
+After reasoning, you MUST output ONLY the final correct option letter inside XML tags.
+YOU MUST output exactly like this: <answer>B</answer> at the very end of your response."></textarea>
                     </div>
                 </div>
                 
