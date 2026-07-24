@@ -704,11 +704,11 @@
             let html = '';
             window.globalModelsArray.forEach((m, i) => {
                 html += `
-                    <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold group transition-all hover:bg-indigo-100 hover:shadow-sm">
+                    <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-indigo-100 hover:shadow-sm">
                         <span class="opacity-40 text-xs font-bold mr-1">#${i+1}</span>
                         ${m}
-                        <button onclick="removeGlobalModel(${i})" class="text-indigo-300 hover:text-red-500 ml-1 transition opacity-0 group-hover:opacity-100">
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        <button type="button" onclick="event.preventDefault(); removeGlobalModel(${i});" class="text-indigo-400 hover:text-red-600 ml-1 transition-colors p-1 rounded-md hover:bg-red-50 flex items-center justify-center">
+                            <i data-lucide="x" class="w-3.5 h-3.5 pointer-events-none"></i>
                         </button>
                     </div>
                 `;
