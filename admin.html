@@ -397,7 +397,26 @@
 
         window.loadUsers = async () => {
             const tbody = document.getElementById('user-rows');
-            tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400">Syncing database...</td></tr>';
+            let skeletonRows = '';
+            for(let i=0; i<4; i++) {
+                skeletonRows += `
+                    <tr class="animate-pulse border-b border-white/5">
+                        <td class="p-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-slate-700/40"></div>
+                                <div class="space-y-2">
+                                    <div class="h-4 w-32 bg-slate-700/40 rounded"></div>
+                                    <div class="h-3 w-20 bg-slate-700/20 rounded"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-5"><div class="h-6 w-16 bg-slate-700/40 rounded-md"></div></td>
+                        <td class="p-5"><div class="h-6 w-20 bg-slate-700/40 rounded-full"></div></td>
+                        <td class="p-5"><div class="flex justify-end"><div class="h-8 w-24 bg-slate-700/40 rounded-lg"></div></div></td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = skeletonRows;
             
             try {
                 const query = await getDocs(collection(db, "users"));
