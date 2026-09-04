@@ -108,17 +108,14 @@
                     <div class="flex gap-3">
                         <select id="new-model-select" onchange="handleModelSelectChange()" class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm bg-white cursor-pointer appearance-none">
                             <option value="" disabled selected>Select a Model to Add...</option>
-                            <optgroup label="Groq Models">
-                                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Recommended)</option>
-                                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fastest)</option>
-                                <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
-                                <option value="qwen/qwen-2.5-coder-32b-instruct">qwen/qwen-2.5-coder-32b-instruct</option>
+                            <optgroup label="Google Gemini Vision Models (Most Popular)">
+                                <option value="gemini-3.6-flash">gemini-3.6-flash (Smartest / Primary)</option>
+                                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fastest / Hedge)</option>
                             </optgroup>
-                            <optgroup label="Google Gemini Models">
-                                <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-                                <option value="gemini-2.5-flash">gemini-2.5-flash (Recommended)</option>
-                                <option value="gemini-2.0-flash-lite-preview-02-05">gemini-2.0-flash-lite</option>
-                                <option value="gemini-2.5-pro">gemini-2.5-pro (Smartest)</option>
+                            <optgroup label="Groq Vision Models (Sub-500ms Racing)">
+                                <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Highly Optimized)</option>
+                                <option value="qwen/qwen3.8-flash-next">qwen/qwen3.8-flash-next (Fastest)</option>
+                                <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct">llama-4-scout-17b</option>
                             </optgroup>
                             <optgroup label="OpenRouter Models">
                                 <option value="qwen/qwen-2.5-72b-instruct">qwen/qwen-2.5-72b-instruct</option>
