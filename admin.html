@@ -34,9 +34,27 @@
         /* Hide details marker */
         summary { list-style: none; }
         summary::-webkit-details-marker { display: none; }
+
+        /* Phased Particle Layout Assembly Transitions */
+        [data-assemble-target] {
+            opacity: 0;
+            transform: translateY(24px) scale(0.98);
+            transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+            will-change: transform, opacity;
+        }
+        [data-assemble-target].assembled {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        [data-assemble-target].assembled-flash {
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25), 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50 text-slate-800 relative">
+
+    <!-- Fullscreen Particle Overlay Canvas -->
+    <canvas id="particle-stream-canvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full" style="transition: opacity 0.45s ease;"></canvas>
 
     <nav class="glass-header sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
@@ -57,7 +75,7 @@
         
         <!-- Stats Row -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+            <div data-assemble-target class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
                 <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition transform">
                     <i data-lucide="users" class="w-24 h-24"></i>
                 </div>
@@ -65,7 +83,7 @@
                 <p class="text-4xl font-extrabold text-slate-800 mt-2" id="stat-total">-</p>
             </div>
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+            <div data-assemble-target class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
                 <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition transform">
                     <i data-lucide="ban" class="w-24 h-24 text-red-500"></i>
                 </div>
@@ -73,7 +91,7 @@
                 <p class="text-4xl font-extrabold text-red-600 mt-2" id="stat-blocked">-</p>
             </div>
 
-            <div class="bg-gradient-to-br from-yellow-500 to-amber-600 p-6 rounded-2xl shadow-lg shadow-yellow-500/20 text-white">
+            <div data-assemble-target class="bg-gradient-to-br from-yellow-500 to-amber-600 p-6 rounded-2xl shadow-lg shadow-yellow-500/20 text-white">
                 <p class="text-sm font-bold text-yellow-100 uppercase tracking-wide">System Status</p>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="w-3 h-3 bg-white rounded-full animate-pulse"></span>
@@ -83,7 +101,7 @@
         </div>
 
         <!-- Global Settings Panel -->
-        <details class="glass-table-container mb-8 group bg-white">
+        <details data-assemble-target class="glass-table-container mb-8 group bg-white">
             <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg flex items-center gap-2">
                     <i data-lucide="settings" class="w-5 h-5 text-slate-400"></i> Global Settings
@@ -142,7 +160,7 @@
         </details>
 
         <!-- Advanced Settings Panel -->
-        <details class="glass-table-container mb-8 group bg-white">
+        <details data-assemble-target class="glass-table-container mb-8 group bg-white">
             <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg flex items-center gap-2">
                     <i data-lucide="sliders" class="w-5 h-5 text-slate-400"></i> Advanced Configuration (Live Sync)
@@ -186,7 +204,7 @@
 
 
         <!-- Create User Module -->
-        <details class="glass-table-container mb-8 overflow-visible group bg-white">
+        <details data-assemble-target class="glass-table-container mb-8 overflow-visible group bg-white">
             <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-yellow-600"></i> Provision New User</h2>
                 <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
@@ -208,7 +226,7 @@
         </details>
 
         <!-- Table -->
-        <details class="glass-table-container group bg-white" open>
+        <details data-assemble-target class="glass-table-container group bg-white" open>
             <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg">User Registry</h2>
                 <div class="flex items-center gap-4">
@@ -397,26 +415,28 @@
 
         window.loadUsers = async () => {
             const tbody = document.getElementById('user-rows');
-            let skeletonRows = '';
+            
+            // Cinematic Skeleton Loader
+            let skeletonHtml = '';
             for(let i=0; i<4; i++) {
-                skeletonRows += `
+                skeletonHtml += `
                     <tr class="animate-pulse border-b border-white/5">
                         <td class="p-5">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-slate-700/40"></div>
+                                <div class="w-8 h-8 rounded-full bg-slate-500/20"></div>
                                 <div class="space-y-2">
-                                    <div class="h-4 w-32 bg-slate-700/40 rounded"></div>
-                                    <div class="h-3 w-20 bg-slate-700/20 rounded"></div>
+                                    <div class="h-4 w-32 bg-slate-500/20 rounded"></div>
+                                    <div class="h-3 w-20 bg-slate-500/10 rounded"></div>
                                 </div>
                             </div>
                         </td>
-                        <td class="p-5"><div class="h-6 w-16 bg-slate-700/40 rounded-md"></div></td>
-                        <td class="p-5"><div class="h-6 w-20 bg-slate-700/40 rounded-full"></div></td>
-                        <td class="p-5"><div class="flex justify-end"><div class="h-8 w-24 bg-slate-700/40 rounded-lg"></div></div></td>
+                        <td class="p-5"><div class="h-5 w-16 bg-slate-500/20 rounded-md"></div></td>
+                        <td class="p-5"><div class="h-5 w-20 bg-slate-500/20 rounded-full"></div></td>
+                        <td class="p-5 text-right"><div class="flex justify-end"><div class="h-8 w-24 bg-slate-500/20 rounded-lg"></div></div></td>
                     </tr>
                 `;
             }
-            tbody.innerHTML = skeletonRows;
+            tbody.innerHTML = skeletonHtml;
             
             try {
                 const query = await getDocs(collection(db, "users"));
@@ -469,15 +489,15 @@
                     }
                     
                     html += `
-                        <tr class="transition">
+                        <tr class="transition border-b border-white/5">
                             <td class="p-5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center font-bold text-slate-500 text-xs">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center font-bold text-indigo-300 text-xs shadow-inner">
                                         ${safeEmail.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <p class="text-slate-900 font-bold">${safeEmail}</p>
-                                        <p class="text-slate-400 text-xs font-mono">${uid.substring(0,8)}...</p>
+                                        <p class="text-slate-200 font-bold tracking-wide">${safeEmail}</p>
+                                        <p class="text-slate-500 text-xs font-mono mt-0.5">${uid.substring(0,8)}...</p>
                                     </div>
                                 </div>
                             </td>
@@ -857,6 +877,304 @@
         }, { passive: true });
 
         lucide.createIcons();
+    </script>
+
+    <!-- ==================== PHASED BEZIER PARTICLE TRANSITION & LAYOUT ASSEMBLY ==================== -->
+    <script>
+    (function initParticleAssembly() {
+        const canvas = document.getElementById('particle-stream-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let dpr = Math.min(window.devicePixelRatio || 1, 2);
+        let animId = null;
+        let isComplete = false;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.floor(width * dpr);
+            canvas.height = Math.floor(height * dpr);
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Standard Cubic Bezier formula: B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃
+        function cubicBezier(t, p0, p1, p2, p3) {
+            const u = 1 - t;
+            const tt = t * t;
+            const uu = u * u;
+            const uuu = uu * u;
+            const ttt = tt * t;
+
+            return {
+                x: uuu * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * p3.x,
+                y: uuu * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * p3.y
+            };
+        }
+
+        // Control points orchestrated in the top-right quadrant
+        function getControlPoints() {
+            return {
+                p0: { x: width * 1.04, y: -40 },
+                p1: { x: width * 0.52, y: height * 0.36 },
+                p2: { x: width * 0.98, y: height * 0.44 },
+                p3: { x: width * 0.84, y: -60 }
+            };
+        }
+
+        // Luminous glowing particle palette
+        const palette = [
+            '#6366f1', // Indigo
+            '#06b6d4', // Cyan
+            '#a855f7', // Purple
+            '#f59e0b', // Amber
+            '#3b82f6', // Electric Blue
+            '#10b981'  // Emerald
+        ];
+
+        // Measure layout boxes dynamically
+        const targetElements = Array.from(document.querySelectorAll('[data-assemble-target]'));
+        if (targetElements.length === 0) return;
+
+        const TOTAL_PARTICLES = 230;
+        
+        // Quota distribution for the 7 primary layout containers
+        const boxQuotas = [
+            30, // Stat 1 (Active Users)
+            30, // Stat 2 (Blocked)
+            30, // Stat 3 (Status)
+            38, // Global Settings
+            34, // Advanced Settings
+            34, // Create User
+            34  // User Registry
+        ];
+
+        let sumQuota = boxQuotas.reduce((a, b) => a + b, 0);
+        while (sumQuota < TOTAL_PARTICLES) { boxQuotas[0]++; sumQuota++; }
+
+        const boxes = targetElements.map((el, bIdx) => {
+            const rect = el.getBoundingClientRect();
+            return {
+                el,
+                rect,
+                quota: boxQuotas[bIdx] || 25,
+                lockedCount: 0,
+                assembled: false
+            };
+        });
+
+        // Compute perimeter target coordinates along DOM container bounds
+        let particleTargets = [];
+        boxes.forEach((box) => {
+            const w = box.rect.width;
+            const h = box.rect.height;
+            const perimeter = 2 * (w + h);
+            const count = box.quota;
+
+            for (let i = 0; i < count; i++) {
+                const dist = (i / count) * perimeter;
+                let tx, ty;
+                if (dist < w) { // Top edge
+                    tx = box.rect.left + dist;
+                    ty = box.rect.top;
+                } else if (dist < w + h) { // Right edge
+                    tx = box.rect.right;
+                    ty = box.rect.top + (dist - w);
+                } else if (dist < 2 * w + h) { // Bottom edge
+                    tx = box.rect.right - (dist - (w + h));
+                    ty = box.rect.bottom;
+                } else { // Left edge
+                    tx = box.rect.left;
+                    ty = box.rect.bottom - (dist - (2 * w + h));
+                }
+                particleTargets.push({ tx, ty, box });
+            }
+        });
+
+        // Particle Class with Phased State Machine
+        class Particle {
+            constructor(index, targetData) {
+                this.index = index;
+                this.targetX = targetData.tx;
+                this.targetY = targetData.ty;
+                this.box = targetData.box;
+
+                // State Machine: 'streaming' -> 'transforming' -> 'locking' -> 'locked'
+                this.state = 'streaming';
+                
+                // Continuous staggered stream over ~1.1s
+                this.t = - (index * 0.0042);
+                this.speed = 0.013 + Math.random() * 0.003;
+                
+                this.x = width * 1.04;
+                this.y = -40;
+                this.vx = 0;
+                this.vy = 0;
+
+                this.size = 2 + Math.random() * 2;
+                this.color = palette[index % palette.length];
+                this.trail = [];
+                this.maxTrail = 6;
+                
+                this.transformTimer = Math.floor(16 + Math.random() * 12);
+                this.lerpRate = 0.085 + Math.random() * 0.035;
+                this.alpha = 1;
+            }
+
+            update(p0, p1, p2, p3) {
+                if (this.state === 'streaming') {
+                    // Phase 1 & 2: The Bezier Stream
+                    this.t += this.speed;
+                    if (this.t >= 0) {
+                        const clampedT = Math.min(1, this.t);
+                        const pos = cubicBezier(clampedT, p0, p1, p2, p3);
+                        this.x = pos.x;
+                        this.y = pos.y;
+
+                        this.trail.push({ x: this.x, y: this.y });
+                        if (this.trail.length > this.maxTrail) this.trail.shift();
+
+                        // Transition to Phase 3 (The Metamorphosis) at the loop exit
+                        if (this.t >= 0.96) {
+                            this.state = 'transforming';
+                            this.trail = [];
+                            // Reassign velocity vector towards target with scatter burst
+                            const dx = this.targetX - this.x;
+                            this.vx = dx * 0.022 + (Math.random() - 0.5) * 6;
+                            this.vy = Math.random() * 8 + 5; // Scatter downwards across screen
+                        }
+                    }
+                } else if (this.state === 'transforming') {
+                    // Phase 3: Scatter & descent
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.25; // Gentle downward gravity
+                    this.transformTimer--;
+
+                    if (this.transformTimer <= 0) {
+                        this.state = 'locking';
+                    }
+                } else if (this.state === 'locking') {
+                    // Phase 4: Layout Assembly (LERP)
+                    this.x += (this.targetX - this.x) * this.lerpRate;
+                    this.y += (this.targetY - this.y) * this.lerpRate;
+
+                    const dist = Math.hypot(this.targetX - this.x, this.targetY - this.y);
+                    if (dist < 2.8) {
+                        this.x = this.targetX;
+                        this.y = this.targetY;
+                        this.state = 'locked';
+
+                        this.box.lockedCount++;
+                        // When enough particles lock onto this container, solidify into DOM
+                        if (!this.box.assembled && this.box.lockedCount / this.box.quota >= 0.75) {
+                            this.box.assembled = true;
+                            this.box.el.classList.add('assembled');
+                            this.box.el.classList.add('assembled-flash');
+                            setTimeout(() => {
+                                if (this.box.el) this.box.el.classList.remove('assembled-flash');
+                            }, 450);
+                        }
+                    }
+                } else if (this.state === 'locked') {
+                    // Fade into solid structural background divs
+                    this.alpha = Math.max(0, this.alpha - 0.04);
+                }
+            }
+
+            draw(ctx) {
+                if (this.t < 0 && this.state === 'streaming') return;
+                if (this.alpha <= 0) return;
+
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+
+                // Motion trail during streaming
+                if (this.state === 'streaming' && this.trail.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[0].x, this.trail[0].y);
+                    for (let i = 1; i < this.trail.length; i++) {
+                        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    }
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = this.size * 0.7;
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = this.color;
+                    ctx.stroke();
+                }
+
+                // Glowing particle
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = (this.state === 'locked') ? 12 : 8;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        // Initialize particles
+        const particles = particleTargets.slice(0, TOTAL_PARTICLES).map((tg, i) => new Particle(i, tg));
+
+        // 60FPS Render Loop
+        function animate() {
+            if (isComplete) return;
+
+            ctx.clearRect(0, 0, width, height);
+            const { p0, p1, p2, p3 } = getControlPoints();
+
+            let allLocked = true;
+
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.update(p0, p1, p2, p3);
+                p.draw(ctx);
+
+                if (p.state !== 'locked' || p.alpha > 0) {
+                    allLocked = false;
+                }
+            }
+
+            if (allLocked) {
+                finishTransition();
+                return;
+            }
+
+            animId = requestAnimationFrame(animate);
+        }
+
+        function finishTransition() {
+            isComplete = true;
+            boxes.forEach(b => {
+                if (b.el) b.el.classList.add('assembled');
+            });
+            canvas.style.opacity = '0';
+            setTimeout(() => {
+                canvas.style.display = 'none';
+                if (animId) cancelAnimationFrame(animId);
+            }, 500);
+        }
+
+        // Safety fallback (ensures layout is never stuck hidden)
+        setTimeout(() => {
+            if (!isComplete) finishTransition();
+        }, 4200);
+
+        // Start animation immediately
+        animId = requestAnimationFrame(animate);
+    })();
     </script>
 </body>
 </html>
