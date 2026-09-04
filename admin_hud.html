@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NETSPEED // CARTOON LAB COMMAND DECK</title>
+    
+    <!-- Distinctive Font Family Combination:
+         1. Fredoka (Display & Headlines: Chunky, expressive, playful, comic-pop)
+         2. Plus Jakarta Sans (UI, Labels, Badges: Crisp, punchy, ultra-modern)
+         3. DM Mono (Telemetry, Code, Keys: Quirky retro-tech monospace) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fredoka:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'comic-bg': '#0f111a',
+                        'comic-card': '#181b2a',
+                        'comic-ink': '#090a10',
+                        'pop-yellow': '#FFE600',
+                        'pop-pink': '#FF3388',
+                        'pop-mint': '#00F59B',
+                        'pop-cyan': '#00D4FF',
+                        'pop-orange': '#FF6B00',
+                        'pop-purple': '#9D4EDD'
+                    },
+                    fontFamily: {
+                        display: ['Fredoka', 'cursive', 'sans-serif'],
+                        body: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"DM Mono"', 'monospace']
+                    },
+                    boxShadow: {
+                        'hard': '4px 4px 0px #090a10',
+                        'hard-sm': '2px 2px 0px #090a10',
+                        'hard-lg': '6px 6px 0px #090a10',
+                        'hard-xl': '8px 8px 0px #090a10',
+                        'hard-pink': '5px 5px 0px #FF3388',
+                        'hard-yellow': '5px 5px 0px #FFE600',
+                        'hard-mint': '5px 5px 0px #00F59B',
+                        'hard-cyan': '5px 5px 0px #00D4FF'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f111a;
+            color: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: 
+                radial-gradient(#252a3d 1.5px, transparent 1.5px),
+                radial-gradient(#1e2233 1.5px, #0f111a 1.5px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            min-height: 100vh;
+        }
+
+        /* Comic Card Styling */
+        .comic-box {
+            background: #181b2a;
+            border: 3px solid #090a10;
+            box-shadow: 6px 6px 0px #090a10;
+            border-radius: 18px;
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .comic-box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #090a10;
+        }
+
+        /* Tactile Bouncy Button */
+        .comic-btn {
+            border: 3px solid #090a10;
+            box-shadow: 4px 4px 0px #090a10;
+            border-radius: 12px;
+            font-family: 'Fredoka', cursive;
+            transition: all 0.1s ease;
+            user-select: none;
+        }
+        .comic-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 5px 5px 0px #090a10;
+        }
+        .comic-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px #090a10;
+        }
+
+        /* Speech-Bubble Tooltip Engine */
+        [data-tooltip] {
+            position: relative;
+            cursor: pointer;
+        }
+        [data-tooltip]::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px) scale(0.95);
+            background: #FFE600;
+            color: #090a10;
+            font-family: 'Fredoka', cursive;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 2px solid #090a10;
+            box-shadow: 3px 3px 0px #090a10;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 100;
+        }
+        [data-tooltip]::after {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0 6px;
+            border-style: solid;
+            border-color: #090a10 transparent transparent transparent;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 101;
+        }
+        [data-tooltip]:hover::before,
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        /* Liquid Tube Bubbling Animation */
+        @keyframes bubble-rise {
+            0% { transform: translateY(100%) scale(0.6); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10%) scale(1.1); opacity: 0; }
+        }
+        .bubble-1 { animation: bubble-rise 2.4s infinite ease-in; left: 20%; }
+        .bubble-2 { animation: bubble-rise 3.1s infinite ease-in 0.8s; left: 55%; }
+        .bubble-3 { animation: bubble-rise 2.8s infinite ease-in 1.4s; left: 80%; }
+
+        /* Wobbly Star Rotation */
+        @keyframes wobble-star {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.15); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .animate-spin-slow {
+            animation: wobble-star 14s infinite linear;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #121422; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #FFE600; border: 2px solid #090a10; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF3388; }
+    </style>
+</head>
+
+<body class="p-3 sm:p-6 select-none">
+
+    <!-- ==================== PLAYFUL RETRO-LAB HEADER ==================== -->
+    <header class="max-w-7xl mx-auto mb-6">
+        <div class="comic-box bg-comic-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Brand Sticker -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-pop-yellow border-3 border-comic-ink flex items-center justify-center shadow-hard rotate-[-3deg] text-comic-ink text-2xl font-display font-bold cursor-pointer hover:rotate-6 transition">
+                    ⚡
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-wide">
+                            NETSPEED <span class="text-pop-yellow inline-block rotate-2">LABS</span>
+                        </h1>
+                        <span class="px-2.5 py-0.5 rounded-full bg-pop-pink text-white font-display text-xs border-2 border-comic-ink shadow-hard-sm" data-tooltip="Overclocked Academic Solver Core">
+                            v5.0 OVERCLOCKED
+                        </span>
+                    </div>
+                    <p class="font-mono text-xs text-slate-400">MISSION CONTROL // DOT-THE-SOLVER FLEET DISPATCH</p>
+                </div>
+            </div>
+
+            <!-- Quick Pill Telemetry -->
+            <div class="flex items-center flex-wrap gap-2.5 font-display text-xs">
+                <!-- Live Status Sticker -->
+                <div class="px-3.5 py-1.5 rounded-xl bg-pop-mint text-comic-ink border-2 border-comic-ink shadow-hard-sm flex items-center gap-2" data-tooltip="All background Chrome offscreen workers healthy!">
+                    <span class="w-2.5 h-2.5 rounded-full bg-comic-ink animate-ping"></span>
+                    <span class="font-bold">STATUS: HYPER-CRUNCHING</span>
+                </div>
+
+                <!-- Simulation Toggle -->
+                <button onclick="toggleTrafficSimulator()" id="sim-btn" class="comic-btn px-3 py-1.5 bg-pop-cyan text-comic-ink font-bold text-xs flex items-center gap-1.5" data-tooltip="Generate live exam solving traffic!">
+                    <span>🎲</span> <span id="sim-btn-label">SIMULATE SOLVES: ON</span>
+                </button>
+
+                <!-- Force Sync Button -->
+                <button onclick="forceSyncFleet()" class="comic-btn px-3 py-1.5 bg-slate-800 text-white hover:bg-slate-700 text-xs flex items-center gap-1.5" data-tooltip="Re-sync memory cache with Firestore cloud!">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> <span>SYNC FLEET</span>
+                </button>
+
+                <!-- Logout Button -->
+                <button onclick="logoutAdmin()" class="comic-btn px-3 py-1.5 bg-pop-pink text-white text-xs flex items-center gap-1.5" data-tooltip="Eject from command cockpit">
+                    <span>🚪</span> <span>EJECT</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ==================== MAIN CARTOON COCKPIT GRID ==================== -->
+    <main class="max-w-7xl mx-auto space-y-6">
+
+        <!-- ==================== HERO SECTION: THE ATOMIC SOLVER REACTOR ==================== -->
+        <section class="comic-box bg-gradient-to-r from-comic-card via-[#1d2136] to-comic-card p-6 sm:p-8 overflow-hidden relative border-3 border-comic-ink shadow-hard-lg">
+            <!-- Decorative Cartoon Stars & Halftones -->
+            <div class="absolute -right-6 -bottom-6 w-36 h-36 bg-pop-yellow/10 rounded-full blur-xl pointer-events-none"></div>
+            <div class="absolute right-12 top-6 text-pop-yellow font-display text-4xl animate-spin-slow pointer-events-none select-none">✦</div>
+            <div class="absolute left-1/3 -top-3 text-pop-pink font-display text-2xl rotate-12 pointer-events-none select-none">★</div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
+                
+                <!-- Left: Big Playful Callout & Stats -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pop-yellow/10 border-2 border-pop-yellow text-pop-yellow font-display text-xs font-bold" data-tooltip="Dynamic provider rotation is active!">
+                        <span>🚀</span> ZERO STRING-GUESSING // DYNAMIC PROVIDER ADAPTIVE
+                    </div>
+
+                    <h2 class="font-display font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight">
+                        PROFESSOR SOLVER’S <br>
+                        <span class="text-pop-yellow underline decoration-wavy decoration-pop-pink decoration-4">QUANTUM COCKPIT</span> 🧪
+                    </h2>
+
+                    <p class="font-body text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                        Real-time exam question decryption deck. Feeds OCR crops straight into dynamic multi-engine rotation (Groq ⚡ Gemini ✦ OpenRouter), bypasses 429 rate-limits, and stamps the answer onto the live test in <strong class="text-pop-mint">2.5s stealth mode!</strong>
+                    </p>
+
+                    <!-- Hero Stat Pills -->
+                    <div class="flex flex-wrap gap-3 pt-2 font-display text-xs">
+                        <div class="p-3 bg-comic-ink/60 rounded-xl border-2 border-slate-700 flex items-center gap-3 shadow-hard-sm" data-tooltip="Total active students connected to the extension">
+                            <span class="text-2xl">👥</span>
+                            <div>
+                                <div class="text-slate-400 text-[10px]">ACTIVE OPERATORS</div>
+                                <div class="text-lg font-bold text-pop-cyan">14 ONLINE</div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-comic-ink/60 rounded-xl border-2 border-slate-700 flex items-center gap-3 shadow-hard-sm" data-tooltip="Keys rotating through the consensus pipeline">
+                            <span class="text-2xl">🔑</span>
+                            <div>
+                                <div class="text-slate-400 text-[10px]">CARTRIDGES LOADED</div>
+                                <div class="text-lg font-bold text-pop-yellow">3 ACTIVE KEYS</div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-comic-ink/60 rounded-xl border-2 border-slate-700 flex items-center gap-3 shadow-hard-sm" data-tooltip="Combined OCR confidence and tag parser success">
+                            <span class="text-2xl">🎯</span>
+                            <div>
+                                <div class="text-slate-400 text-[10px]">FIRST-TRY HIT RATE</div>
+                                <div class="text-lg font-bold text-pop-mint">98.4% PASS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive 3D Cartoon Reactor Core -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="w-full max-w-sm comic-box bg-comic-ink p-5 border-3 border-comic-ink shadow-hard-pink text-center relative group">
+                        
+                        <!-- Top Cartoon Indicator Bar -->
+                        <div class="flex justify-between items-center pb-3 border-b-2 border-slate-800 text-xs font-mono mb-4">
+                            <span class="flex items-center gap-1.5 text-pop-yellow font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-pop-yellow animate-ping"></span> REACTOR CORE
+                            </span>
+                            <span class="text-slate-400" id="reactor-temp">TEMP: 42°C (COOL)</span>
+                        </div>
+
+                        <!-- Cartoon Animated Atomic Sphere (Canvas/SVG Fusion) -->
+                        <div class="relative w-48 h-48 mx-auto my-2 flex items-center justify-center cursor-pointer" onclick="pokeReactor()" data-tooltip="Click to poke the reactor core!">
+                            <!-- Orbiting Ring 1 -->
+                            <div class="absolute inset-0 rounded-full border-4 border-dashed border-pop-cyan animate-spin-slow opacity-70"></div>
+                            <!-- Orbiting Ring 2 -->
+                            <div class="absolute inset-2 rounded-full border-4 border-dotted border-pop-pink animate-spin opacity-60" style="animation-duration: 8s;"></div>
+                            
+                            <!-- Bubbly Core Orb -->
+                            <div class="w-28 h-28 rounded-full bg-gradient-to-tr from-pop-yellow via-pop-pink to-pop-cyan flex flex-col items-center justify-center text-comic-ink font-display shadow-[0_0_30px_rgba(255,230,0,0.5)] transform group-hover:scale-110 transition duration-200">
+                                <span class="text-3xl animate-bounce">⚡</span>
+                                <span class="font-black text-xs tracking-wider uppercase">READY</span>
+                            </div>
+
+                            <!-- Floating comic spark particles -->
+                            <div class="absolute -top-1 left-4 text-pop-yellow text-sm font-black animate-ping">✦</div>
+                            <div class="absolute bottom-2 right-4 text-pop-mint text-xs font-black animate-pulse">★</div>
+                        </div>
+
+                        <div class="mt-3 p-2 rounded-xl bg-slate-900/80 border-2 border-slate-800 font-mono text-xs text-slate-300">
+                            <span class="text-pop-mint font-bold">LAST PING:</span> Tab #1042 ➔ OCR Confirmed <strong class="text-pop-yellow">[ 92% ]</strong>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== TACTICAL ROW 1: CARTRIDGE RACK + BRAIN JUICE TUBE + OPTICAL SCANNER ==================== -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- WIDGET 1: CARTRIDGE RACK (API Key Rotation Bay) -->
+            <div class="comic-box p-5 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🕹️</span>
+                        <h3 class="font-display font-bold text-lg text-white">KEY CARTRIDGE BAY</h3>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-lg bg-pop-yellow text-comic-ink font-display text-[11px] font-bold border border-comic-ink" data-tooltip="Auto-rotates to the best key without rate limits">
+                        DYNAMIC RACK
+                    </span>
+                </div>
+
+                <div class="space-y-3 font-mono text-xs" id="cartridge-list">
+                    <!-- Slot 0: Groq Cartridge -->
+                    <div class="p-3 rounded-xl bg-slate-900 border-2 border-pop-yellow shadow-hard-sm flex items-center justify-between group hover:bg-slate-850" data-tooltip="Primary Groq high-velocity key">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-pop-yellow text-comic-ink font-display font-black flex items-center justify-center text-sm">
+                                #1
+                            </div>
+                            <div>
+                                <div class="font-display font-bold text-white flex items-center gap-1.5">
+                                    GROQ CORE <span class="text-[10px] px-1.5 py-0.2 bg-pop-yellow/20 text-pop-yellow rounded">14 RPM</span>
+                                </div>
+                                <div class="text-[11px] text-slate-400">gsk_8921••••DoMI</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg bg-pop-mint/20 text-pop-mint font-display font-bold text-[10px] border border-pop-mint">
+                            ONLINE
+                        </span>
+                    </div>
+
+                    <!-- Slot 1: Google Gemini Cartridge -->
+                    <div class="p-3 rounded-xl bg-slate-900 border-2 border-pop-cyan shadow-hard-sm flex items-center justify-between group hover:bg-slate-850" data-tooltip="Academic heavyweight reasoning slot">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-pop-cyan text-comic-ink font-display font-black flex items-center justify-center text-sm">
+                                #2
+                            </div>
+                            <div>
+                                <div class="font-display font-bold text-white flex items-center gap-1.5">
+                                    GEMINI PRO <span class="text-[10px] px-1.5 py-0.2 bg-pop-cyan/20 text-pop-cyan rounded">STANDBY</span>
+                                </div>
+                                <div class="text-[11px] text-slate-400">AIzaSy••••EuxK</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg bg-pop-cyan/20 text-pop-cyan font-display font-bold text-[10px] border border-pop-cyan">
+                            HOT SPARE
+                        </span>
+                    </div>
+
+                    <!-- Slot 2: OpenRouter Hybrid -->
+                    <div class="p-3 rounded-xl bg-slate-900 border-2 border-slate-700 shadow-hard-sm flex items-center justify-between group hover:bg-slate-850" data-tooltip="Fallback emergency reserve pool">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 font-display font-black flex items-center justify-center text-sm">
+                                #3
+                            </div>
+                            <div>
+                                <div class="font-display font-bold text-slate-300">OPENROUTER</div>
+                                <div class="text-[11px] text-slate-500">sk-or-••••uSR1</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg bg-slate-800 text-slate-400 font-display font-bold text-[10px]">
+                            RESERVE
+                        </span>
+                    </div>
+                </div>
+
+                <div class="p-2.5 bg-comic-ink/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs font-mono text-slate-400">
+                    <span>COOLDOWN TIMER:</span>
+                    <strong class="text-pop-mint font-bold flex items-center gap-1">
+                        <span>🛡️</span> 0 KEYS IN JAIL
+                    </strong>
+                </div>
+            </div>
+
+            <!-- WIDGET 2: THE BRAIN JUICE PIPE (Pipeline Latency Acceleration Tube) -->
+            <div class="comic-box p-5 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🧪</span>
+                        <h3 class="font-display font-bold text-lg text-white">BRAIN JUICE VELOCITY</h3>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-lg bg-pop-pink text-white font-display text-xs font-bold border border-comic-ink" data-tooltip="Average end-to-end question solve time">
+                        412ms TOTAL
+                    </span>
+                </div>
+
+                <!-- Animated Liquid Tube -->
+                <div class="space-y-4 pt-1">
+                    <div>
+                        <div class="flex justify-between font-display text-xs mb-1.5">
+                            <span class="text-slate-300 flex items-center gap-1"><span>📸</span> SCREEN CAPTURE</span>
+                            <span class="text-pop-cyan font-mono font-bold">82ms (20%)</span>
+                        </div>
+                        <div class="w-full h-4 bg-comic-ink rounded-full border-2 border-comic-ink overflow-hidden p-0.5 shadow-inner">
+                            <div class="h-full bg-pop-cyan rounded-full transition-all duration-500" style="width: 20%" data-tooltip="chrome.tabs.captureVisibleTab API latency"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between font-display text-xs mb-1.5">
+                            <span class="text-slate-300 flex items-center gap-1"><span>🔤</span> TESSERACT OCR WORKER</span>
+                            <span class="text-pop-yellow font-mono font-bold">180ms (43%)</span>
+                        </div>
+                        <div class="w-full h-4 bg-comic-ink rounded-full border-2 border-comic-ink overflow-hidden p-0.5 shadow-inner">
+                            <div class="h-full bg-pop-yellow rounded-full transition-all duration-500" style="width: 43%" data-tooltip="Local OCR extraction in offscreen worker"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between font-display text-xs mb-1.5">
+                            <span class="text-slate-300 flex items-center gap-1"><span>🧠</span> LLM THINKER INFERENCE</span>
+                            <span class="text-pop-pink font-mono font-bold">150ms (37%)</span>
+                        </div>
+                        <div class="w-full h-4 bg-comic-ink rounded-full border-2 border-comic-ink overflow-hidden p-0.5 shadow-inner">
+                            <div class="h-full bg-pop-pink rounded-full transition-all duration-500" style="width: 37%" data-tooltip="Groq LPU / Google Cloud inference roundtrip"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stealth Badge -->
+                <div class="p-2.5 bg-comic-ink/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs font-mono">
+                    <span class="text-slate-400">STEALTH DOT INJECTOR:</span>
+                    <span class="text-pop-yellow font-display font-bold" data-tooltip="Exam stealth rule: answer dot disappears after 2.5s">
+                        2.5s AUTO-VANISH 👻
+                    </span>
+                </div>
+            </div>
+
+            <!-- WIDGET 3: OPTICAL SENSOR VIEWFINDER (Crop & OCR Precision) -->
+            <div class="comic-box p-5 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">👁️</span>
+                        <h3 class="font-display font-bold text-lg text-white">OPTICAL VIEWFINDER</h3>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-lg bg-pop-mint text-comic-ink font-display text-[11px] font-bold border border-comic-ink">
+                        BINARIZED
+                    </span>
+                </div>
+
+                <!-- Viewfinder Target Graphic -->
+                <div class="p-3 bg-comic-ink rounded-xl border-2 border-dashed border-slate-700 relative text-center font-mono space-y-2">
+                    <div class="flex justify-between text-[11px] text-slate-400">
+                        <span>CROP: 1285 x 591 px</span>
+                        <span>WEIGHT: ~104 KB</span>
+                    </div>
+
+                    <!-- Giant Confidence Meter Stamp -->
+                    <div class="py-2 flex items-center justify-center gap-3">
+                        <div class="text-4xl font-display font-black text-pop-mint tracking-wider rotate-[-2deg]">
+                            92.4%
+                        </div>
+                        <div class="text-left font-display leading-tight">
+                            <div class="text-white text-xs font-extrabold">OCR PRECISION</div>
+                            <div class="text-[10px] text-pop-yellow">TEXT SHARP & VALID</div>
+                        </div>
+                    </div>
+
+                    <div class="text-[10px] text-slate-500 border-t border-slate-800/80 pt-1.5">
+                        High-Contrast Grayscale Filter Active
+                    </div>
+                </div>
+
+                <div class="p-2.5 bg-comic-ink/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs font-mono text-slate-400">
+                    <span>OFFSCREEN WORKER:</span>
+                    <strong class="text-pop-mint font-display font-bold">WARMED & ARMED 🔥</strong>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== TACTICAL ROW 2: MODEL GUMBALL DECK + COMIC TICKER LOG STREAM ==================== -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT (7 COLS): AI MODEL ENROLLMENT DECK & HYPERPARAMETERS -->
+            <div class="lg:col-span-7 space-y-6">
+
+                <!-- Model Enrollment Deck -->
+                <div class="comic-box p-6 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between pb-3 border-b-2 border-slate-800 gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">🤖</span>
+                            <h3 class="font-display font-extrabold text-xl text-white">AI MODEL ROSTER DECK</h3>
+                        </div>
+                        <span class="font-mono text-xs text-pop-yellow" data-tooltip="No index coupling! Keys find their own matching models.">
+                            ★ AUTO-PROVIDER MATCHER
+                        </span>
+                    </div>
+
+                    <p class="font-body text-slate-300 text-xs leading-relaxed">
+                        Add or remove AI models anytime. When a user runs a scan, their active API key automatically grabs the first compatible model in this roster!
+                    </p>
+
+                    <!-- Add Model Selector Form -->
+                    <div class="p-3 bg-comic-ink rounded-xl border-2 border-comic-ink flex flex-col sm:flex-row gap-2.5">
+                        <select id="model-picker-select" class="flex-1 bg-slate-900 text-white font-mono text-xs p-2.5 rounded-lg border-2 border-slate-700 focus:outline-none focus:border-pop-yellow cursor-pointer" onchange="handleModelDropdownChange(this)">
+                            <option value="" disabled selected>+ PICK PRODUCTION MODEL TO DEPLOY...</option>
+                            <optgroup label="── GROQ MODELS (HIGH VELOCITY) ──" class="text-pop-yellow font-bold bg-slate-950">
+                                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Top Choice)</option>
+                                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fastest)</option>
+                                <option value="qwen/qwen-2.5-coder-32b-instruct">qwen/qwen-2.5-coder-32b-instruct</option>
+                                <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                            </optgroup>
+                            <optgroup label="── GOOGLE GEMINI (MAX REASONING) ──" class="text-pop-cyan font-bold bg-slate-950">
+                                <option value="gemini-2.5-flash">gemini-2.5-flash (Balanced)</option>
+                                <option value="gemini-2.5-pro">gemini-2.5-pro (Academic Beast)</option>
+                                <option value="gemini-2.0-flash-lite-preview-02-05">gemini-2.0-flash-lite</option>
+                            </optgroup>
+                            <optgroup label="── OPENROUTER HYBRIDS ──" class="text-pop-pink font-bold bg-slate-950">
+                                <option value="meta-llama/llama-3.3-70b-instruct">meta-llama/llama-3.3-70b-instruct</option>
+                                <option value="qwen/qwen-2.5-72b-instruct">qwen/qwen-2.5-72b-instruct</option>
+                            </optgroup>
+                            <option value="custom" class="text-pop-mint font-bold bg-slate-950">>> CUSTOM IDENTIFIER (TYPE MANUALLY)</option>
+                        </select>
+
+                        <button onclick="deploySelectedModel()" class="comic-btn px-4 py-2.5 bg-pop-yellow text-comic-ink font-display font-extrabold text-xs flex items-center justify-center gap-1.5" data-tooltip="Enroll model into Firestore globalConfig">
+                            <span>✚</span> ENROLL MODEL
+                        </button>
+                    </div>
+
+                    <!-- Custom Model Input (Hidden initially) -->
+                    <div id="custom-input-card" class="hidden p-3 bg-slate-900 rounded-xl border-2 border-pop-pink space-y-2">
+                        <label class="block font-display text-xs text-pop-pink font-bold uppercase">ENTER RAW MODEL IDENTIFIER:</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="custom-model-val" placeholder="e.g. deepseek/deepseek-r1" class="flex-1 bg-comic-ink text-white font-mono text-xs p-2 rounded-lg border border-slate-700 focus:outline-none focus:border-pop-pink">
+                            <button onclick="submitCustomModel()" class="comic-btn px-4 py-1.5 bg-pop-pink text-white font-display text-xs">ADD</button>
+                        </div>
+                    </div>
+
+                    <!-- Active Models Sticker Grid -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="font-display font-bold text-xs text-slate-400 uppercase tracking-wider">ACTIVE SYNCED ROSTER IN FIRESTORE:</label>
+                            <span class="font-mono text-[11px] text-pop-mint font-bold">4 ENROLLED</span>
+                        </div>
+
+                        <div id="roster-stickers-box" class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+                            <!-- Card 1: Groq Llama -->
+                            <div class="p-3 bg-comic-ink rounded-xl border-2 border-pop-yellow shadow-hard-sm flex items-center justify-between group hover:border-white transition">
+                                <div class="flex items-center gap-2 truncate">
+                                    <span class="px-2 py-0.5 rounded-lg bg-pop-yellow text-comic-ink font-display font-extrabold text-[10px]">GROQ</span>
+                                    <span class="text-white font-bold truncate">llama-3.3-70b-versatile</span>
+                                </div>
+                                <button onclick="deleteRosterItem(this)" class="text-slate-500 hover:text-pop-pink p-1 transition" data-tooltip="Remove from roster">✕</button>
+                            </div>
+
+                            <!-- Card 2: Gemini Flash -->
+                            <div class="p-3 bg-comic-ink rounded-xl border-2 border-pop-cyan shadow-hard-sm flex items-center justify-between group hover:border-white transition">
+                                <div class="flex items-center gap-2 truncate">
+                                    <span class="px-2 py-0.5 rounded-lg bg-pop-cyan text-comic-ink font-display font-extrabold text-[10px]">GEMINI</span>
+                                    <span class="text-white font-bold truncate">gemini-2.5-flash</span>
+                                </div>
+                                <button onclick="deleteRosterItem(this)" class="text-slate-500 hover:text-pop-pink p-1 transition" data-tooltip="Remove from roster">✕</button>
+                            </div>
+
+                            <!-- Card 3: Groq Qwen -->
+                            <div class="p-3 bg-comic-ink rounded-xl border-2 border-pop-yellow shadow-hard-sm flex items-center justify-between group hover:border-white transition">
+                                <div class="flex items-center gap-2 truncate">
+                                    <span class="px-2 py-0.5 rounded-lg bg-pop-yellow text-comic-ink font-display font-extrabold text-[10px]">GROQ</span>
+                                    <span class="text-white font-bold truncate">qwen/qwen-2.5-coder-32b</span>
+                                </div>
+                                <button onclick="deleteRosterItem(this)" class="text-slate-500 hover:text-pop-pink p-1 transition" data-tooltip="Remove from roster">✕</button>
+                            </div>
+
+                            <!-- Card 4: Gemini Pro -->
+                            <div class="p-3 bg-comic-ink rounded-xl border-2 border-pop-cyan shadow-hard-sm flex items-center justify-between group hover:border-white transition">
+                                <div class="flex items-center gap-2 truncate">
+                                    <span class="px-2 py-0.5 rounded-lg bg-pop-cyan text-comic-ink font-display font-extrabold text-[10px]">GEMINI</span>
+                                    <span class="text-white font-bold truncate">gemini-2.5-pro</span>
+                                </div>
+                                <button onclick="deleteRosterItem(this)" class="text-slate-500 hover:text-pop-pink p-1 transition" data-tooltip="Remove from roster">✕</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hyperparameter Sliders Deck -->
+                    <div class="pt-3 border-t-2 border-slate-800 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-display font-bold text-sm text-white">TUNING DIALS</h4>
+                            <span class="text-[10px] font-mono text-slate-400">SLIDER DRIVEN</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                            <!-- Tokens -->
+                            <div class="p-3 bg-comic-ink rounded-xl border border-slate-800 space-y-1" data-tooltip="Max completion token budget">
+                                <div class="flex justify-between font-display text-[11px]">
+                                    <span class="text-slate-400">MAX TOKENS</span>
+                                    <span class="text-pop-cyan font-bold" id="slider-tokens-label">5000</span>
+                                </div>
+                                <input type="range" min="500" max="8000" step="500" value="5000" class="w-full accent-pop-cyan cursor-pointer" oninput="document.getElementById('slider-tokens-label').textContent = this.value">
+                            </div>
+
+                            <!-- Temperature -->
+                            <div class="p-3 bg-comic-ink rounded-xl border border-slate-800 space-y-1" data-tooltip="Keep at 0.0 for deterministic multiple-choice logic">
+                                <div class="flex justify-between font-display text-[11px]">
+                                    <span class="text-slate-400">TEMP</span>
+                                    <span class="text-pop-yellow font-bold" id="slider-temp-label">0.0</span>
+                                </div>
+                                <input type="range" min="0" max="1" step="0.05" value="0.0" class="w-full accent-pop-yellow cursor-pointer" oninput="document.getElementById('slider-temp-label').textContent = this.value">
+                            </div>
+
+                            <!-- Image Quality -->
+                            <div class="p-3 bg-comic-ink rounded-xl border border-slate-800 space-y-1" data-tooltip="Compression quality for OCR crop payload">
+                                <div class="flex justify-between font-display text-[11px]">
+                                    <span class="text-slate-400">JPEG QUALITY</span>
+                                    <span class="text-pop-mint font-bold" id="slider-qual-label">40%</span>
+                                </div>
+                                <input type="range" min="20" max="90" step="5" value="40" class="w-full accent-pop-mint cursor-pointer" oninput="document.getElementById('slider-qual-label').textContent = this.value + '%'">
+                            </div>
+                        </div>
+
+                        <!-- System Prompt Input -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center font-display text-xs">
+                                <label class="text-slate-300 font-bold">SYSTEM PROMPT PROTOCOL (STRICT TAG PARSER):</label>
+                                <span class="text-pop-pink font-bold" data-tooltip="Forces model to answer strictly inside tags">&lt;answer&gt;X&lt;/answer&gt;</span>
+                            </div>
+                            <textarea id="prompt-box" rows="3" class="w-full bg-comic-ink text-slate-300 font-mono text-xs p-3 rounded-xl border-2 border-slate-700 focus:outline-none focus:border-pop-yellow transition leading-relaxed"></textarea>
+                        </div>
+
+                        <!-- Commit Action Button -->
+                        <div class="flex justify-end pt-2">
+                            <button onclick="saveFleetSettings()" class="comic-btn px-6 py-3 bg-pop-mint text-comic-ink font-display font-black text-sm flex items-center gap-2" data-tooltip="Commit these parameters to Firestore config/global">
+                                <span>🚀</span> TRANSMIT TO EXTENSION FLEET
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT (5 COLS): RETRO COMIC RECEIPT STREAM / LIVE LOG FEED -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <div class="comic-box p-5 flex flex-col h-[680px]">
+                    <div class="flex items-center justify-between pb-3 border-b-2 border-slate-800 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">📻</span>
+                            <h3 class="font-display font-extrabold text-lg text-white">LIVE TELEMETRY TICKERTAPE</h3>
+                        </div>
+                        <div class="flex gap-1.5 font-mono text-[11px]">
+                            <button onclick="clearLogs()" class="comic-btn px-2 py-0.5 bg-slate-800 text-slate-300 text-[10px]">CLEAR</button>
+                            <button onclick="toggleScrollLock()" id="scroll-btn" class="comic-btn px-2 py-0.5 bg-pop-cyan text-comic-ink font-bold text-[10px]">SCROLL: ON</button>
+                        </div>
+                    </div>
+
+                    <!-- Category Filters -->
+                    <div class="flex flex-wrap gap-1.5 pb-2 mb-2 border-b border-slate-800 font-display text-[11px]">
+                        <button onclick="filterLogs('ALL')" class="comic-filter px-2.5 py-1 rounded-lg bg-pop-yellow text-comic-ink font-bold" data-f="ALL">ALL</button>
+                        <button onclick="filterLogs('PIPELINE')" class="comic-filter px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white" data-f="PIPELINE">PIPELINE</button>
+                        <button onclick="filterLogs('ROUTER')" class="comic-filter px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white" data-f="ROUTER">ROUTING</button>
+                        <button onclick="filterLogs('ERROR')" class="comic-filter px-2.5 py-1 rounded-lg bg-slate-800 text-pop-pink hover:bg-pop-pink/20" data-f="ERROR">ERRORS</button>
+                    </div>
+
+                    <!-- Scrollable Log Body -->
+                    <div id="log-terminal" class="flex-1 overflow-y-auto space-y-2 font-mono text-[11px] pr-1 select-text">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Footer Status -->
+                    <div class="pt-3 mt-2 border-t-2 border-slate-800 flex justify-between items-center font-mono text-[11px] text-slate-400">
+                        <span class="flex items-center gap-1.5 text-pop-mint font-bold">
+                            <span>●</span> LISTENING ON offscreen.html
+                        </span>
+                        <span id="log-total-counter">12 LOG PACKETS</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==================== TACTICAL ROW 3: OPERATOR REGISTRY + DECRYPTED QUIZ VAULT ==================== -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- OPERATOR FLEET TABLE (7 COLS) -->
+            <div class="lg:col-span-7 comic-box p-6 space-y-4">
+                <div class="flex flex-wrap items-center justify-between pb-3 border-b-2 border-slate-800 gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🎖️</span>
+                        <h3 class="font-display font-extrabold text-xl text-white">OPERATOR FLEET ROSTER</h3>
+                    </div>
+                    <button onclick="openNewUserModal()" class="comic-btn px-3.5 py-1.5 bg-pop-cyan text-comic-ink font-display font-extrabold text-xs flex items-center gap-1.5" data-tooltip="Provision new student account into Firebase Auth & Firestore">
+                        <span>➕</span> PROVISION OPERATOR
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead>
+                            <tr class="text-slate-400 font-display text-xs border-b-2 border-slate-800 uppercase">
+                                <th class="pb-2.5">IDENTITY</th>
+                                <th class="pb-2.5">RANK</th>
+                                <th class="pb-2.5">KEYS</th>
+                                <th class="pb-2.5">ACCESS</th>
+                                <th class="pb-2.5 text-right">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-rows" class="divide-y divide-slate-800 text-slate-300">
+                            <!-- Operator 1 -->
+                            <tr class="hover:bg-slate-900/60 transition">
+                                <td class="py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-pop-yellow text-comic-ink font-display font-black flex items-center justify-center text-xs">A</div>
+                                        <div>
+                                            <div class="font-display font-bold text-white text-xs">agent.alpha@netspeed.internal</div>
+                                            <div class="text-[10px] text-slate-500 font-mono">UID: 8f92a10c•••</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="px-2 py-0.5 rounded-lg bg-pop-cyan/20 text-pop-cyan font-display font-bold text-[10px] border border-pop-cyan">ADMIN</span></td>
+                                <td><span class="text-pop-yellow font-bold font-mono">3 KEYS</span></td>
+                                <td><span class="px-2 py-0.5 rounded-lg bg-pop-mint/20 text-pop-mint font-display font-bold text-[10px]">AUTHORIZED</span></td>
+                                <td class="text-right space-x-1">
+                                    <button onclick="openKeyModal('agent.alpha')" class="comic-btn px-2 py-1 bg-slate-800 text-pop-yellow text-[10px]">KEYS</button>
+                                    <button class="comic-btn px-2 py-1 bg-slate-800 text-pop-pink text-[10px]">LOCK</button>
+                                </td>
+                            </tr>
+
+                            <!-- Operator 2 -->
+                            <tr class="hover:bg-slate-900/60 transition">
+                                <td class="py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-pop-pink text-white font-display font-black flex items-center justify-center text-xs">T</div>
+                                        <div>
+                                            <div class="font-display font-bold text-white text-xs">test.operator@mvgr.ac.in</div>
+                                            <div class="text-[10px] text-slate-500 font-mono">UID: b441c98e•••</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 font-display font-bold text-[10px]">STUDENT</span></td>
+                                <td><span class="text-pop-yellow font-bold font-mono">1 KEY</span></td>
+                                <td><span class="px-2 py-0.5 rounded-lg bg-pop-mint/20 text-pop-mint font-display font-bold text-[10px]">AUTHORIZED</span></td>
+                                <td class="text-right space-x-1">
+                                    <button onclick="openKeyModal('test.operator')" class="comic-btn px-2 py-1 bg-slate-800 text-pop-yellow text-[10px]">KEYS</button>
+                                    <button class="comic-btn px-2 py-1 bg-slate-800 text-pop-pink text-[10px]">LOCK</button>
+                                </td>
+                            </tr>
+
+                            <!-- Operator 3 (Revoked) -->
+                            <tr class="hover:bg-slate-900/60 transition opacity-60">
+                                <td class="py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-slate-800 text-slate-500 font-display font-black flex items-center justify-center text-xs">X</div>
+                                        <div>
+                                            <div class="font-display font-bold text-slate-400 text-xs line-through">rogue.cadet@mvgr.ac.in</div>
+                                            <div class="text-[10px] text-slate-600 font-mono">UID: f109002a•••</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-500 font-display font-bold text-[10px]">STUDENT</span></td>
+                                <td><span class="text-slate-600 font-mono">0 KEYS</span></td>
+                                <td><span class="px-2 py-0.5 rounded-lg bg-pop-pink/20 text-pop-pink font-display font-bold text-[10px]">REVOKED</span></td>
+                                <td class="text-right space-x-1">
+                                    <button class="comic-btn px-2 py-1 bg-pop-mint text-comic-ink text-[10px]">RESTORE</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DECRYPTED QUIZ MEMORY VAULT (5 COLS) -->
+            <div class="lg:col-span-5 comic-box p-6 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🧠</span>
+                        <h3 class="font-display font-extrabold text-xl text-white">QUIZ MEMORY VAULT</h3>
+                    </div>
+                    <span class="font-mono text-xs text-pop-mint font-bold" data-tooltip="Cached questions avoid redundant AI calls">
+                        FIRESTORE CACHE
+                    </span>
+                </div>
+
+                <div class="space-y-3 font-mono text-xs overflow-y-auto max-h-[380px] pr-1">
+                    <!-- Solved Card 1 -->
+                    <div class="p-3.5 bg-comic-ink rounded-xl border-2 border-slate-800 hover:border-pop-yellow transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400">2026-09-04 18:42:10 UTC</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-pop-mint text-comic-ink font-display font-extrabold text-xs shadow-hard-sm" data-tooltip="Strict XML parser extracted Option C">
+                                ANSWER: [ C ]
+                            </span>
+                        </div>
+                        <p class="font-body text-slate-300 text-xs line-clamp-2 leading-relaxed">
+                            "Which layer of the OSI model is responsible for packet forwarding including routing through intermediate routers?"
+                        </p>
+                        <div class="pt-2 border-t border-slate-850 flex justify-between text-[11px] text-slate-400">
+                            <span>CONFIDENCE: <strong class="text-pop-mint font-display">94%</strong></span>
+                            <span>HASH: <strong class="text-slate-500">#a71f09e4</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Solved Card 2 -->
+                    <div class="p-3.5 bg-comic-ink rounded-xl border-2 border-slate-800 hover:border-pop-cyan transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400">2026-09-04 18:35:08 UTC</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-pop-cyan text-comic-ink font-display font-extrabold text-xs shadow-hard-sm" data-tooltip="Strict XML parser extracted Option B">
+                                ANSWER: [ B ]
+                            </span>
+                        </div>
+                        <p class="font-body text-slate-300 text-xs line-clamp-2 leading-relaxed">
+                            "Which of the following best defines a computer network and its interconnected topological structure?"
+                        </p>
+                        <div class="pt-2 border-t border-slate-850 flex justify-between text-[11px] text-slate-400">
+                            <span>CONFIDENCE: <strong class="text-pop-cyan font-display">88%</strong></span>
+                            <span>HASH: <strong class="text-slate-500">#82d5b120</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Solved Card 3 -->
+                    <div class="p-3.5 bg-comic-ink rounded-xl border-2 border-slate-800 hover:border-pop-yellow transition space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400">2026-09-04 18:12:44 UTC</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-pop-yellow text-comic-ink font-display font-extrabold text-xs shadow-hard-sm" data-tooltip="Strict XML parser extracted Option A">
+                                ANSWER: [ A ]
+                            </span>
+                        </div>
+                        <p class="font-body text-slate-300 text-xs line-clamp-2 leading-relaxed">
+                            "Calculate the transmission delay for a 10MB file sent across a 100Mbps dedicated copper link."
+                        </p>
+                        <div class="pt-2 border-t border-slate-850 flex justify-between text-[11px] text-slate-400">
+                            <span>CONFIDENCE: <strong class="text-pop-yellow font-display">81%</strong></span>
+                            <span>HASH: <strong class="text-slate-500">#992c3a11</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ==================== PLAYFUL MODALS: PROVISION & KEYS ==================== -->
+    <!-- Modal 1: Provision Operator -->
+    <div id="provision-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-comic-ink/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 p-4">
+        <div class="comic-box bg-comic-card w-full max-w-md p-6 space-y-4 border-4 border-comic-ink shadow-hard-pink">
+            <div class="flex justify-between items-center pb-3 border-b-2 border-slate-800">
+                <h3 class="font-display font-extrabold text-xl text-white flex items-center gap-2">
+                    <span>➕</span> PROVISION OPERATOR
+                </h3>
+                <button onclick="closeNewUserModal()" class="comic-btn w-8 h-8 bg-slate-800 text-white font-bold flex items-center justify-center">✕</button>
+            </div>
+
+            <form onsubmit="event.preventDefault(); submitNewOperator();" class="space-y-4 font-mono text-xs">
+                <div>
+                    <label class="block font-display text-xs text-slate-300 mb-1">OPERATOR EMAIL:</label>
+                    <input type="email" id="new-op-email" placeholder="student@netspeed.ac.in" class="w-full bg-comic-ink border-2 border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-pop-cyan" required>
+                </div>
+                <div>
+                    <label class="block font-display text-xs text-slate-300 mb-1">PASSWORD (MIN 6 CHARS):</label>
+                    <input type="password" id="new-op-pass" placeholder="••••••••" class="w-full bg-comic-ink border-2 border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-pop-cyan" required>
+                </div>
+                <div class="pt-2 flex justify-end gap-2 font-display">
+                    <button type="button" onclick="closeNewUserModal()" class="comic-btn px-4 py-2 bg-slate-800 text-slate-300">CANCEL</button>
+                    <button type="submit" class="comic-btn px-5 py-2 bg-pop-cyan text-comic-ink font-bold">DEPLOY CREDENTIALS 🚀</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Key Management Cartridge Drawer -->
+    <div id="key-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-comic-ink/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 p-4">
+        <div class="comic-box bg-comic-card w-full max-w-lg p-6 space-y-4 border-4 border-comic-ink shadow-hard-yellow">
+            <div class="flex justify-between items-center pb-3 border-b-2 border-slate-800">
+                <div>
+                    <h3 class="font-display font-extrabold text-xl text-white flex items-center gap-2">
+                        <span>🔑</span> CARTRIDGE SLOT MANAGER
+                    </h3>
+                    <p class="font-mono text-xs text-pop-yellow mt-0.5" id="key-modal-title">OPERATOR: agent.alpha</p>
+                </div>
+                <button onclick="closeKeyModal()" class="comic-btn w-8 h-8 bg-slate-800 text-white font-bold flex items-center justify-center">✕</button>
+            </div>
+
+            <div class="space-y-4 font-mono text-xs">
+                <div class="flex gap-2">
+                    <input type="text" id="add-key-input" placeholder="Paste API Key (gsk_..., AIzaSy..., sk-or-...)" class="flex-1 bg-comic-ink border-2 border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-pop-yellow text-xs">
+                    <button onclick="pushNewKeyToUser()" class="comic-btn px-4 py-2 bg-pop-yellow text-comic-ink font-display font-bold">INSERT</button>
+                </div>
+
+                <div class="space-y-2 max-h-56 overflow-y-auto" id="user-keys-list">
+                    <div class="p-3 bg-comic-ink rounded-xl border border-slate-800 flex justify-between items-center">
+                        <span class="text-pop-yellow font-bold">gsk_8921••••DoMI (GROQ)</span>
+                        <span class="px-2 py-0.5 rounded bg-pop-mint/20 text-pop-mint text-[10px] font-display font-bold">SLOT #1</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t-2 border-slate-800 flex justify-end gap-2 font-display">
+                    <button onclick="closeKeyModal()" class="comic-btn px-4 py-2 bg-slate-800 text-slate-300">DISMISS</button>
+                    <button onclick="closeKeyModal()" class="comic-btn px-5 py-2 bg-pop-yellow text-comic-ink font-bold">SAVE CARTRIDGES 💾</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT LOGIC & SIMULATION ==================== -->
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // Default Strict Prompt
+        const defaultStrictPrompt = `You are an advanced evaluation engine. Analyze the provided OCR text and determine the absolute correct multiple-choice option.
+
+CRITICAL FORMAT REQUIREMENT:
+You must output your final choice wrapped in exactly <answer>X</answer> tags, where X is ONLY the single capital letter corresponding to the correct option (e.g., <answer>A</answer>, <answer>B</answer>, <answer>C</answer>, or <answer>D</answer>). 
+Do not include punctuation, brackets, code blocks, or text inside the tags. Output nothing else after the closing tag.`;
+        document.getElementById('prompt-box').value = defaultStrictPrompt;
+
+        // Poke Reactor Easter Egg
+        function pokeReactor() {
+            const temps = ['39°C (CRUNCHING)', '48°C (SIZZLING)', '55°C (OVERCLOCK)', '41°C (NOMINAL)'];
+            const rTemp = temps[Math.floor(Math.random() * temps.length)];
+            document.getElementById('reactor-temp').textContent = `TEMP: ${rTemp}`;
+            appendLog('REACTOR', 'Operator poked reactor core! Quantum coherence stabilized.', 'WARN');
+        }
+
+        // Custom Model Toggle
+        function handleModelDropdownChange(select) {
+            const box = document.getElementById('custom-input-card');
+            if (select.value === 'custom') {
+                box.classList.remove('hidden');
+                document.getElementById('custom-model-val').focus();
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        function deploySelectedModel() {
+            const select = document.getElementById('model-picker-select');
+            const val = select.value;
+            if (!val || val === 'custom') return;
+            insertRosterItem(val);
+            select.selectedIndex = 0;
+        }
+
+        function submitCustomModel() {
+            const inp = document.getElementById('custom-model-val');
+            const val = inp.value.trim();
+            if (val) {
+                insertRosterItem(val);
+                inp.value = '';
+                document.getElementById('custom-input-card').classList.add('hidden');
+                document.getElementById('model-picker-select').selectedIndex = 0;
+            }
+        }
+
+        function insertRosterItem(modelName) {
+            const box = document.getElementById('roster-stickers-box');
+            const isGemini = modelName.toLowerCase().includes('gemini');
+            const isGroq = modelName.toLowerCase().includes('llama') || modelName.toLowerCase().includes('qwen') || modelName.toLowerCase().includes('mixtral');
+
+            const badgeColor = isGemini ? 'bg-pop-cyan text-comic-ink' : (isGroq ? 'bg-pop-yellow text-comic-ink' : 'bg-pop-pink text-white');
+            const badgeText = isGemini ? 'GEMINI' : (isGroq ? 'GROQ' : 'HYBRID');
+            const borderColor = isGemini ? 'border-pop-cyan' : (isGroq ? 'border-pop-yellow' : 'border-pop-pink');
+
+            const div = document.createElement('div');
+            div.className = `p-3 bg-comic-ink rounded-xl border-2 ${borderColor} shadow-hard-sm flex items-center justify-between group hover:border-white transition`;
+            div.innerHTML = `
+                <div class="flex items-center gap-2 truncate">
+                    <span class="px-2 py-0.5 rounded-lg ${badgeColor} font-display font-extrabold text-[10px]">${badgeText}</span>
+                    <span class="text-white font-bold truncate">${modelName}</span>
+                </div>
+                <button onclick="deleteRosterItem(this)" class="text-slate-500 hover:text-pop-pink p-1 transition" data-tooltip="Remove from roster">✕</button>
+            `;
+            box.appendChild(div);
+            appendLog('ROSTER', `Enrolled model: [${modelName}] into active roster.`, 'INFO');
+        }
+
+        function deleteRosterItem(btn) {
+            const item = btn.closest('div.p-3');
+            const name = item.querySelector('span.text-white').textContent;
+            item.remove();
+            appendLog('ROSTER', `Removed model: [${name}] from active roster.`, 'WARN');
+        }
+
+        function saveFleetSettings() {
+            appendLog('FLEET_SYNC', 'Transmitting parameter payload to Firestore config/global...', 'INFO');
+            setTimeout(() => {
+                appendLog('FLEET_SYNC', 'Payload ACK received. 14 extension instances synced!', 'INFO');
+                alert('CONFIG COMMITTED: All student extension nodes synchronized successfully! 🚀');
+            }, 500);
+        }
+
+        // ==================== LIVE TERMINAL SIMULATION ENGINE ====================
+        let isScrollLocked = true;
+        let currentFilter = 'ALL';
+        let logIndex = 0;
+        let trafficInterval = null;
+
+        const mockTrafficEvents = [
+            { mod: 'CAPTURE', lvl: 'INFO', text: 'Crop captured (1285x591 px). Binarization threshold clean.' },
+            { mod: 'OCR', lvl: 'INFO', text: 'Tesseract worker extracted 48 words (Confidence: 93%).' },
+            { mod: 'ROUTER', lvl: 'INFO', text: 'Key gsk_•••DoMI (GROQ) auto-mapped to llama-3.3-70b-versatile.' },
+            { mod: 'PIPELINE', lvl: 'DEBUG', text: 'POST https://api.groq.com/... -> HTTP 200 (142ms inference).' },
+            { mod: 'PARSER', lvl: 'INFO', text: 'Extracted option <answer>B</answer>. Valid single letter confirmed.' },
+            { mod: 'STEALTH', lvl: 'INFO', text: 'Answer dot stamped on screen. 2.5s auto-vanish armed.' },
+            { mod: 'ROUTER', lvl: 'INFO', text: 'Key AIzaSy•••EuxK (GEMINI) auto-mapped to gemini-2.5-flash.' },
+            { mod: 'PIPELINE', lvl: 'DEBUG', text: 'POST https://generativelanguage.googleapis.com/... -> HTTP 200 (185ms).' },
+            { mod: 'CACHE', lvl: 'INFO', text: 'Answer cached into quiz_cache [#992c3a11] for Alt+D recall.' },
+            { mod: 'ROUTER', lvl: 'WARN', text: 'Slot 0 hit 429 rate limit. Key placed in 15s cooldown. Falling back to Slot 1.' }
+        ];
+
+        function appendLog(mod, text, lvl = 'INFO') {
+            const term = document.getElementById('log-terminal');
+            const time = new Date().toTimeString().split(' ')[0];
+            logIndex++;
+
+            let color = 'text-pop-cyan';
+            if (lvl === 'WARN') color = 'text-pop-yellow';
+            if (lvl === 'ERROR') color = 'text-pop-pink';
+            if (lvl === 'DEBUG') color = 'text-slate-500';
+
+            const row = document.createElement('div');
+            row.className = `p-1.5 rounded-lg hover:bg-slate-900/80 flex items-start gap-2 leading-tight border-b border-slate-900/60 transition`;
+            row.dataset.mod = mod.toUpperCase();
+            row.dataset.lvl = lvl;
+
+            row.innerHTML = `
+                <span class="text-slate-600 font-mono shrink-0">${time}</span>
+                <span class="${color} font-display font-bold shrink-0">[${lvl}]</span>
+                <span class="text-slate-400 font-display font-bold shrink-0">[${mod}]</span>
+                <span class="text-slate-200 break-all font-mono">${text}</span>
+            `;
+
+            if (currentFilter !== 'ALL') {
+                if (currentFilter === 'ERROR' && lvl !== 'ERROR') row.style.display = 'none';
+                else if (currentFilter === 'PIPELINE' && mod !== 'PIPELINE' && mod !== 'CAPTURE' && mod !== 'OCR') row.style.display = 'none';
+                else if (currentFilter === 'ROUTER' && mod !== 'ROUTER') row.style.display = 'none';
+            }
+
+            term.appendChild(row);
+            document.getElementById('log-total-counter').textContent = `${logIndex} LOG PACKETS`;
+
+            if (isScrollLocked) {
+                term.scrollTop = term.scrollHeight;
+            }
+        }
+
+        // Pre-fill logs
+        mockTrafficEvents.forEach(e => appendLog(e.mod, e.text, e.lvl));
+
+        function toggleTrafficSimulator() {
+            const btn = document.getElementById('sim-btn');
+            const lbl = document.getElementById('sim-btn-label');
+            if (trafficInterval) {
+                clearInterval(trafficInterval);
+                trafficInterval = null;
+                lbl.textContent = 'SIMULATE SOLVES: OFF';
+                btn.className = 'comic-btn px-3 py-1.5 bg-slate-800 text-slate-400 text-xs flex items-center gap-1.5';
+            } else {
+                trafficInterval = setInterval(() => {
+                    const sample = mockTrafficEvents[Math.floor(Math.random() * mockTrafficEvents.length)];
+                    appendLog(sample.mod, sample.text, sample.lvl);
+                }, 2800);
+                lbl.textContent = 'SIMULATE SOLVES: ON';
+                btn.className = 'comic-btn px-3 py-1.5 bg-pop-cyan text-comic-ink font-bold text-xs flex items-center gap-1.5';
+            }
+        }
+        toggleTrafficSimulator();
+
+        function clearLogs() {
+            document.getElementById('log-terminal').innerHTML = '';
+            logIndex = 0;
+            document.getElementById('log-total-counter').textContent = '0 LOG PACKETS';
+        }
+
+        function toggleScrollLock() {
+            isScrollLocked = !isScrollLocked;
+            const b = document.getElementById('scroll-btn');
+            if (isScrollLocked) {
+                b.className = 'comic-btn px-2 py-0.5 bg-pop-cyan text-comic-ink font-bold text-[10px]';
+                b.textContent = 'SCROLL: ON';
+            } else {
+                b.className = 'comic-btn px-2 py-0.5 bg-slate-800 text-slate-400 text-[10px]';
+                b.textContent = 'SCROLL: OFF';
+            }
+        }
+
+        function filterLogs(f) {
+            currentFilter = f;
+            document.querySelectorAll('.comic-filter').forEach(btn => {
+                if (btn.dataset.f === f) {
+                    btn.className = 'comic-filter px-2.5 py-1 rounded-lg bg-pop-yellow text-comic-ink font-bold';
+                } else {
+                    btn.className = 'comic-filter px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white';
+                }
+            });
+
+            document.querySelectorAll('#log-terminal > div').forEach(row => {
+                const lvl = row.dataset.lvl;
+                const mod = row.dataset.mod;
+                if (f === 'ALL') row.style.display = 'flex';
+                else if (f === 'ERROR') row.style.display = lvl === 'ERROR' ? 'flex' : 'none';
+                else if (f === 'PIPELINE') row.style.display = (mod === 'PIPELINE' || mod === 'CAPTURE' || mod === 'OCR') ? 'flex' : 'none';
+                else if (f === 'ROUTER') row.style.display = mod === 'ROUTER' ? 'flex' : 'none';
+            });
+        }
+
+        function forceSyncFleet() {
+            appendLog('FLEET_SYNC', 'Manual fleet sync triggered. Refreshing local caches.', 'INFO');
+            alert('FLEET REFRESHED: All operators synced.');
+        }
+
+        function logoutAdmin() {
+            if (confirm('EJECT FROM COMMAND COCKPIT?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Modal Handlers
+        function openNewUserModal() {
+            const m = document.getElementById('provision-modal');
+            m.classList.remove('opacity-0', 'pointer-events-none');
+        }
+        function closeNewUserModal() {
+            const m = document.getElementById('provision-modal');
+            m.classList.add('opacity-0', 'pointer-events-none');
+        }
+        function submitNewOperator() {
+            const em = document.getElementById('new-op-email').value;
+            closeNewUserModal();
+            appendLog('SECURITY', `Provisioned new operator account: [${em}].`, 'INFO');
+            alert(`Operator [${em}] deployed into Firebase! 🎓`);
+        }
+
+        function openKeyModal(user) {
+            document.getElementById('key-modal-title').textContent = `OPERATOR: ${user} // CARTRIDGE POOL`;
+            const m = document.getElementById('key-modal');
+            m.classList.remove('opacity-0', 'pointer-events-none');
+        }
+        function closeKeyModal() {
+            const m = document.getElementById('key-modal');
+            m.classList.add('opacity-0', 'pointer-events-none');
+        }
+        function pushNewKeyToUser() {
+            const inp = document.getElementById('add-key-input');
+            if (inp.value) {
+                const list = document.getElementById('user-keys-list');
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-comic-ink rounded-xl border border-slate-800 flex justify-between items-center';
+                div.innerHTML = `<span class="text-pop-yellow font-bold">${inp.value.substring(0, 8)}••••</span><span class="px-2 py-0.5 rounded bg-pop-mint/20 text-pop-mint text-[10px] font-display font-bold">ACTIVE</span>`;
+                list.appendChild(div);
+                inp.value = '';
+                appendLog('KEYS', 'New cartridge injected into operator pool.', 'INFO');
+            }
+        }
+    </script>
+</body>
+</html>
