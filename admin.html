@@ -770,31 +770,70 @@
 
         window.logout = () => signOut(auth);
         
-        // Custom Stretch Overscroll Effect
+        // Custom Stretch Overscroll Effect (Wheel + Touch)
         let stretchOverscroll = 0;
         let stretchTimer = null;
+
+        const applyStretch = (delta, atTop, main) => {
+            stretchOverscroll += delta;
+            const maxStretch = 120; // Slightly higher cap for touch fluidity
+            stretchOverscroll = Math.max(-maxStretch, Math.min(maxStretch, stretchOverscroll));
+            
+            main.style.transition = 'none';
+            const scale = 1 + Math.abs(stretchOverscroll) / 1000;
+            main.style.transform = `translateY(${stretchOverscroll * 0.4}px) scaleY(${scale})`;
+            main.style.transformOrigin = atTop ? 'top center' : 'bottom center';
+        };
+
+        const releaseStretch = (main) => {
+            clearTimeout(stretchTimer);
+            stretchTimer = setTimeout(() => {
+                main.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.2, 1)';
+                main.style.transform = 'translateY(0) scaleY(1)';
+                stretchOverscroll = 0;
+            }, 50);
+        };
+
+        // Desktop Wheel
         window.addEventListener('wheel', (e) => {
             const atTop = window.scrollY <= 0;
             const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
             const main = document.getElementById('main-content');
-            if(!main) return;
             
-            if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) {
-                stretchOverscroll += e.deltaY * -0.5;
-                const maxStretch = 80;
-                stretchOverscroll = Math.max(-maxStretch, Math.min(maxStretch, stretchOverscroll));
-                
-                main.style.transition = 'none';
-                const scale = 1 + Math.abs(stretchOverscroll) / 1200;
-                main.style.transform = `translateY(${stretchOverscroll * 0.3}px) scaleY(${scale})`;
-                main.style.transformOrigin = atTop ? 'top center' : 'bottom center';
-                
-                clearTimeout(stretchTimer);
-                stretchTimer = setTimeout(() => {
-                    main.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.2, 1)';
-                    main.style.transform = 'translateY(0) scaleY(1)';
-                    stretchOverscroll = 0;
-                }, 60);
+            if (main && ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0))) {
+                applyStretch(e.deltaY * -0.5, atTop, main);
+                releaseStretch(main);
+            }
+        }, { passive: true });
+
+        // Mobile Touch
+        let lastTouchY = 0;
+        window.addEventListener('touchstart', (e) => {
+            lastTouchY = e.touches[0].clientY;
+            // Don't reset stretchOverscroll here to allow smooth continuous bounces,
+            // but we can clear the release timer if they grab it mid-bounce
+            clearTimeout(stretchTimer); 
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - lastTouchY;
+            lastTouchY = currentY;
+
+            const atTop = window.scrollY <= 0;
+            const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
+            const main = document.getElementById('main-content');
+            
+            // deltaY > 0 means swiping down (which happens when at top)
+            if (main && ((atTop && deltaY > 0) || (atBottom && deltaY < 0))) {
+                applyStretch(deltaY * 0.8, atTop, main);
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            const main = document.getElementById('main-content');
+            if(main && stretchOverscroll !== 0) {
+                releaseStretch(main);
             }
         }, { passive: true });
 
