@@ -425,11 +425,11 @@
                     let actionBtn = '';
                     if (!isSelf) {
                         let dropdownHtml = `
-                        <div class="relative group inline-block text-left">
-                            <button class="text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-slate-200">
-                                Options <i data-lucide="chevron-down" class="w-3 h-3"></i>
-                            </button>
-                            <div class="absolute right-0 mt-1 w-40 origin-top-right rounded-xl bg-white shadow-xl border border-slate-100 focus:outline-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 transform scale-95 group-hover:scale-100 p-1.5">
+                        <details class="relative inline-block text-left group">
+                            <summary class="list-none text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-slate-200 cursor-pointer select-none outline-none">
+                                Options <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-200 group-open:rotate-180"></i>
+                            </summary>
+                            <div class="absolute right-0 top-full mt-1 w-40 z-50 bg-white shadow-2xl border border-slate-200 rounded-xl p-1.5 overflow-hidden">
                                 <button onclick="openKeyModal('${uid}', '${keysStr}')" class="w-full text-left px-3 py-2 text-xs font-bold text-yellow-600 hover:bg-yellow-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="key" class="w-3.5 h-3.5"></i> API Keys (${keysArray.length})</button>
                                 ${u.isBlocked 
                                     ? `<button onclick="setBlock('${uid}', false)" class="w-full text-left px-3 py-2 text-xs font-bold text-emerald-600 hover:bg-emerald-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="unlock" class="w-3.5 h-3.5"></i> Unblock Access</button>` 
@@ -438,7 +438,7 @@
                                 <div class="h-px bg-slate-100 my-1"></div>
                                 <button onclick="deleteUserDoc('${uid}')" class="w-full text-left px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete User</button>
                             </div>
-                        </div>
+                        </details>
                         `;
                         actionBtn = `<div class="flex justify-end">${dropdownHtml}</div>`;
                     } else {
