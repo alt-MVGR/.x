@@ -79,20 +79,23 @@
         </div>
 
         <!-- Global Settings Panel -->
-        <div class="glass-table-container mb-8">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+        <details class="glass-table-container mb-8 group bg-white">
+            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg flex items-center gap-2">
                     <i data-lucide="settings" class="w-5 h-5 text-slate-400"></i> Global Settings
                 </h2>
-                <div class="flex gap-2">
-                    <button onclick="loadGlobalConfig()" class="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition" title="Reload Config">
-                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                    </button>
-                    <button id="save-config-btn" onclick="saveGlobalConfig()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm hover:shadow-md">
-                        <i data-lucide="save" class="w-4 h-4"></i> Save Config
-                    </button>
+                <div class="flex items-center gap-4">
+                    <div class="flex gap-2" onclick="event.preventDefault(); event.stopPropagation();">
+                        <button onclick="loadGlobalConfig()" class="p-2 hover:bg-slate-200 rounded-lg text-slate-500 transition" title="Reload Config">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </button>
+                        <button id="save-config-btn" onclick="saveGlobalConfig()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm hover:shadow-md">
+                            <i data-lucide="save" class="w-4 h-4"></i> Save Config
+                        </button>
+                    </div>
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
                 </div>
-            </div>
+            </summary>
             <div class="p-6 bg-slate-50">
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">AI Model Array Mapping</label>
                 <p class="text-xs text-slate-400 mb-4">Add models in the exact order that corresponds to your API keys (Key #1 maps to Model #1, etc).</p>
@@ -132,15 +135,16 @@
                     <!-- JS Injection -->
                 </div>
             </div>
-        </div>
+        </details>
 
         <!-- Advanced Settings Panel -->
-        <div class="glass-table-container mb-8">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+        <details class="glass-table-container mb-8 group bg-white">
+            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg flex items-center gap-2">
                     <i data-lucide="sliders" class="w-5 h-5 text-slate-400"></i> Advanced Configuration (Live Sync)
                 </h2>
-            </div>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
+            </summary>
             <div class="p-6 bg-slate-50 flex flex-col gap-6">
                 <!-- Endpoint -->
                 <div>
@@ -174,14 +178,15 @@
                 
                 <!-- Note: The Save Config button in the Global Settings panel will save everything -->
             </div>
-        </div>
+        </details>
 
 
         <!-- Create User Module -->
-        <div class="glass-table-container mb-8 overflow-visible">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+        <details class="glass-table-container mb-8 overflow-visible group bg-white">
+            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-yellow-600"></i> Provision New User</h2>
-            </div>
+                <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
+            </summary>
             <form onsubmit="event.preventDefault(); createNewUser();" class="p-6 bg-slate-50 flex flex-col md:flex-row gap-4 items-end">
                 <div class="flex-1 w-full">
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Identity (Email)</label>
@@ -196,16 +201,19 @@
                 </button>
             </form>
             <div id="create-user-msg" class="hidden p-3 mx-6 mb-6 rounded-lg text-sm font-medium text-center"></div>
-        </div>
+        </details>
 
         <!-- Table -->
-        <div class="glass-table-container">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+        <details class="glass-table-container group bg-white" open>
+            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
                 <h2 class="font-bold text-lg">User Registry</h2>
-                <button onclick="loadUsers()" class="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition">
-                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                </button>
-            </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="event.preventDefault(); event.stopPropagation(); loadUsers();" class="p-2 hover:bg-slate-200 rounded-lg text-slate-500 transition">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </button>
+                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
+                </div>
+            </summary>
             <div class="overflow-x-auto min-h-[300px] pb-20">
                 <table class="w-full text-left">
                     <thead>
@@ -221,7 +229,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </details>
 
     </main>
 
