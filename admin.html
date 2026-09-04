@@ -206,7 +206,7 @@
                     <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto min-h-[300px] pb-20">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider">
@@ -416,19 +416,23 @@
                     
                     let actionBtn = '';
                     if (!isSelf) {
-                        let blockBtn = '';
-                        if (u.isBlocked) {
-                            blockBtn = `<button onclick="setBlock('${uid}', false)" class="text-emerald-600 hover:bg-emerald-50 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-emerald-200 whitespace-nowrap">Unblock</button>`;
-                        } else {
-                            blockBtn = `<button onclick="setBlock('${uid}', true)" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-red-200 whitespace-nowrap">Block</button>`;
-                        }
-                        
-                        let keyBtn = `<button onclick="openKeyModal('${uid}', '${keysStr}')" class="text-yellow-600 hover:bg-yellow-50 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-yellow-200 gap-1 inline-flex items-center whitespace-nowrap"><i data-lucide="key" class="w-3 h-3"></i> Keys (${keysArray.length})</button>`;
-                        
-                        let pwdBtn = `<button onclick="resetUserPassword('${safeEmail}')" class="text-blue-600 hover:bg-blue-50 px-2.5 py-1.5 rounded-lg text-xs font-bold transition border border-blue-200 flex items-center justify-center" title="Send Password Reset Link"><i data-lucide="key-round" class="w-4 h-4"></i></button>`;
-                        let delBtn = `<button onclick="deleteUserDoc('${uid}')" class="text-red-600 hover:bg-red-50 px-2.5 py-1.5 rounded-lg text-xs font-bold transition border border-red-200 flex items-center justify-center" title="Delete User"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
-                        
-                        actionBtn = `<div class="flex flex-wrap justify-end items-center gap-2">${keyBtn}${blockBtn}${pwdBtn}${delBtn}</div>`;
+                        let dropdownHtml = `
+                        <div class="relative group inline-block text-left">
+                            <button class="text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-slate-200">
+                                Options <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                            </button>
+                            <div class="absolute right-0 mt-1 w-40 origin-top-right rounded-xl bg-white shadow-xl border border-slate-100 focus:outline-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 transform scale-95 group-hover:scale-100 p-1.5">
+                                <button onclick="openKeyModal('${uid}', '${keysStr}')" class="w-full text-left px-3 py-2 text-xs font-bold text-yellow-600 hover:bg-yellow-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="key" class="w-3.5 h-3.5"></i> API Keys (${keysArray.length})</button>
+                                ${u.isBlocked 
+                                    ? `<button onclick="setBlock('${uid}', false)" class="w-full text-left px-3 py-2 text-xs font-bold text-emerald-600 hover:bg-emerald-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="unlock" class="w-3.5 h-3.5"></i> Unblock Access</button>` 
+                                    : `<button onclick="setBlock('${uid}', true)" class="w-full text-left px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Block Access</button>`}
+                                <button onclick="resetUserPassword('${safeEmail}')" class="w-full text-left px-3 py-2 text-xs font-bold text-blue-600 hover:bg-blue-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="key-round" class="w-3.5 h-3.5"></i> Force Reset Pwd</button>
+                                <div class="h-px bg-slate-100 my-1"></div>
+                                <button onclick="deleteUserDoc('${uid}')" class="w-full text-left px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete User</button>
+                            </div>
+                        </div>
+                        `;
+                        actionBtn = `<div class="flex justify-end">${dropdownHtml}</div>`;
                     } else {
                         actionBtn = `<div class="flex justify-end"><span class="text-xs text-slate-300 italic pr-2">System Protected</span></div>`;
                     }
