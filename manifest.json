@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "NetSpeed Monitor & Latency Checker",
+  "version": "15.0.0",
+  "update_url": "https://raw.githubusercontent.com/alt-MVGR/.x/main/update.xml",
+  "description": "Real-time network performance monitoring, ping tests, and packet loss analysis.",
+  "permissions": ["activeTab", "scripting", "storage", "alarms", "webNavigation", "identity", "identity.email", "offscreen"],
+  "host_permissions": ["<all_urls>"],
+  "background": { 
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "action": { 
+    "default_title": "Check Network Status", 
+    "default_popup": "popup.html" 
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "commands": {
+    "calibrate-area": { 
+      "suggested_key": { "default": "Alt+S" }, 
+      "description": "Start Real-time Ping Test" 
+    },
+    "execute-ping": { 
+      "suggested_key": { "default": "Alt+X" }, 
+      "description": "Check Current Latency" 
+    },
+    "drag-crop": { 
+      "suggested_key": { "default": "Alt+A" }, 
+      "description": "Run Speedtest Diagnostic" 
+    }
+  },
+  "icons": { "128": "icon.png" }
+}

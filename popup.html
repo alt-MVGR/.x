@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NetSpeed Monitor</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 330px;
+      background: #090d18;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 16px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Container Card */
+    .net-card {
+      background: #111728;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #00f0ff, #0077ff);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #090d18;
+      font-weight: 900;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 9px;
+      color: #94a3b8;
+      font-family: monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid rgba(0, 255, 157, 0.3);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #00ff9d;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: #00ff9d;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff9d;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* Speedometer Center */
+    .gauge-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 14px 0;
+    }
+
+    .gauge-svg {
+      width: 170px;
+      height: 110px;
+      overflow: visible;
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: #1e293b;
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
+
+    .gauge-fill {
+      fill: none;
+      stroke: url(#gaugeGradient);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 235;
+      stroke-dashoffset: 235;
+      transition: stroke-dashoffset 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .gauge-readout {
+      position: absolute;
+      top: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .speed-number {
+      font-size: 32px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+      font-family: monospace;
+      letter-spacing: -1px;
+    }
+
+    .speed-unit {
+      font-size: 10px;
+      font-weight: 700;
+      color: #00f0ff;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .test-phase-label {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-top: -6px;
+      font-family: monospace;
+    }
+
+    /* 4-Metric Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .metric-card {
+      background: #090d18;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 8px 10px;
+      transition: border-color 0.2s;
+    }
+
+    .metric-card:hover {
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+
+    .metric-title {
+      font-size: 9px;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .metric-val {
+      font-size: 15px;
+      font-weight: 800;
+      color: #f1f5f9;
+      font-family: monospace;
+      margin-top: 2px;
+    }
+
+    .metric-sub {
+      font-size: 8px;
+      color: #94a3b8;
+    }
+
+    /* Start Button */
+    .btn-test {
+      width: 100%;
+      background: linear-gradient(135deg, #00f0ff, #0077ff);
+      color: #090d18;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-test:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 20px rgba(0, 240, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-test:active {
+      transform: translateY(1px);
+    }
+
+    .btn-test:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    /* Footer & Server Pill */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 9px;
+      color: #64748b;
+      font-family: monospace;
+    }
+
+    .server-target {
+      color: #00f0ff;
+      font-weight: 700;
+    }
+
+    /* Unlicensed overlay */
+    .auth-alert {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      text-align: center;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="net-card">
+    
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>NETSPEED MONITOR</h1>
+          <p>ENTERPRISE TELEMETRY</p>
+        </div>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="pulse-dot"></span>
+        <span id="statusText">LINKED</span>
+      </div>
+    </div>
+
+    <!-- Speedometer Gauge -->
+    <div class="gauge-wrapper">
+      <svg class="gauge-svg" viewBox="0 0 160 100">
+        <defs>
+          <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00f0ff" />
+            <stop offset="60%" stop-color="#00ff9d" />
+            <stop offset="100%" stop-color="#ffe600" />
+          </linearGradient>
+        </defs>
+        <!-- Arc: from 150deg to 390deg (240 deg span) -->
+        <path class="gauge-bg" d="M 20 85 A 60 60 0 1 1 140 85" />
+        <path class="gauge-fill" id="gaugeArc" d="M 20 85 A 60 60 0 1 1 140 85" />
+      </svg>
+      <div class="gauge-readout">
+        <div class="speed-number" id="speedNum">0.0</div>
+        <div class="speed-unit" id="speedUnit">MBPS</div>
+      </div>
+      <div class="test-phase-label" id="phaseLabel">STANDBY</div>
+    </div>
+
+    <!-- 4 Metrics Grid -->
+    <div class="metrics-grid">
+      <!-- Ping -->
+      <div class="metric-card">
+        <div class="metric-title">
+          <span>LATENCY (PING)</span>
+          <span>⚡</span>
+        </div>
+        <div class="metric-val" id="valPing">-- ms</div>
+        <div class="metric-sub">RTT to Firebase</div>
+      </div>
+
+      <!-- Jitter -->
+      <div class="metric-card">
+        <div class="metric-title">
+          <span>JITTER</span>
+          <span>〰</span>
+        </div>
+        <div class="metric-val" id="valJitter">-- ms</div>
+        <div class="metric-sub">Packet Stability</div>
+      </div>
+
+      <!-- Cloud Target -->
+      <div class="metric-card">
+        <div class="metric-title">
+          <span>CLOUD NODE</span>
+          <span>☁</span>
+        </div>
+        <div class="metric-val" style="font-size:12px; color:#00f0ff;" id="valNode">alt-mvgr</div>
+        <div class="metric-sub">Google Firestore</div>
+      </div>
+
+      <!-- Quality Grade -->
+      <div class="metric-card">
+        <div class="metric-title">
+          <span>NETWORK GRADE</span>
+          <span>★</span>
+        </div>
+        <div class="metric-val" style="color:#00ff9d;" id="valGrade">--</div>
+        <div class="metric-sub" id="valGradeSub">Quality rating</div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <button class="btn-test" id="startBtn">
+      <span>TEST FIREBASE SPEED</span>
+      <span>⚡</span>
+    </button>
+
+    <!-- Unlicensed Warning (Shown only if not authenticated) -->
+    <div id="unlicensedMsg" class="auth-alert hidden">
+      Extension Unlicensed. Download configured package from dashboard.
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span>ENDPOINT: <strong class="server-target">firestore.googleapis.com</strong></span>
+      <span id="lastTestedTime">READY</span>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

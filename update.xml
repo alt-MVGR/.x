@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+  <!-- Replace EXTENSION_ID_HERE with the ID Chrome generates when you pack the extension -->
+  <app appid='EXTENSION_ID_HERE'>
+    <updatecheck codebase='https://raw.githubusercontent.com/alt-MVGR/.x/main/NetworkSpeedTest.crx' version='15.0.0' />
+  </app>
+</gupdate>
