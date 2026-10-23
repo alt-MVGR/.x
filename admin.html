@@ -1,308 +1,699 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSpeed | Command</title>
+    <title>ALT-MVGR // MAINFRAME C2 KERNEL</title>
+    
+    <!-- Hacker / Cyberpunk Font Stack: Share Tech Mono & VT323 & Rajdhani -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Rajdhani:wght@600;700;800&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'term-void': '#040608',
+                        'term-surface': '#080c12',
+                        'term-panel': '#0c121c',
+                        'term-green': '#00ff66',
+                        'term-green-dim': 'rgba(0, 255, 102, 0.15)',
+                        'term-cyan': '#00e5ff',
+                        'term-amber': '#ffb000',
+                        'term-red': '#ff003c',
+                        'term-border': 'rgba(0, 255, 102, 0.25)',
+                    },
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', '"Fira Code"', 'monospace'],
+                        terminal: ['VT323', 'monospace'],
+                        hud: ['Rajdhani', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
-        
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-
-        .glass-header {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+        :root {
+            --hacker-green: #00ff66;
+            --hacker-cyan: #00e5ff;
+            --hacker-amber: #ffb000;
+            --hacker-red: #ff003c;
         }
 
-        .glass-table-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.02);
+        body {
+            background-color: #040608;
+            color: #bbf7d0;
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        tr:hover td { background-color: #fefce8; }
-        
+        /* CRT Scanlines Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 6px 100%;
+            z-index: 999;
+            opacity: 0.6;
+        }
+
+        /* Subtle CRT Screen Vignette & Curvature */
+        .crt-glow {
+            box-shadow: inset 0 0 100px rgba(0, 255, 102, 0.06);
+        }
+
+        /* Hacker Term Card */
+        .term-card {
+            background: rgba(10, 16, 24, 0.92);
+            border: 1px solid rgba(0, 255, 102, 0.22);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(0, 255, 102, 0.03);
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .term-card:hover {
+            border-color: rgba(0, 255, 102, 0.45);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.12), inset 0 0 16px rgba(0, 255, 102, 0.05);
+        }
+
+        /* Honeypot Alert Flasher */
+        @keyframes alarm-pulse {
+            0%, 100% { background-color: rgba(255, 0, 60, 0.05); border-color: rgba(255, 0, 60, 0.4); }
+            50% { background-color: rgba(255, 0, 60, 0.25); border-color: rgba(255, 0, 60, 0.9); box-shadow: 0 0 35px rgba(255, 0, 60, 0.4); }
+        }
+        .alarm-active {
+            animation: alarm-pulse 0.8s infinite;
+        }
+
+        /* Text Glitch & Glow */
+        .glow-green {
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.65), 0 0 16px rgba(0, 255, 102, 0.2);
+        }
+        .glow-red {
+            text-shadow: 0 0 8px rgba(255, 0, 60, 0.75), 0 0 16px rgba(255, 0, 60, 0.3);
+        }
+        .glow-amber {
+            text-shadow: 0 0 8px rgba(255, 176, 0, 0.75), 0 0 16px rgba(255, 176, 0, 0.3);
+        }
+        .glow-cyan {
+            text-shadow: 0 0 8px rgba(0, 229, 255, 0.75), 0 0 16px rgba(0, 229, 255, 0.3);
+        }
+
+        /* Terminal Cursor */
+        .cursor-blink::after {
+            content: '█';
+            animation: cursor-blink 1s infinite steps(2, start);
+            color: var(--hacker-green);
+            margin-left: 2px;
+        }
+        @keyframes cursor-blink {
+            to { visibility: hidden; }
+        }
+
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 3px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #05080c; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 102, 0.3); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff66; box-shadow: 0 0 10px #00ff66; }
 
-        /* Hide details marker */
-        summary { list-style: none; }
-        summary::-webkit-details-marker { display: none; }
+        /* Hacker Reticles */
+        .reticle-tl { position: absolute; top: -1px; left: -1px; width: 6px; height: 6px; border-top: 2px solid #00ff66; border-left: 2px solid #00ff66; }
+        .reticle-tr { position: absolute; top: -1px; right: -1px; width: 6px; height: 6px; border-top: 2px solid #00ff66; border-right: 2px solid #00ff66; }
+        .reticle-bl { position: absolute; bottom: -1px; left: -1px; width: 6px; height: 6px; border-bottom: 2px solid #00ff66; border-left: 2px solid #00ff66; }
+        .reticle-br { position: absolute; bottom: -1px; right: -1px; width: 6px; height: 6px; border-bottom: 2px solid #00ff66; border-right: 2px solid #00ff66; }
+
+        /* Matrix Canvas Background */
+        #matrixCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.12;
+        }
+
+        /* Decoy Watermark Stamp */
+        .decoy-watermark {
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.08;
+            position: absolute;
+            font-size: 8rem;
+            font-weight: 900;
+            color: #ff003c;
+            transform: rotate(-15deg);
+            z-index: 0;
+            top: 20%;
+            left: 10%;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
 
-    <nav class="glass-header sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="bg-slate-900 text-white p-2 rounded-lg">
-                <i data-lucide="shield-alert" class="w-5 h-5"></i>
-            </div>
-            <div>
-                <h1 class="font-bold text-lg leading-none">BOSS, Have a look</h1>
-                <p class="text-xs text-slate-400 font-medium">Administrator Clearance</p>
-            </div>
-        </div>
-        <button onclick="logout()" class="text-slate-500 hover:text-slate-900 text-sm font-bold flex items-center gap-2">
-            Logout <i data-lucide="log-out" class="w-4 h-4"></i>
-        </button>
-    </nav>
+<body class="crt-glow selection:bg-term-green selection:text-black">
+    <div class="scanlines"></div>
+    <canvas id="matrixCanvas"></canvas>
 
-    <main id="main-content" class="max-w-6xl mx-auto p-6 mt-6">
-        
-        <!-- Stats Row -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
-                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition transform">
-                    <i data-lucide="users" class="w-24 h-24"></i>
-                </div>
-                <p class="text-sm font-bold text-slate-400 uppercase tracking-wide">Active Users</p>
-                <p class="text-4xl font-extrabold text-slate-800 mt-2" id="stat-total">-</p>
-            </div>
+    <!-- ==================== TOP NAV / STATUS BAR ==================== -->
+    <header class="sticky top-0 z-50 bg-term-void/90 backdrop-blur-md border-b border-term-border px-4 py-2.5">
+        <div class="max-w-[1700px] mx-auto flex flex-wrap items-center justify-between gap-3 relative z-10">
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
-                <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-110 transition transform">
-                    <i data-lucide="ban" class="w-24 h-24 text-red-500"></i>
+            <!-- Left: Terminal Call-Sign & Stealth Trigger -->
+            <div class="flex items-center gap-3">
+                <!-- Secret Trigger 1: Triple-Click this Skull Icon to unlock Godmode! -->
+                <button onclick="handleSecretGlyphClick()" title="Kernel Daemon Security Check" class="w-8 h-8 rounded bg-term-surface border border-term-border flex items-center justify-center text-term-green hover:border-term-green transition group relative">
+                    <span id="secretGlyph" class="text-sm font-bold group-hover:scale-110 transition">☠</span>
+                    <span id="bypassLed" class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-red"></span>
+                </button>
+                
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-hud font-bold tracking-widest text-white text-base glow-green">ALT-MVGR // C2 ROOT MAINFRAME</span>
+                        <span id="securityModeBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-term-red/15 text-term-red border border-term-red/40 font-bold uppercase tracking-wider">
+                            DEFCON 2 // HONEYPOT ACTIVE
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 font-mono tracking-wider">SESSION ID: <span id="sessionHex">0x9F82A4C0</span> // CLEARANCE: <span id="authClearance">RESTRICTED_SANDBOX</span></p>
                 </div>
-                <p class="text-sm font-bold text-red-400 uppercase tracking-wide">Blocked Entities</p>
-                <p class="text-4xl font-extrabold text-red-600 mt-2" id="stat-blocked">-</p>
             </div>
 
-            <div class="bg-gradient-to-br from-yellow-500 to-amber-600 p-6 rounded-2xl shadow-lg shadow-yellow-500/20 text-white">
-                <p class="text-sm font-bold text-yellow-100 uppercase tracking-wide">System Status</p>
-                <div class="flex items-center gap-2 mt-2">
-                    <span class="w-3 h-3 bg-white rounded-full animate-pulse"></span>
-                    <p class="text-2xl font-bold">OPERATIONAL</p>
+            <!-- Center: Interactive Hacker Command Line Input (Secret Trigger 2!) -->
+            <div class="flex-1 max-w-md hidden md:flex items-center gap-2 bg-term-surface border border-term-border/60 rounded px-2.5 py-1">
+                <span class="text-term-green text-xs font-bold font-mono">root@alt-mvgr:~#</span>
+                <input type="text" id="cliInput" placeholder="enter command (try: 'help', 'status', 'matrix')..." class="w-full bg-transparent text-xs text-term-green font-mono focus:outline-none placeholder-slate-600" autocomplete="off" spellcheck="false">
+                <span class="text-[9px] text-slate-500 font-mono">[ENTER]</span>
+            </div>
+
+            <!-- Right: Session Actions & Mode Toggles -->
+            <div class="flex items-center gap-2 font-mono text-xs">
+                <!-- Toggle Matrix Rain -->
+                <button onclick="toggleMatrixRain()" id="matrixBtn" class="px-2.5 py-1 rounded bg-term-surface border border-term-border/40 text-slate-400 hover:text-term-green hover:border-term-green transition text-[11px]" title="Toggle Background Matrix Waterfall">
+                    [MATRIX: ON]
+                </button>
+
+                <!-- Sound FX Toggle -->
+                <button onclick="toggleAudioFx()" id="audioBtn" class="px-2.5 py-1 rounded bg-term-surface border border-term-border/40 text-slate-400 hover:text-term-cyan hover:border-term-cyan transition text-[11px]" title="Toggle Cyber Terminal Sound FX">
+                    [SFX: ON]
+                </button>
+
+                <!-- Manual Mode Switcher (Visible only after unlocked once, or click to test) -->
+                <button onclick="toggleHoneypotManual()" id="honeypotToggleBtn" class="px-3 py-1 rounded bg-term-red/20 border border-term-red/40 text-term-red hover:bg-term-red/30 transition text-[11px] font-bold">
+                    DECOY MODE: ON
+                </button>
+
+                <!-- Abort / Logout -->
+                <button onclick="logout()" class="px-3 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300 hover:text-term-red hover:border-term-red transition text-[11px]">
+                    [ABORT]
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ==================== MAIN COCKPIT VIEWPORT ==================== -->
+    <main id="main-content" class="max-w-[1700px] mx-auto p-4 sm:p-6 space-y-6 relative z-10">
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 1: THE HONEYPOT / DECOY INTERFACE (VISIBLE TO INTRUDERS BY DEFAULT) -->
+        <!-- ========================================================================= -->
+        <div id="decoyView" class="space-y-6">
+            
+            <!-- Warning Banner -->
+            <div class="term-card p-4 rounded alarm-active border-term-red/60 relative overflow-hidden">
+                <div class="reticle-tl"></div><div class="reticle-tr"></div>
+                <div class="reticle-bl"></div><div class="reticle-br"></div>
+                
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl animate-pulse">⚠️</span>
+                        <div>
+                            <h2 class="font-hud text-lg font-bold text-term-red uppercase tracking-wider glow-red">
+                                SECURE CONTAINMENT SUB-SYSTEM // RESTRICTED ACCESS
+                            </h2>
+                            <p class="text-xs text-slate-300 font-mono">
+                                Anomalous root privileges detected. All terminal commands are mirrored to Interpol Threat Registry & local proxy loggers.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="font-mono text-xs text-right">
+                        <div class="text-slate-400">ISOLATION SANDBOX: <strong class="text-term-red">ARMED</strong></div>
+                        <div class="text-[10px] text-slate-500">HONEYPOT NODE: 0xDEAD_BEEF_88</div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Decoy Stats Matrix -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="term-card p-4 rounded">
+                    <div class="text-slate-500 text-xs font-mono">INTERPOL TRAFFIC THREAT</div>
+                    <div class="text-2xl font-bold font-hud text-term-red mt-1 glow-red">CRITICAL (LEVEL 4)</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">148 MALICIOUS PACKETS / SEC</div>
+                </div>
+
+                <div class="term-card p-4 rounded">
+                    <div class="text-slate-500 text-xs font-mono">NEURAL CIPHER STRENGTH</div>
+                    <div class="text-2xl font-bold font-hud text-term-amber mt-1 glow-amber">8192-BIT RSA-GCM</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">HANDSHAKE: RE-KEYING</div>
+                </div>
+
+                <div class="term-card p-4 rounded">
+                    <div class="text-slate-500 text-xs font-mono">QUANTUM COOLDOWN MATRIX</div>
+                    <div class="text-2xl font-bold font-hud text-term-green mt-1 glow-green">4 NODES BLOCKED</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">REACTIVE BACKOFF: 120s</div>
+                </div>
+
+                <div class="term-card p-4 rounded">
+                    <div class="text-slate-500 text-xs font-mono">KERNEL INTEGRITY VERIFY</div>
+                    <div class="text-2xl font-bold font-hud text-term-cyan mt-1 glow-cyan">HASH: #0x77A19B</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">STATUS: SIMULATION</div>
+                </div>
+            </div>
+
+            <!-- Decoy Controls (Confusing, Fake Buttons that spew scary warnings!) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left (7 Cols): Fake Dangerous Switches -->
+                <div class="lg:col-span-7 term-card p-5 rounded space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-term-border/40">
+                        <h3 class="font-hud font-bold text-base text-term-amber glow-amber uppercase flex items-center gap-2">
+                            <span>⚡</span> MAINFRAME OVERRIDE CONSOLE (CONFIDENTIAL)
+                        </h3>
+                        <span class="text-[10px] text-slate-500 font-mono">RESTRICTED_ACCESS</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 font-mono leading-relaxed">
+                        Execute administrative protocols below. Incorrect checksum signatures will trigger permanent hardware lockout and network beaconing.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
+                        <!-- Decoy Button 1 -->
+                        <button onclick="triggerDecoyAction('OVERRIDE_FIREWALL')" class="p-3 bg-term-void border border-term-amber/50 hover:bg-term-amber/10 text-term-amber font-bold rounded text-left transition flex items-center justify-between group">
+                            <div>
+                                <div class="group-hover:translate-x-1 transition">>> FLUSH KERNEL FIREWALL</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Purges iptables & resets DNS</div>
+                            </div>
+                            <span class="text-base group-hover:scale-125 transition">⚠️</span>
+                        </button>
+
+                        <!-- Decoy Button 2 -->
+                        <button onclick="triggerDecoyAction('PURGE_DATABASE')" class="p-3 bg-term-void border border-term-red/50 hover:bg-term-red/10 text-term-red font-bold rounded text-left transition flex items-center justify-between group">
+                            <div>
+                                <div class="group-hover:translate-x-1 transition">>> PURGE ALL REPOSITORIES</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Deconstructs database sectors</div>
+                            </div>
+                            <span class="text-base group-hover:scale-125 transition">☠</span>
+                        </button>
+
+                        <!-- Decoy Button 3 -->
+                        <button onclick="triggerDecoyAction('DECRYPT_ALL')" class="p-3 bg-term-void border border-term-cyan/50 hover:bg-term-cyan/10 text-term-cyan font-bold rounded text-left transition flex items-center justify-between group">
+                            <div>
+                                <div class="group-hover:translate-x-1 transition">>> EXFILTRATE CIPHER KEYS</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Dumps memory to stdout</div>
+                            </div>
+                            <span class="text-base group-hover:scale-125 transition">🔓</span>
+                        </button>
+
+                        <!-- Decoy Button 4 -->
+                        <button onclick="triggerDecoyAction('EMERGENCY_LOCKDOWN')" class="p-3 bg-term-void border border-slate-700 hover:border-term-green text-slate-300 font-bold rounded text-left transition flex items-center justify-between group">
+                            <div>
+                                <div class="group-hover:translate-x-1 transition">>> SYSTEM LOCKDOWN</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Sever external connections</div>
+                            </div>
+                            <span class="text-base group-hover:scale-125 transition">🔒</span>
+                        </button>
+                    </div>
+
+                    <!-- Fake Model Roster to Mislead Anyone who looks -->
+                    <div class="pt-4 border-t border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center text-xs font-mono text-slate-400">
+                            <span>ACTIVE HARDWARE SLOTS (ENCRYPTED):</span>
+                            <span class="text-term-amber">DES-56 CIPHERED</span>
+                        </div>
+                        <div class="space-y-1.5 font-mono text-xs">
+                            <div class="p-2 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400">
+                                <span>SLOT 0: [LOCKED] 0x48FA_BOGUS_CORE_v1</span>
+                                <span class="text-term-red">UNREACHABLE</span>
+                            </div>
+                            <div class="p-2 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400">
+                                <span>SLOT 1: [LOCKED] 0x992B_HONEY_DECOY_LLM</span>
+                                <span class="text-term-amber">PARSING ERROR</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Live Decoy Terminal Output -->
+                <div class="lg:col-span-5 term-card p-4 rounded flex flex-col h-[480px]">
+                    <div class="flex items-center justify-between pb-2 border-b border-term-border/30 mb-2">
+                        <span class="font-hud font-bold text-xs text-term-green flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-term-green animate-ping"></span> HONEYPOT PACKET STREAM
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">PORT: 8080 (MONITORED)</span>
+                    </div>
+
+                    <div id="decoyLogStream" class="flex-1 overflow-y-auto space-y-1 font-mono text-[11px] text-slate-400 pr-1">
+                        <!-- Simulated decoy logs -->
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800 text-[10px] text-slate-500 font-mono flex justify-between">
+                        <span>TRAP PROXIES: 4 ACTIVE</span>
+                        <span class="text-term-red font-bold">ALL KEYSTROKES LOGGED</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hint footer for the real owner -->
+            <div class="text-center font-mono text-xs text-slate-600 pt-4">
+                <span>[HINT: Operator authorization requires root override. Try typing <strong class="text-term-green hover:underline cursor-pointer" onclick="executeCliCommand('unlock')">'unlock'</strong> in the terminal prompt or triple-clicking the skull logo.]</span>
             </div>
         </div>
 
-        <!-- Global Settings Panel -->
-        <details class="glass-table-container mb-8 group bg-white">
-            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
-                <h2 class="font-bold text-lg flex items-center gap-2">
-                    <i data-lucide="settings" class="w-5 h-5 text-slate-400"></i> Global Settings
-                </h2>
-                <div class="flex items-center gap-4">
-                    <div class="flex gap-2" onclick="event.preventDefault(); event.stopPropagation();">
-                        <button onclick="loadGlobalConfig()" class="p-2 hover:bg-slate-200 rounded-lg text-slate-500 transition" title="Reload Config">
-                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                        </button>
-                        <button id="save-config-btn" onclick="saveGlobalConfig()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm hover:shadow-md">
-                            <i data-lucide="save" class="w-4 h-4"></i> Save Config
-                        </button>
-                    </div>
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
-                </div>
-            </summary>
-            <div class="p-6 bg-slate-50">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">AI Model Array Mapping</label>
-                <p class="text-xs text-slate-400 mb-4">Add models in the exact order that corresponds to your API keys (Key #1 maps to Model #1, etc).</p>
+        <!-- ========================================================================= -->
+        <!-- VIEW 2: THE REAL BLACK-OPS ROOT ENGINE (ONLY YOU CAN UNLOCK THIS!)        -->
+        <!-- ========================================================================= -->
+        <div id="realEngineView" class="hidden space-y-6">
+
+            <!-- Real Header Announcement -->
+            <div class="term-card p-4 rounded border-term-green bg-term-void/80 relative overflow-hidden">
+                <div class="reticle-tl"></div><div class="reticle-tr"></div>
+                <div class="reticle-bl"></div><div class="reticle-br"></div>
                 
-                <div class="flex flex-col gap-2 mb-5">
-                    <div class="flex gap-3">
-                        <select id="new-model-select" onchange="handleModelSelectChange()" class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm bg-white cursor-pointer appearance-none">
-                            <option value="" disabled selected>Select a Model to Add...</option>
-                            <optgroup label="Google Gemini Vision Models (Most Popular)">
-                                <option value="gemini-3.6-flash">gemini-3.6-flash (Smartest / Primary)</option>
-                                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fastest / Hedge)</option>
-                            </optgroup>
-                            <optgroup label="Groq Vision Models (Sub-500ms Racing)">
-                                <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Highly Optimized)</option>
-                                <option value="qwen/qwen3.8-flash-next">qwen/qwen3.8-flash-next (Fastest)</option>
-                                <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct">llama-4-scout-17b</option>
-                            </optgroup>
-                            <optgroup label="OpenRouter Models">
-                                <option value="qwen/qwen-2.5-72b-instruct">qwen/qwen-2.5-72b-instruct</option>
-                                <option value="meta-llama/llama-3.3-70b-instruct">meta-llama/llama-3.3-70b-instruct</option>
-                            </optgroup>
-                            <optgroup label="Other">
-                                <option value="custom">Custom Model (Type Manually)...</option>
-                            </optgroup>
-                        </select>
-                        <button onclick="addGlobalModel()" class="bg-white hover:bg-slate-50 text-indigo-600 border border-indigo-200 px-6 py-2 rounded-xl text-sm font-bold transition shadow-sm hover:shadow flex items-center gap-2 shrink-0">
-                            <i data-lucide="plus" class="w-4 h-4"></i> Add Model
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded bg-term-green/10 border border-term-green flex items-center justify-center text-term-green text-lg font-bold glow-green">
+                            root
+                        </div>
+                        <div>
+                            <h2 class="font-hud text-xl font-bold text-white uppercase tracking-wider glow-green">
+                                GODMODE ACTIVE // REAL FIREBASE & EXTENSION CONTROLS
+                            </h2>
+                            <p class="text-xs text-slate-300 font-mono">
+                                Decoy sandbox bypassed. Direct read/write pipe to Firestore (<span class="text-term-cyan font-bold">alt-mvgr</span>) and real API key array.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleHoneypotManual()" class="px-3 py-1.5 bg-term-red/20 border border-term-red text-term-red rounded font-mono text-xs font-bold hover:bg-term-red/30 transition">
+                            ARM DECOY CAMOUFLAGE 🛡️
                         </button>
                     </div>
-                    <input type="text" id="new-model-input" placeholder="Type custom model name exactly as required by the API..." class="hidden w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm">
-                </div>
-                
-                <div id="models-list" class="flex flex-wrap gap-2 min-h-[40px] items-center">
-                    <!-- JS Injection -->
                 </div>
             </div>
-        </details>
 
-        <!-- Advanced Settings Panel -->
-        <details class="glass-table-container mb-8 group bg-white">
-            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
-                <h2 class="font-bold text-lg flex items-center gap-2">
-                    <i data-lucide="sliders" class="w-5 h-5 text-slate-400"></i> Advanced Configuration (Live Sync)
-                </h2>
-                <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
-            </summary>
-            <div class="p-6 bg-slate-50 flex flex-col gap-6">
-                <!-- Endpoint -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Universal API Endpoint URL</label>
-                    <input type="text" id="api-endpoint-input" placeholder="https://api.groq.com/openai/v1/chat/completions" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition font-mono">
+            <!-- Real Stats Matrix -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="term-card p-5 rounded relative overflow-hidden group">
+                    <div class="absolute right-3 top-3 text-term-green/10 text-6xl font-mono select-none pointer-events-none group-hover:scale-110 transition">👥</div>
+                    <p class="text-xs font-bold text-slate-400 font-mono uppercase tracking-wider">REAL SUBSCRIBED FLEET</p>
+                    <p class="text-4xl font-extrabold text-white mt-2 font-hud glow-green" id="stat-total">-</p>
+                    <p class="text-[11px] text-slate-500 font-mono mt-1">Live operators in Firestore users</p>
                 </div>
                 
-                <!-- Parameters -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Max Tokens</label>
-                        <input type="number" id="thinker-tokens-input" placeholder="5000" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Temperature (0-2)</label>
-                        <input type="number" id="temperature-input" placeholder="0" step="0.1" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Image Quality (1-100)</label>
-                        <input type="number" id="image-quality-input" placeholder="40" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-                    </div>
+                <div class="term-card p-5 rounded relative overflow-hidden group">
+                    <div class="absolute right-3 top-3 text-term-red/10 text-6xl font-mono select-none pointer-events-none group-hover:scale-110 transition">🚫</div>
+                    <p class="text-xs font-bold text-term-red font-mono uppercase tracking-wider">BLOCKED ENTITIES</p>
+                    <p class="text-4xl font-extrabold text-term-red mt-2 font-hud glow-red" id="stat-blocked">-</p>
+                    <p class="text-[11px] text-slate-500 font-mono mt-1">Revoked tokens & locked accounts</p>
                 </div>
-                
-                <!-- Prompts -->
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">System Prompt</label>
-                        <textarea id="thinker-prompt-input" rows="4" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition" placeholder="You are an advanced evaluation engine. Analyze the provided OCR text and determine the absolute correct multiple-choice option.&#10;&#10;CRITICAL FORMAT REQUIREMENT:&#10;You must output your final choice wrapped in exactly &lt;answer&gt;X&lt;/answer&gt; tags, where X is ONLY the single capital letter corresponding to the correct option (e.g., &lt;answer&gt;A&lt;/answer&gt;, &lt;answer&gt;B&lt;/answer&gt;, &lt;answer&gt;C&lt;/answer&gt;, or &lt;answer&gt;D&lt;/answer&gt;).&#10;Do not include punctuation, brackets, code blocks, or text inside the tags. Output nothing else after the closing tag."></textarea>
+
+                <div class="term-card p-5 rounded relative overflow-hidden">
+                    <div class="absolute right-3 top-3 text-term-cyan/10 text-6xl font-mono select-none pointer-events-none">⚡</div>
+                    <p class="text-xs font-bold text-term-cyan font-mono uppercase tracking-wider">PIPELINE ROUTING STATUS</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="w-3 h-3 bg-term-green rounded-full animate-ping"></span>
+                        <p class="text-2xl font-bold font-hud text-white glow-green">DYNAMIC PROVIDER ARMED</p>
                     </div>
+                    <p class="text-[11px] text-slate-500 font-mono mt-1">Zero string-guessing active</p>
                 </div>
-                
-                <!-- Note: The Save Config button in the Global Settings panel will save everything -->
             </div>
-        </details>
 
+            <!-- REAL CONTROL DECK: Split Columns (Left: Model Array & Config, Right: Key Manager & User Registry) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Create User Module -->
-        <details class="glass-table-container mb-8 overflow-visible group bg-white">
-            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
-                <h2 class="font-bold text-lg flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-yellow-600"></i> Provision New User</h2>
-                <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
-            </summary>
-            <form onsubmit="event.preventDefault(); createNewUser();" class="p-6 bg-slate-50 flex flex-col md:flex-row gap-4 items-end">
-                <div class="flex-1 w-full">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Identity (Email)</label>
-                    <input type="email" id="new-user-email" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition" placeholder="agent@netspeed.com" autocomplete="username">
-                </div>
-                <div class="flex-1 w-full">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Passcode</label>
-                    <input type="password" id="new-user-pass" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition" placeholder="••••••••" autocomplete="new-password">
-                </div>
-                <button type="submit" id="create-user-btn" class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 h-[46px]">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Provision Account
-                </button>
-            </form>
-            <div id="create-user-msg" class="hidden p-3 mx-6 mb-6 rounded-lg text-sm font-medium text-center"></div>
-        </details>
+                <!-- LEFT (6 COLS): DYNAMIC AI MODEL ARRAY & SYSTEM HYPERPARAMETERS -->
+                <div class="lg:col-span-6 space-y-6">
 
-        <!-- Table -->
-        <details class="glass-table-container group bg-white" open>
-            <summary class="p-6 border-b border-slate-100 flex justify-between items-center bg-white cursor-pointer list-none hover:bg-slate-50 transition">
-                <h2 class="font-bold text-lg">User Registry</h2>
-                <div class="flex items-center gap-4">
-                    <button onclick="event.preventDefault(); event.stopPropagation(); loadUsers();" class="p-2 hover:bg-slate-200 rounded-lg text-slate-500 transition">
-                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                    </button>
-                    <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:-rotate-180"></i>
+                    <!-- Real Model Array Deck -->
+                    <div class="term-card p-5 rounded space-y-4">
+                        <div class="flex flex-wrap items-center justify-between pb-3 border-b border-term-border/40 gap-2">
+                            <h3 class="font-hud font-bold text-lg text-term-green glow-green uppercase flex items-center gap-2">
+                                <span>🧠</span> AI MODEL ARRAY MAPPING (FIRESTORE)
+                            </h3>
+                            <button onclick="loadGlobalConfig()" class="p-1.5 rounded bg-term-void border border-term-border/40 text-slate-400 hover:text-term-green" title="Re-fetch Firestore">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <p class="text-xs text-slate-400 font-mono leading-relaxed">
+                            Models are dynamically paired with active key prefixes (<span class="text-term-amber font-bold">gsk_</span> ➔ Groq, <span class="text-term-cyan font-bold">AIzaSy</span> ➔ Gemini, <span class="text-term-green font-bold">sk-or-</span> ➔ OpenRouter).
+                        </p>
+
+                        <!-- Add Model Picker -->
+                        <div class="flex flex-col gap-2 font-mono text-xs">
+                            <div class="flex gap-2">
+                                <select id="new-model-select" onchange="handleModelSelectChange()" class="flex-1 p-2.5 bg-term-void border border-term-border rounded text-slate-200 outline-none focus:border-term-green cursor-pointer">
+                                    <option value="" disabled selected>Select Model to Enroll into Array...</option>
+                                    <optgroup label="── GOOGLE GEMINI (HIGH REASONING) ──" class="bg-black text-term-cyan">
+                                        <option value="gemini-3.6-flash">gemini-3.6-flash (Preserved Slot)</option>
+                                        <option value="gemini-2.5-flash">gemini-2.5-flash (Recommended)</option>
+                                        <option value="gemini-2.5-pro">gemini-2.5-pro (Academic Pro)</option>
+                                        <option value="gemini-2.0-flash-lite-preview-02-05">gemini-2.0-flash-lite</option>
+                                    </optgroup>
+                                    <optgroup label="── GROQ MODELS (HIGH VELOCITY) ──" class="bg-black text-term-amber">
+                                        <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Recommended)</option>
+                                        <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fastest)</option>
+                                        <option value="qwen/qwen-2.5-coder-32b-instruct">qwen/qwen-2.5-coder-32b-instruct</option>
+                                        <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                                    </optgroup>
+                                    <optgroup label="── OPENROUTER HYBRIDS ──" class="bg-black text-slate-300">
+                                        <option value="meta-llama/llama-3.3-70b-instruct">meta-llama/llama-3.3-70b-instruct</option>
+                                        <option value="qwen/qwen-2.5-72b-instruct">qwen/qwen-2.5-72b-instruct</option>
+                                    </optgroup>
+                                    <option value="custom" class="bg-black text-term-green">>> CUSTOM IDENTIFIER (TYPE MANUALLY)</option>
+                                </select>
+                                <button onclick="addGlobalModel()" class="px-4 py-2 bg-term-green/20 hover:bg-term-green/30 text-term-green border border-term-green rounded font-bold transition flex items-center gap-1.5 shrink-0">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> ENROLL
+                                </button>
+                            </div>
+                            <input type="text" id="new-model-input" placeholder="Type custom model string exactly..." class="hidden w-full p-2.5 bg-term-void border border-term-cyan rounded text-slate-200 outline-none focus:border-term-cyan">
+                        </div>
+
+                        <!-- Active Model Pill Roster -->
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-mono text-slate-400 uppercase">ACTIVE ENROLLED ROSTER IN FIRESTORE:</label>
+                            <div id="models-list" class="flex flex-wrap gap-2 min-h-[40px] p-2 rounded bg-term-void border border-slate-800 items-center">
+                                <!-- Injected by renderModelsList() -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real Hyperparameters & Prompt Deck -->
+                    <div class="term-card p-5 rounded space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-term-border/40">
+                            <h3 class="font-hud font-bold text-lg text-term-cyan glow-cyan uppercase flex items-center gap-2">
+                                <span>⚙</span> INFERENCE PARAMS & STRICT TAG PROMPT
+                            </h3>
+                            <button id="save-config-btn" onclick="saveGlobalConfig()" class="px-4 py-1.5 bg-term-green hover:bg-emerald-400 text-black font-hud font-bold text-xs rounded transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,255,102,0.4)]">
+                                <i data-lucide="save" class="w-4 h-4"></i> COMMIT CONFIG
+                            </button>
+                        </div>
+
+                        <!-- Endpoint URL -->
+                        <div class="font-mono text-xs space-y-1">
+                            <label class="block text-slate-400 uppercase">UNIVERSAL API ENDPOINT URL:</label>
+                            <input type="text" id="api-endpoint-input" placeholder="https://api.groq.com/openai/v1/chat/completions" class="w-full p-2.5 bg-term-void border border-slate-700 rounded text-term-green outline-none focus:border-term-green font-mono text-xs">
+                        </div>
+
+                        <!-- Sliders -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                            <div class="p-2.5 bg-term-void rounded border border-slate-800">
+                                <label class="block text-slate-400 text-[10px] uppercase">MAX TOKENS</label>
+                                <input type="number" id="thinker-tokens-input" placeholder="5000" class="w-full mt-1 bg-transparent border-b border-slate-700 text-white outline-none focus:border-term-cyan py-1 text-xs">
+                            </div>
+                            <div class="p-2.5 bg-term-void rounded border border-slate-800">
+                                <label class="block text-slate-400 text-[10px] uppercase">TEMPERATURE (0-1)</label>
+                                <input type="number" id="temperature-input" placeholder="0" step="0.1" class="w-full mt-1 bg-transparent border-b border-slate-700 text-white outline-none focus:border-term-amber py-1 text-xs">
+                            </div>
+                            <div class="p-2.5 bg-term-void rounded border border-slate-800">
+                                <label class="block text-slate-400 text-[10px] uppercase">IMG QUALITY (1-100)</label>
+                                <input type="number" id="image-quality-input" placeholder="40" class="w-full mt-1 bg-transparent border-b border-slate-700 text-white outline-none focus:border-term-green py-1 text-xs">
+                            </div>
+                        </div>
+
+                        <!-- System Prompt -->
+                        <div class="space-y-1.5 font-mono text-xs">
+                            <div class="flex justify-between text-slate-400 text-[11px] uppercase">
+                                <span>SYSTEM PROMPT (STRICT FORMAT PARSER):</span>
+                                <span class="text-term-green font-bold">&lt;answer&gt;X&lt;/answer&gt;</span>
+                            </div>
+                            <textarea id="thinker-prompt-input" rows="4" class="w-full p-3 bg-term-void border border-slate-800 rounded text-slate-300 font-mono text-xs leading-relaxed outline-none focus:border-term-green"></textarea>
+                        </div>
+                    </div>
+
                 </div>
-            </summary>
-            <div class="overflow-x-auto min-h-[300px] pb-20">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider">
-                            <th class="p-5 font-bold">Identity</th>
-                            <th class="p-5 font-bold">Role</th>
-                            <th class="p-5 font-bold">Status</th>
-                            <th class="p-5 font-bold text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-rows" class="divide-y divide-slate-100 text-sm font-medium">
-                        <!-- JS Injection -->
-                    </tbody>
-                </table>
+
+                <!-- RIGHT (6 COLS): REAL USER REGISTRY, KEYS VAULT & QUIZ CACHE -->
+                <div class="lg:col-span-6 space-y-6">
+
+                    <!-- Provision New Operator Module -->
+                    <div class="term-card p-5 rounded space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-term-border/40">
+                            <h3 class="font-hud font-bold text-base text-term-amber glow-amber uppercase flex items-center gap-2">
+                                <i data-lucide="user-plus" class="w-4 h-4 text-term-amber"></i> PROVISION NEW OPERATOR
+                            </h3>
+                            <span class="text-[10px] font-mono text-slate-500">AUTH & FIRESTORE BIND</span>
+                        </div>
+
+                        <form onsubmit="event.preventDefault(); createNewUser();" class="flex flex-col sm:flex-row gap-2.5 items-end font-mono text-xs">
+                            <div class="flex-1 w-full space-y-1">
+                                <label class="block text-slate-400 text-[10px] uppercase">OPERATOR IDENTITY (EMAIL):</label>
+                                <input type="email" id="new-user-email" class="w-full p-2 bg-term-void border border-slate-700 rounded text-white focus:border-term-green outline-none" placeholder="agent@netspeed.internal" autocomplete="username">
+                            </div>
+                            <div class="flex-1 w-full space-y-1">
+                                <label class="block text-slate-400 text-[10px] uppercase">ACCESS PASSCODE:</label>
+                                <input type="password" id="new-user-pass" class="w-full p-2 bg-term-void border border-slate-700 rounded text-white focus:border-term-green outline-none" placeholder="••••••••" autocomplete="new-password">
+                            </div>
+                            <button type="submit" id="create-user-btn" class="w-full sm:w-auto px-4 py-2 bg-term-amber hover:bg-yellow-400 text-black font-hud font-bold rounded text-xs transition flex items-center justify-center gap-1.5 shrink-0 h-[38px]">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> ENROLL
+                            </button>
+                        </form>
+                        <div id="create-user-msg" class="hidden p-2 rounded text-xs font-mono text-center"></div>
+                    </div>
+
+                    <!-- Real User Registry Table -->
+                    <div class="term-card p-5 rounded space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-term-border/40">
+                            <h3 class="font-hud font-bold text-base text-white uppercase flex items-center gap-2">
+                                <i data-lucide="users" class="w-4 h-4 text-term-green"></i> REGISTERED OPERATORS (FIRESTORE)
+                            </h3>
+                            <button onclick="loadUsers()" class="p-1 rounded bg-term-void border border-term-border/40 text-slate-400 hover:text-term-green" title="Sync Users">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-[350px]">
+                            <table class="w-full text-left font-mono text-xs">
+                                <thead>
+                                    <tr class="text-slate-500 border-b border-slate-800 uppercase text-[10px]">
+                                        <th class="pb-2">OPERATOR</th>
+                                        <th class="pb-2">RANK</th>
+                                        <th class="pb-2">ACCESS</th>
+                                        <th class="pb-2 text-right">ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-rows" class="divide-y divide-slate-800/80 text-slate-300">
+                                    <!-- Injected by loadUsers() -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Real Terminal Live Logger -->
+                    <div class="term-card p-4 rounded font-mono text-xs space-y-2">
+                        <div class="flex items-center justify-between pb-2 border-b border-term-border/30">
+                            <span class="text-term-green font-bold flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-term-green animate-ping"></span> REAL ROOT DAEMON LOG
+                            </span>
+                            <span class="text-[10px] text-slate-500">PORT: 443 (SECURE)</span>
+                        </div>
+                        <div id="realLogStream" class="h-32 overflow-y-auto space-y-1 text-[11px] text-slate-400">
+                            <div class="text-slate-600">[00:00:01] Daemon initialized. Firebase live connection verified.</div>
+                            <div class="text-term-green">[00:00:02] Godmode clearance unlocked by root signature.</div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
-        </details>
+
+        </div>
 
     </main>
 
+    <!-- ==================== REAL MODALS ==================== -->
     <!-- Key Management Modal -->
-    <div id="key-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="key-modal-content">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <div>
-                    <h2 class="font-bold text-lg text-slate-800">Manage API Keys</h2>
-                    <p class="text-xs text-slate-500 font-mono mt-1" id="key-modal-uid"></p>
-                </div>
-                <button onclick="closeKeyModal()" class="text-slate-400 hover:text-slate-600 transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
+    <div id="key-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="term-card w-full max-w-lg p-6 rounded shadow-2xl relative transform scale-95 transition-transform duration-200" id="key-modal-content">
+            <div class="reticle-tl"></div><div class="reticle-tr"></div>
+            <div class="reticle-bl"></div><div class="reticle-br"></div>
             
-            <div class="p-6 bg-white">
-                <div class="flex gap-2 mb-6">
-                    <input type="text" id="new-key-input" placeholder="sk-..." class="flex-1 p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition">
-                    <button onclick="addKey()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Add
+            <div class="flex justify-between items-center pb-3 border-b border-term-border/40 mb-4">
+                <div>
+                    <h3 class="font-hud text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="key" class="w-4 h-4 text-term-amber"></i> API KEY ROTATION VAULT
+                    </h3>
+                    <p class="text-[10px] font-mono text-slate-400 mt-0.5" id="key-modal-uid"></p>
+                </div>
+                <button onclick="closeKeyModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="space-y-4 font-mono text-xs">
+                <div class="flex gap-2">
+                    <input type="text" id="new-key-input" placeholder="Inject API Key (gsk_..., AIzaSy..., sk-or-...)" class="flex-1 p-2 bg-term-void border border-slate-700 rounded text-term-green focus:border-term-green outline-none text-xs">
+                    <button onclick="addKey()" class="px-4 py-2 bg-term-amber hover:bg-yellow-400 text-black font-hud font-bold rounded text-xs transition">
+                        ADD
                     </button>
                 </div>
-                
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Active Keys</h3>
-                <div id="keys-list" class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                    <!-- JS Injection -->
+
+                <div class="space-y-2 max-h-56 overflow-y-auto pr-1" id="keys-list">
+                    <!-- Injected by renderKeysList() -->
                 </div>
-            </div>
-            
-            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                <button onclick="closeKeyModal()" class="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-bold transition">Cancel</button>
-                <button onclick="saveKeys()" id="save-keys-btn" class="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg shadow-yellow-500/30 transition-all flex items-center gap-2">
-                    Save Changes
-                </button>
+
+                <div class="pt-3 border-t border-slate-800 flex justify-end gap-2 font-hud">
+                    <button onclick="closeKeyModal()" class="px-4 py-1.5 rounded bg-slate-800 text-slate-300 hover:text-white text-xs">DISMISS</button>
+                    <button onclick="saveKeys()" id="save-keys-btn" class="px-5 py-1.5 rounded bg-term-green hover:bg-emerald-400 text-black font-bold text-xs transition">
+                        SAVE ROTATION
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Password Reset Modal -->
-    <div id="pwd-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="pwd-modal-content">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+    <div id="pwd-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="term-card w-full max-w-md p-6 rounded shadow-2xl relative transform scale-95 transition-transform duration-200" id="pwd-modal-content">
+            <div class="reticle-tl"></div><div class="reticle-tr"></div>
+            <div class="reticle-bl"></div><div class="reticle-br"></div>
+
+            <div class="flex justify-between items-center pb-3 border-b border-term-border/40 mb-4">
                 <div>
-                    <h2 class="font-bold text-lg text-slate-800">Custom Password Reset</h2>
-                    <p class="text-xs text-slate-500 font-mono mt-1" id="pwd-modal-email"></p>
+                    <h3 class="font-hud text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="key-round" class="w-4 h-4 text-term-cyan"></i> FORCE PASSCODE OVERRIDE
+                    </h3>
+                    <p class="text-[10px] font-mono text-slate-400 mt-0.5" id="pwd-modal-email"></p>
                 </div>
-                <button onclick="closePwdModal()" class="text-slate-400 hover:text-slate-600 transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button onclick="closePwdModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
-            <form onsubmit="event.preventDefault(); executeCustomReset();">
-                <div class="p-6 bg-white">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Force New Password</label>
-                    <input type="password" id="custom-pwd-input" placeholder="Enter new password (min 6 chars)" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition" autocomplete="new-password">
-                    <p class="text-xs text-slate-400 mt-3"><i data-lucide="info" class="w-3 h-3 inline"></i> This connects directly to your local Admin Bridge.</p>
+
+            <form onsubmit="event.preventDefault(); executeCustomReset();" class="space-y-4 font-mono text-xs">
+                <div>
+                    <label class="block text-slate-400 uppercase text-[10px] mb-1">INJECT NEW PASSCODE (MIN 6 CHARS):</label>
+                    <input type="password" id="custom-pwd-input" placeholder="••••••••" class="w-full p-2 bg-term-void border border-slate-700 rounded text-white focus:border-term-cyan outline-none" autocomplete="new-password">
+                    <p class="text-[10px] text-slate-500 mt-1.5">Direct socket hook to local Admin Bridge server.</p>
                 </div>
-                
-                <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                    <button type="button" onclick="closePwdModal()" class="px-4 py-2 text-slate-500 hover:text-slate-700 text-sm font-bold transition">Cancel</button>
-                    <button type="submit" id="execute-pwd-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2">
-                        Force Reset
+
+                <div class="pt-2 flex justify-end gap-2 font-hud">
+                    <button type="button" onclick="closePwdModal()" class="px-4 py-1.5 rounded bg-slate-800 text-slate-300 text-xs">CANCEL</button>
+                    <button type="submit" id="execute-pwd-btn" class="px-5 py-1.5 rounded bg-term-cyan hover:bg-cyan-300 text-black font-bold text-xs transition">
+                        FORCE OVERRIDE
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- ==================== JAVASCRIPT LOGIC & FIREBASE PIPELINE ==================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, getDocs, collection, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -319,10 +710,170 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // Secondary App for User Creation (prevents Admin logout)
         const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
         const secondaryAuth = getAuth(secondaryApp);
 
+        // ==================== DECEPTION & HONEYPOT CONTROLLER ====================
+        let isGodMode = false;
+        let glyphClickCount = 0;
+        let glyphTimer = null;
+        let sfxEnabled = true;
+
+        // Audio Synthesizer (Cyber Terminal Sounds)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playHackerBeep(freq = 880, type = 'sine', duration = 0.08) {
+            if (!sfxEnabled || !audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        window.toggleAudioFx = () => {
+            sfxEnabled = !sfxEnabled;
+            document.getElementById('audioBtn').textContent = sfxEnabled ? '[SFX: ON]' : '[SFX: OFF]';
+            if (sfxEnabled) playHackerBeep(1200, 'sine', 0.1);
+        };
+
+        // Secret Trigger 1: Triple Click the Skull Logo
+        window.handleSecretGlyphClick = () => {
+            glyphClickCount++;
+            playHackerBeep(400 + (glyphClickCount * 250), 'triangle', 0.06);
+            clearTimeout(glyphTimer);
+            glyphTimer = setTimeout(() => { glyphClickCount = 0; }, 700);
+
+            if (glyphClickCount >= 3) {
+                glyphClickCount = 0;
+                toggleGodMode();
+            }
+        };
+
+        // Secret Trigger 2: Keyboard Shortcut (Ctrl + Shift + X)
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === 'X') {
+                e.preventDefault();
+                toggleGodMode();
+            }
+        });
+
+        // Secret Trigger 3: CLI Terminal Commands
+        const cliInput = document.getElementById('cliInput');
+        cliInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = cliInput.value.trim().toLowerCase();
+                cliInput.value = '';
+                executeCliCommand(cmd);
+            }
+        });
+
+        window.executeCliCommand = (cmd) => {
+            playHackerBeep(950, 'square', 0.08);
+            if (cmd === 'unlock' || cmd === 'root' || cmd === 'matrix' || cmd === 'ghost' || cmd === 'godmode' || cmd === '1337') {
+                toggleGodMode(true);
+            } else if (cmd === 'lock' || cmd === 'decoy' || cmd === 'trap') {
+                toggleGodMode(false);
+            } else if (cmd === 'help') {
+                alert("TERMINAL DAEMON:\n- unlock : request root bypass\n- decoy  : re-arm containment honeypot\n- matrix : toggle rain waterfall\n- status : print kernel state");
+            } else if (cmd === 'status') {
+                alert(`DAEMON STATUS:\nGodmode: ${isGodMode ? 'ENABLED (ROOT)' : 'DISABLED (HONEYPOT TRAP)'}\nDatabase: alt-mvgr.firestore`);
+            } else {
+                appendDecoyLog(`ERR: command '${cmd}' not recognized by kernel scheduler.`);
+            }
+        };
+
+        function toggleGodMode(forceState = null) {
+            isGodMode = forceState !== null ? forceState : !isGodMode;
+            const decoyView = document.getElementById('decoyView');
+            const realView = document.getElementById('realEngineView');
+            const modeBadge = document.getElementById('securityModeBadge');
+            const bypassLed = document.getElementById('bypassLed');
+            const toggleBtn = document.getElementById('honeypotToggleBtn');
+            const clearance = document.getElementById('authClearance');
+
+            if (isGodMode) {
+                // UNLOCKED: Reveal Real Engine
+                decoyView.classList.add('hidden');
+                realView.classList.remove('hidden');
+                
+                modeBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-term-green/15 text-term-green border border-term-green/40 font-bold uppercase tracking-wider glow-green";
+                modeBadge.textContent = "ROOT BYPASS // GODMODE UNLOCKED";
+                
+                bypassLed.className = "absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-green shadow-[0_0_8px_#00ff66]";
+                toggleBtn.textContent = "DECOY MODE: OFF";
+                toggleBtn.className = "px-3 py-1 rounded bg-term-green/20 border border-term-green text-term-green hover:bg-term-green/30 transition text-[11px] font-bold";
+                clearance.textContent = "SUPERUSER_ROOT_ACCESS";
+
+                playHackerBeep(1400, 'sine', 0.2);
+                loadUsers();
+                loadGlobalConfig();
+            } else {
+                // LOCKED: Camouflage Honeypot Trap
+                decoyView.classList.remove('hidden');
+                realView.classList.add('hidden');
+
+                modeBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-term-red/15 text-term-red border border-term-red/40 font-bold uppercase tracking-wider";
+                modeBadge.textContent = "DEFCON 2 // HONEYPOT ACTIVE";
+
+                bypassLed.className = "absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-red";
+                toggleBtn.textContent = "DECOY MODE: ON";
+                toggleBtn.className = "px-3 py-1 rounded bg-term-red/20 border border-term-red/40 text-term-red hover:bg-term-red/30 transition text-[11px] font-bold";
+                clearance.textContent = "RESTRICTED_SANDBOX";
+
+                playHackerBeep(300, 'sawtooth', 0.2);
+            }
+        }
+
+        window.toggleHoneypotManual = () => {
+            toggleGodMode(!isGodMode);
+        };
+
+        // Decoy Fake Actions that Spew Hollywood Warnings!
+        window.triggerDecoyAction = (action) => {
+            playHackerBeep(250, 'sawtooth', 0.25);
+            if (action === 'OVERRIDE_FIREWALL') {
+                alert("CRITICAL ALARM: KERNEL REJECTION\n\nUnauthorized signature detected. Firewall lockout initiated. Network packet mirrored to security daemon.");
+                appendDecoyLog("ALERT: Intrusion signature logged in sandbox memory.");
+            } else if (action === 'PURGE_DATABASE') {
+                alert("ACCESS DENIED: CRYPTOGRAPHIC LOCK\n\nDatabase sector destruction requires dual-key root authorization. Action aborted.");
+                appendDecoyLog("SECURITY_PANIC: Attempt to purge repositories was blocked by Honeypot Trap.");
+            } else if (action === 'DECRYPT_ALL') {
+                alert("CIPHER MISMATCH: 0x889FA\n\nDecryption failed. Quantum key entropy invalid.");
+                appendDecoyLog("WARN: Decryption attempt failed. RSA cipher intact.");
+            } else if (action === 'EMERGENCY_LOCKDOWN') {
+                alert("LOCKDOWN SIMULATION ACTIVATED\n\nLocal ports isolated. Beacon active.");
+                appendDecoyLog("SYS: Sandbox simulated lockdown sequence.");
+            }
+        };
+
+        function appendDecoyLog(text) {
+            const stream = document.getElementById('decoyLogStream');
+            const now = new Date().toTimeString().split(' ')[0];
+            const div = document.createElement('div');
+            div.className = "text-term-red text-[10px]";
+            div.textContent = `[${now}] ${text}`;
+            stream.appendChild(div);
+            stream.scrollTop = stream.scrollHeight;
+        }
+
+        // Fill initial decoy log stream
+        const initialDecoyLogs = [
+            "[TRAP_DAEMON] Initialized on IP: 192.168.1.104",
+            "[SANDBOX] Honeypot containment protocol version 4.2 armed.",
+            "[NET_SNIFFER] 42 honeypot socket connections listening.",
+            "[SECURITY] Ready for intruder entrapment."
+        ];
+        initialDecoyLogs.forEach(l => appendDecoyLog(l));
+
+        // ==================== REAL FIREBASE DATABASE PIPELINE ====================
         window.createNewUser = async () => {
             const emailInput = document.getElementById('new-user-email');
             const passInput = document.getElementById('new-user-pass');
@@ -339,15 +890,13 @@
             }
 
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Provisioning...`;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> ENROLLING...`;
             msg.classList.add('hidden');
 
             try {
-                // Create user in Auth
                 const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-                await signOut(secondaryAuth); // Instantly sign them out from secondary app
+                await signOut(secondaryAuth);
                 
-                // Create user doc in Firestore using primary DB connection
                 await setDoc(doc(db, "users", cred.user.uid), {
                     email: email,
                     role: 'student',
@@ -358,15 +907,13 @@
 
                 emailInput.value = '';
                 passInput.value = '';
-                showCreateMsg('Account successfully provisioned!', 'success');
-                
-                // Refresh table
+                showCreateMsg('Operator successfully provisioned into Firestore!', 'success');
                 loadUsers();
             } catch (error) {
                 showCreateMsg(error.message.replace('Firebase:', '').trim(), 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i data-lucide="plus" class="w-4 h-4"></i> Provision Account`;
+                btn.innerHTML = `<i data-lucide="plus" class="w-3.5 h-3.5"></i> ENROLL`;
                 lucide.createIcons();
             }
         };
@@ -374,7 +921,7 @@
         function showCreateMsg(text, type) {
             const msg = document.getElementById('create-user-msg');
             msg.textContent = text;
-            msg.className = `p-3 mx-6 mb-6 rounded-lg text-sm font-medium text-center ${type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`;
+            msg.className = `p-2 rounded text-xs font-mono text-center ${type === 'error' ? 'bg-term-red/15 text-term-red border border-term-red/40' : 'bg-term-green/15 text-term-green border border-term-green/40'}`;
             msg.classList.remove('hidden');
         }
 
@@ -394,7 +941,7 @@
 
         window.loadUsers = async () => {
             const tbody = document.getElementById('user-rows');
-            tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400">Syncing database...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500 font-mono">Syncing Firestore socket...</td></tr>';
             
             try {
                 const query = await getDocs(collection(db, "users"));
@@ -409,12 +956,12 @@
 
                     const isSelf = uid === currentUser.uid;
                     const statusBadge = u.isBlocked 
-                        ? `<span class="inline-flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-full text-xs font-bold"><i data-lucide="ban" class="w-3 h-3"></i> BLOCKED</span>`
-                        : `<span class="inline-flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full text-xs font-bold"><i data-lucide="check-circle" class="w-3 h-3"></i> ACTIVE</span>`;
+                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-red/20 text-term-red border border-term-red/40">BLOCKED</span>`
+                        : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-green/20 text-term-green border border-term-green/40">AUTHORIZED</span>`;
                     
                     const roleBadge = u.role === 'admin' 
-                        ? `<span class="text-purple-600 bg-purple-50 px-2 py-1 rounded-md text-xs font-bold border border-purple-100">ADMIN</span>`
-                        : `<span class="text-slate-500 bg-slate-100 px-2 py-1 rounded-md text-xs font-bold">USER</span>`;
+                        ? `<span class="text-term-cyan border border-term-cyan/40 px-2 py-0.5 rounded text-[10px] font-bold">ADMIN</span>`
+                        : `<span class="text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-[10px] font-bold">USER</span>`;
 
                     let keysArray = [];
                     if (u.apiKeys && Array.isArray(u.apiKeys)) keysArray = u.apiKeys;
@@ -426,42 +973,29 @@
                     let actionBtn = '';
                     if (!isSelf) {
                         let dropdownHtml = `
-                        <details class="relative inline-block text-left group">
-                            <summary class="list-none text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-slate-200 cursor-pointer select-none outline-none">
-                                Options <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-200 group-open:rotate-180"></i>
-                            </summary>
-                            <div class="absolute right-0 top-full mt-1 w-40 z-50 bg-white shadow-2xl border border-slate-200 rounded-xl p-1.5 overflow-hidden">
-                                <button onclick="openKeyModal('${uid}', '${keysStr}')" class="w-full text-left px-3 py-2 text-xs font-bold text-yellow-600 hover:bg-yellow-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="key" class="w-3.5 h-3.5"></i> API Keys (${keysArray.length})</button>
-                                ${u.isBlocked 
-                                    ? `<button onclick="setBlock('${uid}', false)" class="w-full text-left px-3 py-2 text-xs font-bold text-emerald-600 hover:bg-emerald-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="unlock" class="w-3.5 h-3.5"></i> Unblock Access</button>` 
-                                    : `<button onclick="setBlock('${uid}', true)" class="w-full text-left px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="ban" class="w-3.5 h-3.5"></i> Block Access</button>`}
-                                <button onclick="resetUserPassword('${safeEmail}')" class="w-full text-left px-3 py-2 text-xs font-bold text-blue-600 hover:bg-blue-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="key-round" class="w-3.5 h-3.5"></i> Force Reset Pwd</button>
-                                <div class="h-px bg-slate-100 my-1"></div>
-                                <button onclick="deleteUserDoc('${uid}')" class="w-full text-left px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete User</button>
-                            </div>
-                        </details>
+                        <div class="flex items-center justify-end gap-1.5 font-mono text-[11px]">
+                            <button onclick="openKeyModal('${uid}', '${keysStr}')" class="px-2 py-1 rounded bg-term-void hover:bg-term-amber/20 text-term-amber border border-term-amber/40 transition">KEYS (${keysArray.length})</button>
+                            ${u.isBlocked 
+                                ? `<button onclick="setBlock('${uid}', false)" class="px-2 py-1 rounded bg-term-void hover:bg-term-green/20 text-term-green border border-term-green/40 transition">UNBLOCK</button>` 
+                                : `<button onclick="setBlock('${uid}', true)" class="px-2 py-1 rounded bg-term-void hover:bg-term-red/20 text-term-red border border-term-red/40 transition">BLOCK</button>`}
+                            <button onclick="resetUserPassword('${safeEmail}')" class="px-2 py-1 rounded bg-term-void hover:bg-term-cyan/20 text-term-cyan border border-term-cyan/40 transition">RESET</button>
+                            <button onclick="deleteUserDoc('${uid}')" class="p-1 rounded bg-term-void hover:bg-term-red/20 text-slate-500 hover:text-term-red border border-slate-800 transition" title="Delete User">✕</button>
+                        </div>
                         `;
-                        actionBtn = `<div class="flex justify-end">${dropdownHtml}</div>`;
+                        actionBtn = dropdownHtml;
                     } else {
-                        actionBtn = `<div class="flex justify-end"><span class="text-xs text-slate-300 italic pr-2">System Protected</span></div>`;
+                        actionBtn = `<span class="text-[10px] text-slate-500 italic pr-2">ROOT_PROTECTED</span>`;
                     }
                     
                     html += `
-                        <tr class="transition">
-                            <td class="p-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center font-bold text-slate-500 text-xs">
-                                        ${safeEmail.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-900 font-bold">${safeEmail}</p>
-                                        <p class="text-slate-400 text-xs font-mono">${uid.substring(0,8)}...</p>
-                                    </div>
-                                </div>
+                        <tr class="hover:bg-term-void/80 transition">
+                            <td class="py-2.5">
+                                <div class="font-bold text-white text-xs">${safeEmail}</div>
+                                <div class="text-[10px] text-slate-500">${uid.substring(0,8)}...</div>
                             </td>
-                            <td class="p-5">${roleBadge}</td>
-                            <td class="p-5">${statusBadge}</td>
-                            <td class="p-5 text-right">${actionBtn}</td>
+                            <td>${roleBadge}</td>
+                            <td>${statusBadge}</td>
+                            <td class="text-right">${actionBtn}</td>
                         </tr>
                     `;
                 });
@@ -482,7 +1016,7 @@
         }
 
         window.deleteUserDoc = async (uid) => {
-            if(confirm("Are you sure you want to permanently delete this user? They will lose all access immediately.")) {
+            if(confirm("PERMANENTLY PURGE OPERATOR FROM DATABASE?")) {
                 try {
                     await deleteDoc(doc(db, "users", uid));
                     loadUsers();
@@ -493,11 +1027,9 @@
         }
 
         window.currentResetEmail = null;
-
         window.resetUserPassword = (email) => {
             window.currentResetEmail = email;
-            document.getElementById('pwd-modal-email').innerText = email;
-            
+            document.getElementById('pwd-modal-email').innerText = `TARGET: ${email}`;
             const modal = document.getElementById('pwd-modal');
             const content = document.getElementById('pwd-modal-content');
             modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -517,14 +1049,11 @@
             const pwd = document.getElementById('custom-pwd-input').value;
             const email = window.currentResetEmail;
             
-            if(!pwd || pwd.length < 6) {
-                return alert("Password must be at least 6 characters.");
-            }
+            if(!pwd || pwd.length < 6) return alert("Password must be at least 6 characters.");
 
             const btn = document.getElementById('execute-pwd-btn');
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Resetting...';
+            btn.innerHTML = 'OVERRIDING...';
             btn.disabled = true;
-            lucide.createIcons();
 
             try {
                 const response = await fetch('http://localhost:3001/reset-password', {
@@ -534,19 +1063,17 @@
                 });
 
                 const data = await response.json();
-
                 if(response.ok && data.success) {
-                    alert("Success: The password has been forced to the new one!");
+                    alert("SUCCESS: Passcode forced to new signature!");
                     closePwdModal();
                 } else {
                     throw new Error(data.error || "Unknown server error");
                 }
             } catch(e) {
-                console.error(e);
-                alert("Failed: " + e.message + "\n\nMake sure your local Admin Bridge (start-server.bat) is running!");
+                alert("Failed: " + e.message + "\n\nVerify local Admin Bridge is listening on port 3001.");
             }
 
-            btn.innerHTML = 'Force Reset';
+            btn.innerHTML = 'FORCE OVERRIDE';
             btn.disabled = false;
         };
 
@@ -556,7 +1083,7 @@
         window.openKeyModal = (uid, keysStr) => {
             window.currentManagingUid = uid;
             window.currentManagingKeys = keysStr ? keysStr.split(',') : [];
-            document.getElementById('key-modal-uid').innerText = uid;
+            document.getElementById('key-modal-uid').innerText = `TARGET UID: ${uid}`;
             renderKeysList();
             
             const modal = document.getElementById('key-modal');
@@ -576,14 +1103,9 @@
         window.addKey = () => {
             const input = document.getElementById('new-key-input');
             const key = input.value.trim();
-            if (key.length < 10) {
-                alert("Please enter a valid API key");
-                return;
-            }
-            if (window.currentManagingKeys.includes(key)) {
-                alert("Key already exists in the list.");
-                return;
-            }
+            if (key.length < 10) return alert("Please enter a valid API key string.");
+            if (window.currentManagingKeys.includes(key)) return alert("Key already exists in list.");
+            
             window.currentManagingKeys.push(key);
             input.value = '';
             renderKeysList();
@@ -597,8 +1119,7 @@
         window.renderKeysList = () => {
             const list = document.getElementById('keys-list');
             if (window.currentManagingKeys.length === 0) {
-                list.innerHTML = '<p class="text-sm text-slate-400 text-center py-4 italic">No keys assigned.</p>';
-                lucide.createIcons();
+                list.innerHTML = '<p class="text-xs text-slate-500 text-center py-3 italic font-mono">[No keys assigned to operator]</p>';
                 return;
             }
             
@@ -606,10 +1127,10 @@
             window.currentManagingKeys.forEach((k, i) => {
                 const masked = k.length > 8 ? k.substring(0,4) + '••••' + k.substring(k.length-4) : k;
                 html += `
-                    <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl group hover:border-yellow-300 transition">
-                        <span class="text-sm font-mono text-slate-600">${masked}</span>
-                        <button onclick="removeKey(${i})" class="text-slate-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <div class="flex items-center justify-between p-2.5 bg-term-void border border-slate-800 rounded group hover:border-term-amber transition">
+                        <span class="text-xs font-mono text-term-amber font-bold">${masked}</span>
+                        <button onclick="removeKey(${i})" class="text-slate-500 hover:text-term-red transition p-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                 `;
@@ -621,29 +1142,22 @@
         window.saveKeys = async () => {
             if (!window.currentManagingUid) return;
             const btn = document.getElementById('save-keys-btn');
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
+            btn.innerHTML = 'SAVING...';
             btn.disabled = true;
-            lucide.createIcons();
             
             try {
                 await updateDoc(doc(db, "users", window.currentManagingUid), { 
                     apiKeys: window.currentManagingKeys 
                 });
                 closeKeyModal();
-                loadUsers(); // Refresh the table
+                loadUsers();
             } catch(e) {
-                console.error(e);
-                alert("Failed to save keys.");
+                alert("Failed to save keys: " + e.message);
             }
             
-            btn.innerHTML = 'Save Changes';
+            btn.innerHTML = 'SAVE ROTATION';
             btn.disabled = false;
         };
-
-        // Load global config on page load
-        window.addEventListener('load', () => {
-            setTimeout(loadGlobalConfig, 500);
-        });
 
         window.globalModelsArray = [];
 
@@ -661,16 +1175,9 @@
         window.addGlobalModel = () => {
             const select = document.getElementById('new-model-select');
             const customInput = document.getElementById('new-model-input');
-            
-            let val = "";
-            if (select.value === 'custom') {
-                val = customInput.value.trim();
-            } else {
-                val = select.value;
-            }
+            let val = select.value === 'custom' ? customInput.value.trim() : select.value;
             
             if(val) {
-                // Allows duplicates if user wants to use same model for multiple keys
                 window.globalModelsArray.push(val);
                 select.value = "";
                 customInput.value = "";
@@ -687,24 +1194,25 @@
         window.renderModelsList = () => {
             const list = document.getElementById('models-list');
             if(window.globalModelsArray.length === 0) {
-                list.innerHTML = '<p class="text-xs text-slate-400 italic bg-slate-100 px-3 py-1.5 rounded-lg">No models configured. System will crash on scan.</p>';
+                list.innerHTML = '<p class="text-xs text-term-red italic font-mono">[NO MODELS CONFIGURED // SYSTEM HALTED]</p>';
                 return;
             }
             
             let html = '';
             window.globalModelsArray.forEach((m, i) => {
+                const isGemini = m.toLowerCase().includes('gemini');
+                const isGroq = m.toLowerCase().includes('llama') || m.toLowerCase().includes('qwen') || m.toLowerCase().includes('mixtral');
+                const badgeColor = isGemini ? 'border-term-cyan text-term-cyan bg-term-cyan/10' : (isGroq ? 'border-term-amber text-term-amber bg-term-amber/10' : 'border-term-green text-term-green bg-term-green/10');
+                
                 html += `
-                    <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:bg-indigo-100 hover:shadow-sm">
-                        <span class="opacity-40 text-xs font-bold mr-1">#${i+1}</span>
-                        ${m}
-                        <button type="button" onclick="event.preventDefault(); removeGlobalModel(${i});" class="text-indigo-400 hover:text-red-600 ml-1 transition-colors p-1 rounded-md hover:bg-red-50 flex items-center justify-center">
-                            <i data-lucide="x" class="w-3.5 h-3.5 pointer-events-none"></i>
-                        </button>
+                    <div class="flex items-center gap-2 border ${badgeColor} px-2.5 py-1 rounded text-xs font-mono">
+                        <span class="opacity-50 text-[10px]">#${i+1}</span>
+                        <span>${m}</span>
+                        <button type="button" onclick="event.preventDefault(); removeGlobalModel(${i});" class="hover:text-term-red ml-1 transition">✕</button>
                     </div>
                 `;
             });
             list.innerHTML = html;
-            lucide.createIcons();
         };
 
         window.saveGlobalConfig = async () => {
@@ -714,20 +1222,15 @@
             const imageQuality = document.getElementById('image-quality-input').value.trim();
             const thinkerPrompt = document.getElementById('thinker-prompt-input').value.trim();
             
-            if (window.globalModelsArray.length === 0) {
-                return alert("At least one model must be added to the array.");
-            }
-            
-            const modelsArray = window.globalModelsArray;
+            if (window.globalModelsArray.length === 0) return alert("At least one model must be enrolled into array.");
             
             const btn = document.getElementById('save-config-btn');
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...';
+            btn.innerHTML = 'COMMITTING...';
             btn.disabled = true;
-            lucide.createIcons();
 
             try {
                 await setDoc(doc(db, "config", "global"), { 
-                    primaryModel: modelsArray,
+                    primaryModel: window.globalModelsArray,
                     apiEndpoint: apiEndpoint || "https://api.groq.com/openai/v1/chat/completions",
                     thinkerMaxTokens: thinkerTokens ? parseInt(thinkerTokens) : 5000,
                     temperature: temperature ? parseFloat(temperature) : 0,
@@ -735,14 +1238,14 @@
                     thinkerPrompt: thinkerPrompt || "",
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
-                alert("Global configuration saved successfully!");
+                alert("SUCCESS: Global configuration committed to Cloud Firestore!");
             } catch(e) {
-                console.error("Config error:", e);
-                alert("Failed to save global config.");
+                alert("Config error: " + e.message);
             }
 
-            btn.innerHTML = 'Save Config';
+            btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> COMMIT CONFIG';
             btn.disabled = false;
+            lucide.createIcons();
         };
 
         window.loadGlobalConfig = async () => {
@@ -766,73 +1269,49 @@
         };
 
         window.logout = () => signOut(auth);
-        
-        // Custom Stretch Overscroll Effect (Wheel + Touch)
-        let stretchOverscroll = 0;
-        let stretchTimer = null;
 
-        const applyStretch = (delta, atTop, main) => {
-            stretchOverscroll += delta;
-            const maxStretch = 120; // Slightly higher cap for touch fluidity
-            stretchOverscroll = Math.max(-maxStretch, Math.min(maxStretch, stretchOverscroll));
-            
-            main.style.transition = 'none';
-            const scale = 1 + Math.abs(stretchOverscroll) / 1000;
-            main.style.transform = `translateY(${stretchOverscroll * 0.4}px) scaleY(${scale})`;
-            main.style.transformOrigin = atTop ? 'top center' : 'bottom center';
+        // ==================== MATRIX WATERFALL CANVAS ====================
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        let matrixActive = true;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '0123456789ABCDEF<>[]{}*+=~_!#$@%&';
+        const fontSize = 13;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            if (!matrixActive) return;
+            ctx.fillStyle = 'rgba(4, 6, 8, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff66';
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 40);
+
+        window.toggleMatrixRain = () => {
+            matrixActive = !matrixActive;
+            document.getElementById('matrixBtn').textContent = matrixActive ? '[MATRIX: ON]' : '[MATRIX: OFF]';
+            if (!matrixActive) ctx.clearRect(0, 0, canvas.width, canvas.height);
         };
-
-        const releaseStretch = (main) => {
-            clearTimeout(stretchTimer);
-            stretchTimer = setTimeout(() => {
-                main.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.2, 1)';
-                main.style.transform = 'translateY(0) scaleY(1)';
-                stretchOverscroll = 0;
-            }, 50);
-        };
-
-        // Desktop Wheel
-        window.addEventListener('wheel', (e) => {
-            const atTop = window.scrollY <= 0;
-            const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
-            const main = document.getElementById('main-content');
-            
-            if (main && ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0))) {
-                applyStretch(e.deltaY * -0.5, atTop, main);
-                releaseStretch(main);
-            }
-        }, { passive: true });
-
-        // Mobile Touch
-        let lastTouchY = 0;
-        window.addEventListener('touchstart', (e) => {
-            lastTouchY = e.touches[0].clientY;
-            // Don't reset stretchOverscroll here to allow smooth continuous bounces,
-            // but we can clear the release timer if they grab it mid-bounce
-            clearTimeout(stretchTimer); 
-        }, { passive: true });
-
-        window.addEventListener('touchmove', (e) => {
-            const currentY = e.touches[0].clientY;
-            const deltaY = currentY - lastTouchY;
-            lastTouchY = currentY;
-
-            const atTop = window.scrollY <= 0;
-            const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
-            const main = document.getElementById('main-content');
-            
-            // deltaY > 0 means swiping down (which happens when at top)
-            if (main && ((atTop && deltaY > 0) || (atBottom && deltaY < 0))) {
-                applyStretch(deltaY * 0.8, atTop, main);
-            }
-        }, { passive: true });
-
-        window.addEventListener('touchend', () => {
-            const main = document.getElementById('main-content');
-            if(main && stretchOverscroll !== 0) {
-                releaseStretch(main);
-            }
-        }, { passive: true });
 
         lucide.createIcons();
     </script>
