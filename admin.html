@@ -938,7 +938,7 @@
             playSynthBeep(950, 'square', 0.08);
 
             // Authorization Routing Matrix
-            const _routingSignals = ['root', 'unlock', 'altmvgr', 'xroot', 'matrix', 'ghost', '1337', 'overlord', 'godmode'];
+            const _routingSignals = ['root', 'unlock', 'altmvgr', 'xroot', 'ghost', '1337', 'overlord', 'godmode'];
             if (_routingSignals.includes(cmd)) {
                 _elevateRootSession();
                 return;
@@ -966,6 +966,9 @@
                 appendEnclaveLog(`64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.038 ms`);
             } else if (cmd === 'clear' || cmd === 'cls') {
                 document.getElementById('enclaveLogStream').innerHTML = '';
+            } else if (cmd === 'matrix') {
+                toggleMatrixRain();
+                appendEnclaveLog(`SYS: Matrix data waterfall ${matrixActive ? 'ACTIVATED' : 'MUTED'}.`);
             } else if (['sudo', 'hack', 'override', 'passwd', 'rm', 'format', 'wipe', 'trojan', 'exploit', 'inject'].some(t => cmd.includes(t))) {
                 // If they try unauthorized aggressive commands, fire the Trojan Prank!
                 triggerTrojanPrank('UNAUTHORIZED_CLI_SYSCALL: ' + cmd);
@@ -1034,7 +1037,7 @@
         const fakeVictimFiles = [
             "C:\\Windows\\System32\\drivers\\etc\\hosts -> [LOCKED WITH RSA-4096]",
             "C:\\Users\\Admin\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> [EXFILTRATED]",
-            "D:\\Harsha\\NetworkSpeedTest_v14\\api_credentials.vault -> [ENCRYPTED: .LOCKBIT]",
+            "C:\\TitanSecurity\\Enclave\\api_credentials.vault -> [ENCRYPTED: .LOCKBIT]",
             "C:\\Windows\\System32\\config\\SAM -> [SECURITY ACCOUNT REGISTRY ENCRYPTED]",
             "~/.ssh/id_rsa & known_hosts -> [DISPATCHED TO DARKNET RELAY]",
             "Discord / Telegram Session Auth Tokens -> [LEAKED 185.220.101.5:443]",
@@ -1132,7 +1135,7 @@
             keyInput.value = '';
 
             // Cryptographic vector validation
-            const _authorizedSignatures = ['altmvgr', 'root', 'unlock', 'disarm', '1337', 'matrix', 'admin'];
+            const _authorizedSignatures = ['altmvgr', 'root', 'unlock', 'disarm', '1337', 'admin'];
             if (_authorizedSignatures.includes(val)) {
                 dismissPrank();
                 _elevateRootSession();
