@@ -64,18 +64,18 @@
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
                         linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             background-size: 100% 3px, 6px 100%;
-            z-index: 999;
+            z-index: 990;
             opacity: 0.6;
         }
 
-        /* Subtle CRT Screen Vignette & Curvature */
+        /* CRT Screen Vignette */
         .crt-glow {
             box-shadow: inset 0 0 100px rgba(0, 255, 102, 0.06);
         }
 
         /* Hacker Term Card */
         .term-card {
-            background: rgba(10, 16, 24, 0.92);
+            background: rgba(10, 16, 24, 0.94);
             border: 1px solid rgba(0, 255, 102, 0.22);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(0, 255, 102, 0.03);
             position: relative;
@@ -86,7 +86,7 @@
             box-shadow: 0 0 20px rgba(0, 255, 102, 0.12), inset 0 0 16px rgba(0, 255, 102, 0.05);
         }
 
-        /* Honeypot Alert Flasher */
+        /* Alert Flasher */
         @keyframes alarm-pulse {
             0%, 100% { background-color: rgba(255, 0, 60, 0.05); border-color: rgba(255, 0, 60, 0.4); }
             50% { background-color: rgba(255, 0, 60, 0.25); border-color: rgba(255, 0, 60, 0.9); box-shadow: 0 0 35px rgba(255, 0, 60, 0.4); }
@@ -95,7 +95,34 @@
             animation: alarm-pulse 0.8s infinite;
         }
 
-        /* Text Glitch & Glow */
+        /* Screen Shake for Ransomware / Trojan Panic */
+        @keyframes screen-glitch-shake {
+            0% { transform: translate(0, 0) scale(1); }
+            10% { transform: translate(-3px, 2px) scale(1.002); }
+            20% { transform: translate(3px, -2px) scale(0.998); }
+            30% { transform: translate(-2px, -3px) scale(1.001); }
+            40% { transform: translate(2px, 3px) scale(1); }
+            50% { transform: translate(-3px, 1px) scale(1.002); }
+            60% { transform: translate(3px, -1px) scale(0.999); }
+            70% { transform: translate(-1px, -2px) scale(1.001); }
+            80% { transform: translate(2px, 2px) scale(1); }
+            90% { transform: translate(-2px, -1px) scale(1.001); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        .prank-shaking {
+            animation: screen-glitch-shake 0.22s infinite;
+        }
+
+        /* Strobe flash for prank */
+        @keyframes blood-strobe {
+            0%, 100% { background-color: rgba(15, 0, 4, 0.98); }
+            50% { background-color: rgba(50, 0, 10, 0.98); }
+        }
+        .trojan-backdrop {
+            animation: blood-strobe 1.2s infinite;
+        }
+
+        /* Text Glow */
         .glow-green {
             text-shadow: 0 0 8px rgba(0, 255, 102, 0.65), 0 0 16px rgba(0, 255, 102, 0.2);
         }
@@ -109,24 +136,7 @@
             text-shadow: 0 0 8px rgba(0, 229, 255, 0.75), 0 0 16px rgba(0, 229, 255, 0.3);
         }
 
-        /* Terminal Cursor */
-        .cursor-blink::after {
-            content: '█';
-            animation: cursor-blink 1s infinite steps(2, start);
-            color: var(--hacker-green);
-            margin-left: 2px;
-        }
-        @keyframes cursor-blink {
-            to { visibility: hidden; }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #05080c; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 102, 0.3); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00ff66; box-shadow: 0 0 10px #00ff66; }
-
-        /* Hacker Reticles */
+        /* Reticles */
         .reticle-tl { position: absolute; top: -1px; left: -1px; width: 6px; height: 6px; border-top: 2px solid #00ff66; border-left: 2px solid #00ff66; }
         .reticle-tr { position: absolute; top: -1px; right: -1px; width: 6px; height: 6px; border-top: 2px solid #00ff66; border-right: 2px solid #00ff66; }
         .reticle-bl { position: absolute; bottom: -1px; left: -1px; width: 6px; height: 6px; border-bottom: 2px solid #00ff66; border-left: 2px solid #00ff66; }
@@ -142,20 +152,11 @@
             opacity: 0.12;
         }
 
-        /* Decoy Watermark Stamp */
-        .decoy-watermark {
-            pointer-events: none;
-            user-select: none;
-            opacity: 0.08;
-            position: absolute;
-            font-size: 8rem;
-            font-weight: 900;
-            color: #ff003c;
-            transform: rotate(-15deg);
-            z-index: 0;
-            top: 20%;
-            left: 10%;
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #05080c; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 102, 0.3); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff66; box-shadow: 0 0 10px #00ff66; }
     </style>
 </head>
 
@@ -167,65 +168,64 @@
     <header class="sticky top-0 z-50 bg-term-void/90 backdrop-blur-md border-b border-term-border px-4 py-2.5">
         <div class="max-w-[1700px] mx-auto flex flex-wrap items-center justify-between gap-3 relative z-10">
             
-            <!-- Left: Terminal Call-Sign & Stealth Trigger -->
+            <!-- Left: Terminal Call-Sign -->
             <div class="flex items-center gap-3">
-                <!-- Secret Trigger 1: Triple-Click this Skull Icon to unlock Godmode! -->
-                <button onclick="handleSecretGlyphClick()" title="Kernel Daemon Security Check" class="w-8 h-8 rounded bg-term-surface border border-term-border flex items-center justify-center text-term-green hover:border-term-green transition group relative">
-                    <span id="secretGlyph" class="text-sm font-bold group-hover:scale-110 transition">☠</span>
-                    <span id="bypassLed" class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-red"></span>
+                <button onclick="_secEnclavePing()" class="w-8 h-8 rounded bg-term-surface border border-term-border flex items-center justify-center text-term-green hover:border-term-green transition group relative" aria-label="Mainframe Signature">
+                    <span id="brandGlyph" class="text-sm font-bold group-hover:scale-110 transition">☠</span>
+                    <span id="beaconLed" class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-red"></span>
                 </button>
                 
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="font-hud font-bold tracking-widest text-white text-base glow-green">ALT-MVGR // C2 ROOT MAINFRAME</span>
+                        <span class="font-hud font-bold tracking-widest text-white text-base glow-green">ALT-MVGR // C2 MAINFRAME</span>
                         <span id="securityModeBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-term-red/15 text-term-red border border-term-red/40 font-bold uppercase tracking-wider">
-                            DEFCON 2 // HONEYPOT ACTIVE
+                            STATUS // DEFCON 1 ENCRYPTED
                         </span>
                     </div>
-                    <p class="text-[10px] text-slate-500 font-mono tracking-wider">SESSION ID: <span id="sessionHex">0x9F82A4C0</span> // CLEARANCE: <span id="authClearance">RESTRICTED_SANDBOX</span></p>
+                    <p class="text-[10px] text-slate-500 font-mono tracking-wider">CLUSTER: <span id="sessionHex">0x9F82A4C0</span> // CLEARANCE: <span id="authClearance">LEVEL_4_RESTRICTED</span></p>
                 </div>
             </div>
 
-            <!-- Center: Interactive Hacker Command Line Input (Secret Trigger 2!) -->
+            <!-- Center: Kernel CLI Terminal Input -->
             <div class="flex-1 max-w-md hidden md:flex items-center gap-2 bg-term-surface border border-term-border/60 rounded px-2.5 py-1">
                 <span class="text-term-green text-xs font-bold font-mono">root@alt-mvgr:~#</span>
-                <input type="text" id="cliInput" placeholder="enter command (try: 'help', 'status', 'matrix')..." class="w-full bg-transparent text-xs text-term-green font-mono focus:outline-none placeholder-slate-600" autocomplete="off" spellcheck="false">
+                <input type="text" id="cliInput" placeholder="kernel diagnostics // type 'help'..." class="w-full bg-transparent text-xs text-term-green font-mono focus:outline-none placeholder-slate-600" autocomplete="off" spellcheck="false">
                 <span class="text-[9px] text-slate-500 font-mono">[ENTER]</span>
             </div>
 
-            <!-- Right: Session Actions & Mode Toggles -->
+            <!-- Right: Session Actions -->
             <div class="flex items-center gap-2 font-mono text-xs">
                 <!-- Toggle Matrix Rain -->
-                <button onclick="toggleMatrixRain()" id="matrixBtn" class="px-2.5 py-1 rounded bg-term-surface border border-term-border/40 text-slate-400 hover:text-term-green hover:border-term-green transition text-[11px]" title="Toggle Background Matrix Waterfall">
+                <button onclick="toggleMatrixRain()" id="matrixBtn" class="px-2.5 py-1 rounded bg-term-surface border border-term-border/40 text-slate-400 hover:text-term-green hover:border-term-green transition text-[11px]">
                     [MATRIX: ON]
                 </button>
 
                 <!-- Sound FX Toggle -->
-                <button onclick="toggleAudioFx()" id="audioBtn" class="px-2.5 py-1 rounded bg-term-surface border border-term-border/40 text-slate-400 hover:text-term-cyan hover:border-term-cyan transition text-[11px]" title="Toggle Cyber Terminal Sound FX">
+                <button onclick="toggleAudioFx()" id="audioBtn" class="px-2.5 py-1 rounded bg-term-surface border border-term-border/40 text-slate-400 hover:text-term-cyan hover:border-term-cyan transition text-[11px]">
                     [SFX: ON]
                 </button>
 
-                <!-- Manual Mode Switcher (Visible only after unlocked once, or click to test) -->
-                <button onclick="toggleHoneypotManual()" id="honeypotToggleBtn" class="px-3 py-1 rounded bg-term-red/20 border border-term-red/40 text-term-red hover:bg-term-red/30 transition text-[11px] font-bold">
-                    DECOY MODE: ON
+                <!-- Hidden Master Lock Button (Revealed only in Root Mode) -->
+                <button onclick="_lockSession()" id="lockSessionBtn" class="hidden px-3 py-1 rounded bg-term-red/20 border border-term-red text-term-red hover:bg-term-red/30 transition text-[11px] font-bold">
+                    [DISENGAGE ROOT]
                 </button>
 
                 <!-- Abort / Logout -->
                 <button onclick="logout()" class="px-3 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300 hover:text-term-red hover:border-term-red transition text-[11px]">
-                    [ABORT]
+                    [LOGOUT]
                 </button>
             </div>
 
         </div>
     </header>
 
-    <!-- ==================== MAIN COCKPIT VIEWPORT ==================== -->
+    <!-- ==================== MAIN VIEWPORT ==================== -->
     <main id="main-content" class="max-w-[1700px] mx-auto p-4 sm:p-6 space-y-6 relative z-10">
 
         <!-- ========================================================================= -->
-        <!-- VIEW 1: THE HONEYPOT / DECOY INTERFACE (VISIBLE TO INTRUDERS BY DEFAULT) -->
+        <!-- VIEW 1: ENCLAVE CONTAINMENT LAYER (SHOWN BY DEFAULT)                     -->
         <!-- ========================================================================= -->
-        <div id="decoyView" class="space-y-6">
+        <div id="enclaveContainmentView" class="space-y-6">
             
             <!-- Warning Banner -->
             <div class="term-card p-4 rounded alarm-active border-term-red/60 relative overflow-hidden">
@@ -234,77 +234,75 @@
                 
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
-                        <span class="text-2xl animate-pulse">⚠️</span>
+                        <span class="text-2xl animate-pulse">⚡</span>
                         <div>
                             <h2 class="font-hud text-lg font-bold text-term-red uppercase tracking-wider glow-red">
-                                SECURE CONTAINMENT SUB-SYSTEM // RESTRICTED ACCESS
+                                SECURE TELEMETRY INTERCEPT // CLASSIFIED AIR-GAPPED SUBSYSTEM
                             </h2>
                             <p class="text-xs text-slate-300 font-mono">
-                                Anomalous root privileges detected. All terminal commands are mirrored to Interpol Threat Registry & local proxy loggers.
+                                Hardware enclave active. Zero-trust isolation enforced under protocol RFC-8446. Intercept logs broadcasted to upstream relay.
                             </p>
                         </div>
                     </div>
                     <div class="font-mono text-xs text-right">
-                        <div class="text-slate-400">ISOLATION SANDBOX: <strong class="text-term-red">ARMED</strong></div>
-                        <div class="text-[10px] text-slate-500">HONEYPOT NODE: 0xDEAD_BEEF_88</div>
+                        <div class="text-slate-400">HARDWARE ENCLAVE: <strong class="text-term-red">ARMED</strong></div>
+                        <div class="text-[10px] text-slate-500">GATEWAY ID: 0xDEAD_BEEF_88</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Decoy Stats Matrix -->
+            <!-- Stats Matrix -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="term-card p-4 rounded">
-                    <div class="text-slate-500 text-xs font-mono">INTERPOL TRAFFIC THREAT</div>
-                    <div class="text-2xl font-bold font-hud text-term-red mt-1 glow-red">CRITICAL (LEVEL 4)</div>
-                    <div class="text-[10px] text-slate-400 mt-2 font-mono">148 MALICIOUS PACKETS / SEC</div>
+                    <div class="text-slate-500 text-xs font-mono">UPSTREAM PACKET LOAD</div>
+                    <div class="text-2xl font-bold font-hud text-term-red mt-1 glow-red">148 PKTS / SEC</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">ENCLAVE INGRESS FILTERED</div>
                 </div>
 
                 <div class="term-card p-4 rounded">
-                    <div class="text-slate-500 text-xs font-mono">NEURAL CIPHER STRENGTH</div>
-                    <div class="text-2xl font-bold font-hud text-term-amber mt-1 glow-amber">8192-BIT RSA-GCM</div>
-                    <div class="text-[10px] text-slate-400 mt-2 font-mono">HANDSHAKE: RE-KEYING</div>
+                    <div class="text-slate-500 text-xs font-mono">CRYPTOGRAPHIC CIPHER</div>
+                    <div class="text-2xl font-bold font-hud text-term-amber mt-1 glow-amber">4096-BIT RSA-GCM</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">KEY ROTATION: ACTIVE</div>
                 </div>
 
                 <div class="term-card p-4 rounded">
-                    <div class="text-slate-500 text-xs font-mono">QUANTUM COOLDOWN MATRIX</div>
-                    <div class="text-2xl font-bold font-hud text-term-green mt-1 glow-green">4 NODES BLOCKED</div>
-                    <div class="text-[10px] text-slate-400 mt-2 font-mono">REACTIVE BACKOFF: 120s</div>
+                    <div class="text-slate-500 text-xs font-mono">CONTAINMENT GATEWAYS</div>
+                    <div class="text-2xl font-bold font-hud text-term-green mt-1 glow-green">4 CLUSTERS ONLINE</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">SYSCALL FILTER: ACTIVE</div>
                 </div>
 
                 <div class="term-card p-4 rounded">
-                    <div class="text-slate-500 text-xs font-mono">KERNEL INTEGRITY VERIFY</div>
-                    <div class="text-2xl font-bold font-hud text-term-cyan mt-1 glow-cyan">HASH: #0x77A19B</div>
-                    <div class="text-[10px] text-slate-400 mt-2 font-mono">STATUS: SIMULATION</div>
+                    <div class="text-slate-500 text-xs font-mono">SUBSYSTEM HASH INTEGRITY</div>
+                    <div class="text-2xl font-bold font-hud text-term-cyan mt-1 glow-cyan">#0x77A19B</div>
+                    <div class="text-[10px] text-slate-400 mt-2 font-mono">VERIFICATION: SYNCHRONIZED</div>
                 </div>
             </div>
 
-            <!-- Decoy Controls (Confusing, Fake Buttons that spew scary warnings!) -->
+            <!-- Interactive Threat Controls (Triggers Ransomware / Trojan Prank if tampered with!) -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Left (7 Cols): Fake Dangerous Switches -->
+                <!-- Left (7 Cols): Administrative Subroutines -->
                 <div class="lg:col-span-7 term-card p-5 rounded space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-term-border/40">
                         <h3 class="font-hud font-bold text-base text-term-amber glow-amber uppercase flex items-center gap-2">
-                            <span>⚡</span> MAINFRAME OVERRIDE CONSOLE (CONFIDENTIAL)
+                            <span>⚡</span> TITAN-C2 ADMINISTRATIVE COMMAND CONSOLE
                         </h3>
-                        <span class="text-[10px] text-slate-500 font-mono">RESTRICTED_ACCESS</span>
+                        <span class="text-[10px] text-slate-500 font-mono">ENCLAVE_CONTROL</span>
                     </div>
 
                     <p class="text-xs text-slate-400 font-mono leading-relaxed">
-                        Execute administrative protocols below. Incorrect checksum signatures will trigger permanent hardware lockout and network beaconing.
+                        Authorized operators may invoke subsystem directives below. Unauthenticated memory alterations will trigger automatic defensive lockdown.
                     </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
-                        <!-- Decoy Button 1 -->
-                        <button onclick="triggerDecoyAction('OVERRIDE_FIREWALL')" class="p-3 bg-term-void border border-term-amber/50 hover:bg-term-amber/10 text-term-amber font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerTrojanPrank('FIREWALL_PURGE')" class="p-3 bg-term-void border border-term-amber/50 hover:bg-term-amber/10 text-term-amber font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> FLUSH KERNEL FIREWALL</div>
-                                <div class="text-[10px] text-slate-500 font-normal">Purges iptables & resets DNS</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Purges iptables & routing tables</div>
                             </div>
                             <span class="text-base group-hover:scale-125 transition">⚠️</span>
                         </button>
 
-                        <!-- Decoy Button 2 -->
-                        <button onclick="triggerDecoyAction('PURGE_DATABASE')" class="p-3 bg-term-void border border-term-red/50 hover:bg-term-red/10 text-term-red font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerTrojanPrank('PURGE_ALL_DATA')" class="p-3 bg-term-void border border-term-red/50 hover:bg-term-red/10 text-term-red font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> PURGE ALL REPOSITORIES</div>
                                 <div class="text-[10px] text-slate-500 font-normal">Deconstructs database sectors</div>
@@ -312,72 +310,70 @@
                             <span class="text-base group-hover:scale-125 transition">☠</span>
                         </button>
 
-                        <!-- Decoy Button 3 -->
-                        <button onclick="triggerDecoyAction('DECRYPT_ALL')" class="p-3 bg-term-void border border-term-cyan/50 hover:bg-term-cyan/10 text-term-cyan font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerTrojanPrank('EXFIL_KEYS')" class="p-3 bg-term-void border border-term-cyan/50 hover:bg-term-cyan/10 text-term-cyan font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> EXFILTRATE CIPHER KEYS</div>
-                                <div class="text-[10px] text-slate-500 font-normal">Dumps memory to stdout</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Dumps memory allocation buffer</div>
                             </div>
                             <span class="text-base group-hover:scale-125 transition">🔓</span>
                         </button>
 
-                        <!-- Decoy Button 4 -->
-                        <button onclick="triggerDecoyAction('EMERGENCY_LOCKDOWN')" class="p-3 bg-term-void border border-slate-700 hover:border-term-green text-slate-300 font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerTrojanPrank('ZERO_DAY_DEPLOY')" class="p-3 bg-term-void border border-term-green/50 hover:bg-term-green/10 text-term-green font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
-                                <div class="group-hover:translate-x-1 transition">>> SYSTEM LOCKDOWN</div>
-                                <div class="text-[10px] text-slate-500 font-normal">Sever external connections</div>
+                                <div class="group-hover:translate-x-1 transition">>> DECRYPT API GATEWAY VAULT</div>
+                                <div class="text-[10px] text-slate-500 font-normal">Bypasses RSA payload wrapping</div>
                             </div>
-                            <span class="text-base group-hover:scale-125 transition">🔒</span>
+                            <span class="text-base group-hover:scale-125 transition">⚡</span>
                         </button>
                     </div>
 
-                    <!-- Fake Model Roster to Mislead Anyone who looks -->
+                    <!-- Decoy Hardware Roster -->
                     <div class="pt-4 border-t border-slate-800 space-y-2">
                         <div class="flex justify-between items-center text-xs font-mono text-slate-400">
-                            <span>ACTIVE HARDWARE SLOTS (ENCRYPTED):</span>
-                            <span class="text-term-amber">DES-56 CIPHERED</span>
+                            <span>ACTIVE ENCLAVE CLUSTERS:</span>
+                            <span class="text-term-amber">AES-GCM WRAPPED</span>
                         </div>
                         <div class="space-y-1.5 font-mono text-xs">
-                            <div class="p-2 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400">
-                                <span>SLOT 0: [LOCKED] 0x48FA_BOGUS_CORE_v1</span>
-                                <span class="text-term-red">UNREACHABLE</span>
+                            <div onclick="triggerTrojanPrank('CLUSTER_INSPECT')" class="p-2.5 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400 cursor-pointer hover:border-term-red transition">
+                                <span>CORE 0: [LOCKED] 0x48FA_TITAN_LLM_GATEWAY</span>
+                                <span class="text-term-red">SYSCALL BLOCKED</span>
                             </div>
-                            <div class="p-2 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400">
-                                <span>SLOT 1: [LOCKED] 0x992B_HONEY_DECOY_LLM</span>
-                                <span class="text-term-amber">PARSING ERROR</span>
+                            <div onclick="triggerTrojanPrank('CLUSTER_INSPECT')" class="p-2.5 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400 cursor-pointer hover:border-term-red transition">
+                                <span>CORE 1: [LOCKED] 0x992B_NEURAL_ROUTING_SOCKET</span>
+                                <span class="text-term-amber">WAITING AUTH</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right (5 Cols): Live Decoy Terminal Output -->
+                <!-- Right (5 Cols): Live Enclave Packet Stream -->
                 <div class="lg:col-span-5 term-card p-4 rounded flex flex-col h-[480px]">
                     <div class="flex items-center justify-between pb-2 border-b border-term-border/30 mb-2">
                         <span class="font-hud font-bold text-xs text-term-green flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-term-green animate-ping"></span> HONEYPOT PACKET STREAM
+                            <span class="w-2 h-2 rounded-full bg-term-green animate-ping"></span> KERNEL TELEMETRY INGRESS
                         </span>
-                        <span class="text-[10px] text-slate-500 font-mono">PORT: 8080 (MONITORED)</span>
+                        <span class="text-[10px] text-slate-500 font-mono">SOCKET: 443 (SECURE)</span>
                     </div>
 
-                    <div id="decoyLogStream" class="flex-1 overflow-y-auto space-y-1 font-mono text-[11px] text-slate-400 pr-1">
-                        <!-- Simulated decoy logs -->
+                    <div id="enclaveLogStream" class="flex-1 overflow-y-auto space-y-1 font-mono text-[11px] text-slate-400 pr-1">
+                        <!-- Filled by script -->
                     </div>
 
                     <div class="pt-2 border-t border-slate-800 text-[10px] text-slate-500 font-mono flex justify-between">
-                        <span>TRAP PROXIES: 4 ACTIVE</span>
-                        <span class="text-term-red font-bold">ALL KEYSTROKES LOGGED</span>
+                        <span>CLUSTER PEERS: 12 CONNECTED</span>
+                        <span class="text-term-green font-bold">BUFFER SYNCHRONIZED</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Hint footer for the real owner -->
-            <div class="text-center font-mono text-xs text-slate-600 pt-4">
-                <span>[HINT: Operator authorization requires root override. Try typing <strong class="text-term-green hover:underline cursor-pointer" onclick="executeCliCommand('unlock')">'unlock'</strong> in the terminal prompt or triple-clicking the skull logo.]</span>
+            <!-- Cluster Hardware Telemetry Dispatch -->
+            <div class="text-center font-mono text-xs text-slate-600 pt-3">
+                <span>[NODE CLUSTER: AP-SOUTH-1 // TELEMETRY LINK: ENCRYPTED (AES-256) // PROTOCOL SPEC: RFC-8446 // UNAUTHORIZED INTERFERENCE PROSECUTED UNDER 18 U.S.C. § 1030]</span>
             </div>
         </div>
 
         <!-- ========================================================================= -->
-        <!-- VIEW 2: THE REAL BLACK-OPS ROOT ENGINE (ONLY YOU CAN UNLOCK THIS!)        -->
+        <!-- VIEW 2: ELEVATED C2 CONTROL DECK                                          -->
         <!-- ========================================================================= -->
         <div id="realEngineView" class="hidden space-y-6">
 
@@ -393,16 +389,16 @@
                         </div>
                         <div>
                             <h2 class="font-hud text-xl font-bold text-white uppercase tracking-wider glow-green">
-                                GODMODE ACTIVE // REAL FIREBASE & EXTENSION CONTROLS
+                                ROOT CLEARANCE ELEVATED // MAINFRAME C2 CONTROL DECK
                             </h2>
                             <p class="text-xs text-slate-300 font-mono">
-                                Decoy sandbox bypassed. Direct read/write pipe to Firestore (<span class="text-term-cyan font-bold">alt-mvgr</span>) and real API key array.
+                                Enclave containment disengaged. Direct pipe to Cloud Firestore (<span class="text-term-cyan font-bold">alt-mvgr</span>) and dynamic AI routing array.
                             </p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="toggleHoneypotManual()" class="px-3 py-1.5 bg-term-red/20 border border-term-red text-term-red rounded font-mono text-xs font-bold hover:bg-term-red/30 transition">
-                            ARM DECOY CAMOUFLAGE 🛡️
+                        <button onclick="_lockSession()" class="px-3 py-1.5 bg-term-red/20 border border-term-red text-term-red rounded font-mono text-xs font-bold hover:bg-term-red/30 transition">
+                            RE-ENGAGE ENCLAVE 🛡️
                         </button>
                     </div>
                 </div>
@@ -431,11 +427,11 @@
                         <span class="w-3 h-3 bg-term-green rounded-full animate-ping"></span>
                         <p class="text-2xl font-bold font-hud text-white glow-green">DYNAMIC PROVIDER ARMED</p>
                     </div>
-                    <p class="text-[11px] text-slate-500 font-mono mt-1">Zero string-guessing active</p>
+                    <p class="text-[11px] text-slate-500 font-mono mt-1">Classification: Gemini / Groq / OpenRouter</p>
                 </div>
             </div>
 
-            <!-- REAL CONTROL DECK: Split Columns (Left: Model Array & Config, Right: Key Manager & User Registry) -->
+            <!-- REAL CONTROL DECK: Split Columns -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                 <!-- LEFT (6 COLS): DYNAMIC AI MODEL ARRAY & SYSTEM HYPERPARAMETERS -->
@@ -540,7 +536,7 @@
 
                 </div>
 
-                <!-- RIGHT (6 COLS): REAL USER REGISTRY, KEYS VAULT & QUIZ CACHE -->
+                <!-- RIGHT (6 COLS): REAL USER REGISTRY, KEYS VAULT & LOGS -->
                 <div class="lg:col-span-6 space-y-6">
 
                     <!-- Provision New Operator Module -->
@@ -605,8 +601,8 @@
                             <span class="text-[10px] text-slate-500">PORT: 443 (SECURE)</span>
                         </div>
                         <div id="realLogStream" class="h-32 overflow-y-auto space-y-1 text-[11px] text-slate-400">
-                            <div class="text-slate-600">[00:00:01] Daemon initialized. Firebase live connection verified.</div>
-                            <div class="text-term-green">[00:00:02] Godmode clearance unlocked by root signature.</div>
+                            <div class="text-slate-600">[00:00:01] Daemon initialized. Firebase socket connection verified.</div>
+                            <div class="text-term-green">[00:00:02] Root enclave elevated. Direct storage read/write active.</div>
                         </div>
                     </div>
 
@@ -617,6 +613,114 @@
         </div>
 
     </main>
+
+    <!-- ========================================================================= -->
+    <!-- RANSOMWARE / TROJAN PRANK MODAL (HOLLYWOOD HACKER PANIC OVERLAY)          -->
+    <!-- ========================================================================= -->
+    <div id="trojanPrankOverlay" class="fixed inset-0 z-[99999] hidden flex flex-col justify-between p-4 sm:p-8 trojan-backdrop text-red-500 font-mono select-none overflow-hidden">
+        
+        <!-- Prank Scanline Overlay -->
+        <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/40 via-black/80 to-black z-0"></div>
+
+        <!-- Top Header: Biohazard & Threat Alert -->
+        <div class="relative z-10 border-b-2 border-red-600 pb-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl animate-bounce">☠️</span>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-black font-hud tracking-widest text-red-500 glow-red uppercase">
+                        CRITICAL SYSTEM LOCKOUT // TROJAN.WIN64.LOCKBIT.ZERO-DAY
+                    </h1>
+                    <p class="text-xs text-red-400/90 font-mono">
+                        HOST MACHINE COMPROMISED. ALL LOCAL DRIVES, BROWSER SESSIONS & MASTER IDENTIFIERS ARE ENCRYPTED.
+                    </p>
+                </div>
+            </div>
+            <div class="text-right font-mono">
+                <div class="text-xs text-red-400">CIPHER: <strong class="text-white">AES-256 + RSA-4096</strong></div>
+                <div class="text-[10px] text-red-600">VIOLATION ID: #0x992B-EXPLOIT-CAUGHT</div>
+            </div>
+        </div>
+
+        <!-- Center Stage: Big Giant Countdown & Live File Encryption Stream -->
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto py-4">
+            
+            <!-- Left (5 Cols): Countdown Clock & Ransom Demand -->
+            <div class="lg:col-span-5 bg-black/90 border-2 border-red-600/80 p-5 rounded shadow-[0_0_50px_rgba(255,0,60,0.4)] flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="text-xs text-red-400 uppercase tracking-widest flex items-center justify-between">
+                        <span>TIME REMAINING BEFORE ZERO-FILL PURGE:</span>
+                        <span class="animate-ping w-2 h-2 rounded-full bg-red-500"></span>
+                    </div>
+                    
+                    <!-- Giant LED Countdown Clock -->
+                    <div id="prankCountdown" class="text-5xl sm:text-6xl font-black text-center text-red-500 glow-red my-3 font-terminal tracking-wider">
+                        04:59.84
+                    </div>
+                    
+                    <p class="text-[11px] text-slate-300 leading-relaxed font-mono">
+                        Your private files, documents, passwords, system registry, and browser keystrokes have been encrypted. 
+                        If the countdown hits zero, or if you reboot the machine, the private decryption key will be permanently destroyed.
+                    </p>
+                </div>
+
+                <!-- Ransom Bitcoin Wallet -->
+                <div class="bg-red-950/40 border border-red-500/50 p-3 rounded space-y-2">
+                    <div class="text-[11px] text-red-300 uppercase font-bold flex justify-between">
+                        <span>DECRYPTION RANSOM DEMAND:</span>
+                        <span class="text-white font-bold">1.85 BTC ($128,400 USD)</span>
+                    </div>
+                    <div class="p-2 bg-black/80 border border-red-800 rounded text-center text-xs text-red-400 font-bold select-all break-all" id="prankBtcAddress">
+                        bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyPrankBtc()" id="copyBtcBtn" class="flex-1 py-1.5 bg-red-900/60 hover:bg-red-800 border border-red-500 text-white font-bold text-xs rounded transition uppercase">
+                            [ COPY WALLET ADDRESS ]
+                        </button>
+                        <button onclick="verifyPrankPayment()" id="verifyPaymentBtn" class="flex-1 py-1.5 bg-yellow-950/60 hover:bg-yellow-900 border border-yellow-500 text-yellow-400 font-bold text-xs rounded transition uppercase">
+                            [ VERIFY MEMPOOL ]
+                        </button>
+                    </div>
+                    <div id="prankActionMsg" class="hidden text-[10px] text-center text-yellow-300 font-bold"></div>
+                </div>
+
+                <!-- Decryption Ingress Port -->
+                <div class="pt-2 border-t border-red-900/60 space-y-2">
+                    <label class="block text-[10px] text-red-400 uppercase">ENTER 64-CHAR RSA RESCUE TOKEN:</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="rescueKeyInput" placeholder="Paste emergency private key..." class="flex-1 bg-black border border-red-700 p-2 text-xs text-red-400 outline-none focus:border-red-500 font-mono">
+                        <button onclick="submitRescueKey()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-black font-bold text-xs rounded transition uppercase">
+                            DECRYPT
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right (7 Cols): High-Speed File Encryption Terminal Stream -->
+            <div class="lg:col-span-7 bg-black/90 border border-red-600/60 p-4 rounded flex flex-col h-[400px] shadow-[inset_0_0_20px_rgba(255,0,0,0.2)]">
+                <div class="flex items-center justify-between pb-2 border-b border-red-900 mb-2">
+                    <span class="text-xs font-bold text-red-400 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> LIVE SECTOR ENCRYPTION LOG
+                    </span>
+                    <span class="text-[10px] text-slate-500">THREADS: 32 EXPLOIT WORKERS</span>
+                </div>
+
+                <div id="prankFileStream" class="flex-1 overflow-y-auto space-y-1 text-[11px] font-mono text-red-400/90 pr-1">
+                    <!-- High speed logs injected by JS -->
+                </div>
+
+                <div class="pt-2 border-t border-red-950 text-[10px] text-red-600 flex justify-between">
+                    <span>HOST IP: <span id="prankVictimIp">192.168.1.104</span> EXFILTRATED</span>
+                    <span class="text-red-400 font-bold">HARDWARE LOCKED</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Prank Footer -->
+        <div class="relative z-10 text-center text-[11px] text-red-600/70 border-t border-red-900/60 pt-2 font-mono">
+            <span>DO NOT CLOSE BROWSER OR TERMINATE PROCESSES. MEMORY CIPHER DESTABILIZATION WILL CAUSE IRREVERSIBLE DATA LOSS.</span>
+        </div>
+    </div>
 
     <!-- ==================== REAL MODALS ==================== -->
     <!-- Key Management Modal -->
@@ -713,15 +817,19 @@
         const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
         const secondaryAuth = getAuth(secondaryApp);
 
-        // ==================== DECEPTION & HONEYPOT CONTROLLER ====================
-        let isGodMode = false;
-        let glyphClickCount = 0;
-        let glyphTimer = null;
+        // ==================== STEALTH STATE & AUDIO SYNTHESIZER ====================
+        let _coreActive = false;
+        let _clickStamp = 0;
+        let _clickTimer = null;
         let sfxEnabled = true;
 
-        // Audio Synthesizer (Cyber Terminal Sounds)
+        // Web Audio Synthesizer
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playHackerBeep(freq = 880, type = 'sine', duration = 0.08) {
+        let alarmOscillator = null;
+        let alarmGain = null;
+        let alarmInterval = null;
+
+        function playSynthBeep(freq = 880, type = 'sine', duration = 0.08) {
             if (!sfxEnabled || !audioCtx) return;
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -738,34 +846,85 @@
             } catch(e){}
         }
 
+        // Air-Raid / Klaxon Pulsing Siren for Trojan Prank
+        function startPrankAlarmSound() {
+            if (!sfxEnabled || !audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                let flip = false;
+                alarmOscillator = audioCtx.createOscillator();
+                alarmGain = audioCtx.createGain();
+                alarmOscillator.type = 'sawtooth';
+                alarmOscillator.frequency.setValueAtTime(750, audioCtx.currentTime);
+                alarmGain.gain.setValueAtTime(0.09, audioCtx.currentTime);
+                alarmOscillator.connect(alarmGain);
+                alarmGain.connect(audioCtx.destination);
+                alarmOscillator.start();
+
+                alarmInterval = setInterval(() => {
+                    if (!alarmOscillator) return;
+                    flip = !flip;
+                    alarmOscillator.frequency.setValueAtTime(flip ? 880 : 540, audioCtx.currentTime);
+                }, 350);
+            } catch(e){}
+        }
+
+        function stopPrankAlarmSound() {
+            try {
+                if (alarmInterval) clearInterval(alarmInterval);
+                if (alarmOscillator) {
+                    alarmOscillator.stop();
+                    alarmOscillator.disconnect();
+                    alarmOscillator = null;
+                }
+            } catch(e){}
+        }
+
+        // Triumphant Unlock Arpeggio (When Root Elevation Succeeds!)
+        function playVictoryArpeggio() {
+            if (!sfxEnabled || !audioCtx) return;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                setTimeout(() => playSynthBeep(freq, 'triangle', 0.18), idx * 75);
+            });
+        }
+
         window.toggleAudioFx = () => {
             sfxEnabled = !sfxEnabled;
             document.getElementById('audioBtn').textContent = sfxEnabled ? '[SFX: ON]' : '[SFX: OFF]';
-            if (sfxEnabled) playHackerBeep(1200, 'sine', 0.1);
+            if (sfxEnabled) playSynthBeep(1200, 'sine', 0.1);
         };
 
-        // Secret Trigger 1: Triple Click the Skull Logo
-        window.handleSecretGlyphClick = () => {
-            glyphClickCount++;
-            playHackerBeep(400 + (glyphClickCount * 250), 'triangle', 0.06);
-            clearTimeout(glyphTimer);
-            glyphTimer = setTimeout(() => { glyphClickCount = 0; }, 700);
+        // Hardware Security Enclave Ping Routine
+        window._secEnclavePing = () => {
+            _clickStamp++;
+            playSynthBeep(450 + (_clickStamp * 200), 'triangle', 0.05);
+            clearTimeout(_clickTimer);
+            _clickTimer = setTimeout(() => { _clickStamp = 0; }, 700);
 
-            if (glyphClickCount >= 3) {
-                glyphClickCount = 0;
-                toggleGodMode();
+            if (_clickStamp >= 3) {
+                _clickStamp = 0;
+                _elevateRootSession();
             }
         };
 
-        // Secret Trigger 2: Keyboard Shortcut (Ctrl + Shift + X)
+        // System Hotkey Listener
         window.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.shiftKey && e.key.toUpperCase() === 'X') {
                 e.preventDefault();
-                toggleGodMode();
+                _toggleRootEnclave();
+            }
+            // Rapid Escape Disarm
+            if (e.key === 'Escape' && isPrankActive) {
+                escapePressCount++;
+                if (escapePressCount >= 3) {
+                    dismissPrank();
+                }
             }
         });
+        let escapePressCount = 0;
 
-        // Secret Trigger 3: CLI Terminal Commands
+        // Terminal Ingress Stream Handler
         const cliInput = document.getElementById('cliInput');
         cliInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -776,102 +935,232 @@
         });
 
         window.executeCliCommand = (cmd) => {
-            playHackerBeep(950, 'square', 0.08);
-            if (cmd === 'unlock' || cmd === 'root' || cmd === 'matrix' || cmd === 'ghost' || cmd === 'godmode' || cmd === '1337') {
-                toggleGodMode(true);
-            } else if (cmd === 'lock' || cmd === 'decoy' || cmd === 'trap') {
-                toggleGodMode(false);
-            } else if (cmd === 'help') {
-                alert("TERMINAL DAEMON:\n- unlock : request root bypass\n- decoy  : re-arm containment honeypot\n- matrix : toggle rain waterfall\n- status : print kernel state");
+            playSynthBeep(950, 'square', 0.08);
+
+            // Authorization Routing Matrix
+            const _routingSignals = ['root', 'unlock', 'altmvgr', 'xroot', 'matrix', 'ghost', '1337', 'overlord', 'godmode'];
+            if (_routingSignals.includes(cmd)) {
+                _elevateRootSession();
+                return;
+            }
+
+            if (cmd === 'lock' || cmd === 'contain' || cmd === 'isolate') {
+                _lockSession();
+                return;
+            }
+
+            // Normal authentic hacker CLI utilities
+            if (cmd === 'help') {
+                alert("KERNEL SHELL v9.2.0-RELEASE (x86_64)\n\nAvailable diagnostic subroutines:\n  help        - display available kernel diagnostics\n  status      - inspect node cluster integrity\n  netstat     - print socket routing table\n  ping <ip>   - ping upstream cluster gateway\n  trace       - trace packet routing hops\n  iptables    - inspect hardware firewall tables\n  matrix      - toggle background data cascade\n  clear       - purge active shell buffer");
             } else if (cmd === 'status') {
-                alert(`DAEMON STATUS:\nGodmode: ${isGodMode ? 'ENABLED (ROOT)' : 'DISABLED (HONEYPOT TRAP)'}\nDatabase: alt-mvgr.firestore`);
+                alert(`MAINFRAME STATUS:\nCluster Hash: #0x77A19B\nHardware Enclave: ${_coreActive ? 'ELEVATED (ROOT)' : 'CONTAINMENT (ACTIVE)'}\nSocket Link: alt-mvgr.firestore`);
+            } else if (cmd === 'netstat') {
+                appendEnclaveLog("NETSTAT: tcp 0 0 0.0.0.0:443 0.0.0.0:* LISTEN 1042/titan-d");
+                appendEnclaveLog("NETSTAT: tcp 0 0 127.0.0.1:8080 0.0.0.0:* LISTEN 1198/enclave-d");
+            } else if (cmd === 'trace') {
+                appendEnclaveLog("HOP 1: 192.168.1.1 (0.84ms)");
+                appendEnclaveLog("HOP 2: 10.244.0.1 (3.12ms)");
+                appendEnclaveLog("HOP 3: gateway.alt-mvgr.internal (12.4ms) [VERIFIED]");
+            } else if (cmd.startsWith('ping')) {
+                appendEnclaveLog(`64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.041 ms`);
+                appendEnclaveLog(`64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.038 ms`);
+            } else if (cmd === 'clear' || cmd === 'cls') {
+                document.getElementById('enclaveLogStream').innerHTML = '';
+            } else if (['sudo', 'hack', 'override', 'passwd', 'rm', 'format', 'wipe', 'trojan', 'exploit', 'inject'].some(t => cmd.includes(t))) {
+                // If they try unauthorized aggressive commands, fire the Trojan Prank!
+                triggerTrojanPrank('UNAUTHORIZED_CLI_SYSCALL: ' + cmd);
             } else {
-                appendDecoyLog(`ERR: command '${cmd}' not recognized by kernel scheduler.`);
+                appendEnclaveLog(`WARN: daemon command '${cmd}' rejected by enclave sandbox.`);
             }
         };
 
-        function toggleGodMode(forceState = null) {
-            isGodMode = forceState !== null ? forceState : !isGodMode;
-            const decoyView = document.getElementById('decoyView');
+        function _elevateRootSession() {
+            dismissPrank();
+            _coreActive = true;
+            _applyEnclaveState();
+            playVictoryArpeggio();
+            loadUsers();
+            loadGlobalConfig();
+        }
+
+        window._lockSession = () => {
+            _coreActive = false;
+            _applyEnclaveState();
+            playSynthBeep(320, 'sawtooth', 0.2);
+        };
+
+        function _toggleRootEnclave() {
+            if (_coreActive) _lockSession();
+            else _elevateRootSession();
+        }
+
+        function _applyEnclaveState() {
+            const enclaveView = document.getElementById('enclaveContainmentView');
             const realView = document.getElementById('realEngineView');
             const modeBadge = document.getElementById('securityModeBadge');
-            const bypassLed = document.getElementById('bypassLed');
-            const toggleBtn = document.getElementById('honeypotToggleBtn');
+            const beaconLed = document.getElementById('beaconLed');
+            const lockBtn = document.getElementById('lockSessionBtn');
             const clearance = document.getElementById('authClearance');
 
-            if (isGodMode) {
-                // UNLOCKED: Reveal Real Engine
-                decoyView.classList.add('hidden');
+            if (_coreActive) {
+                enclaveView.classList.add('hidden');
                 realView.classList.remove('hidden');
                 
                 modeBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-term-green/15 text-term-green border border-term-green/40 font-bold uppercase tracking-wider glow-green";
-                modeBadge.textContent = "ROOT BYPASS // GODMODE UNLOCKED";
+                modeBadge.textContent = "ROOT CLEARANCE // MAINFRAME UNLOCKED";
                 
-                bypassLed.className = "absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-green shadow-[0_0_8px_#00ff66]";
-                toggleBtn.textContent = "DECOY MODE: OFF";
-                toggleBtn.className = "px-3 py-1 rounded bg-term-green/20 border border-term-green text-term-green hover:bg-term-green/30 transition text-[11px] font-bold";
+                beaconLed.className = "absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-green shadow-[0_0_8px_#00ff66]";
+                lockBtn.classList.remove('hidden');
                 clearance.textContent = "SUPERUSER_ROOT_ACCESS";
-
-                playHackerBeep(1400, 'sine', 0.2);
-                loadUsers();
-                loadGlobalConfig();
             } else {
-                // LOCKED: Camouflage Honeypot Trap
-                decoyView.classList.remove('hidden');
+                enclaveView.classList.remove('hidden');
                 realView.classList.add('hidden');
 
                 modeBadge.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-term-red/15 text-term-red border border-term-red/40 font-bold uppercase tracking-wider";
-                modeBadge.textContent = "DEFCON 2 // HONEYPOT ACTIVE";
+                modeBadge.textContent = "STATUS // DEFCON 1 ENCRYPTED";
 
-                bypassLed.className = "absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-red";
-                toggleBtn.textContent = "DECOY MODE: ON";
-                toggleBtn.className = "px-3 py-1 rounded bg-term-red/20 border border-term-red/40 text-term-red hover:bg-term-red/30 transition text-[11px] font-bold";
-                clearance.textContent = "RESTRICTED_SANDBOX";
-
-                playHackerBeep(300, 'sawtooth', 0.2);
+                beaconLed.className = "absolute -top-1 -right-1 w-2 h-2 rounded-full bg-term-red";
+                lockBtn.classList.add('hidden');
+                clearance.textContent = "LEVEL_4_RESTRICTED";
             }
         }
 
-        window.toggleHoneypotManual = () => {
-            toggleGodMode(!isGodMode);
+        // ==================== EPIC RANSOMWARE / TROJAN PRANK CONTROLLER ====================
+        let isPrankActive = false;
+        let prankSecondsLeft = 299; // 04:59
+        let prankTimerInterval = null;
+        let prankLogInterval = null;
+
+        const fakeVictimFiles = [
+            "C:\\Windows\\System32\\drivers\\etc\\hosts -> [LOCKED WITH RSA-4096]",
+            "C:\\Users\\Admin\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> [EXFILTRATED]",
+            "D:\\Harsha\\NetworkSpeedTest_v14\\api_credentials.vault -> [ENCRYPTED: .LOCKBIT]",
+            "C:\\Windows\\System32\\config\\SAM -> [SECURITY ACCOUNT REGISTRY ENCRYPTED]",
+            "~/.ssh/id_rsa & known_hosts -> [DISPATCHED TO DARKNET RELAY]",
+            "Discord / Telegram Session Auth Tokens -> [LEAKED 185.220.101.5:443]",
+            "Crypto Wallets (MetaMask, Phantom, Ledger) -> [PRIVATE KEYS HARVESTED]",
+            "C:\\Users\\Admin\\Documents\\passwords.kdbx -> [CORRUPTED: ZERO-FILL OVERWRITE]",
+            "Kernel Memory Allocation Buffer 0x00FF88 -> [DUMPING TO ONION STREAM]",
+            "Hardware Master Boot Record (MBR) Sector 0 -> [RSA PAYLOAD INJECTED]",
+            "Drive C:\\ Sectors 1048576 - 4194304 -> [ENCRYPTION ROUND 3/3 FINISHED]"
+        ];
+
+        window.triggerTrojanPrank = (triggerReason = 'UNAUTHORIZED_ACCESS') => {
+            isPrankActive = true;
+            escapePressCount = 0;
+            document.body.classList.add('prank-shaking');
+            
+            const overlay = document.getElementById('trojanPrankOverlay');
+            overlay.classList.remove('hidden');
+            
+            startPrankAlarmSound();
+            
+            // Random IP spoof
+            document.getElementById('prankVictimIp').textContent = `192.168.1.${Math.floor(Math.random() * 200 + 10)}`;
+            
+            // Start Countdown Timer
+            prankSecondsLeft = 299.9;
+            clearInterval(prankTimerInterval);
+            prankTimerInterval = setInterval(() => {
+                prankSecondsLeft -= 0.1;
+                if (prankSecondsLeft <= 0) {
+                    prankSecondsLeft = 0;
+                    clearInterval(prankTimerInterval);
+                    document.getElementById('prankCountdown').textContent = "00:00.00 [PURGED]";
+                } else {
+                    const mins = Math.floor(prankSecondsLeft / 60);
+                    const secs = Math.floor(prankSecondsLeft % 60);
+                    const tenths = Math.floor((prankSecondsLeft % 1) * 100);
+                    document.getElementById('prankCountdown').textContent = 
+                        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(tenths).padStart(2, '0')}`;
+                }
+            }, 100);
+
+            // Fast Supersonic File Encryption Stream
+            const stream = document.getElementById('prankFileStream');
+            stream.innerHTML = '';
+            clearInterval(prankLogInterval);
+            prankLogInterval = setInterval(() => {
+                const randomFile = fakeVictimFiles[Math.floor(Math.random() * fakeVictimFiles.length)];
+                const div = document.createElement('div');
+                div.className = "text-[11px] font-mono leading-tight flex justify-between";
+                div.innerHTML = `<span class="text-red-400">⚡ ${randomFile}</span><span class="text-white font-bold ml-2">[DONE]</span>`;
+                stream.appendChild(div);
+                stream.scrollTop = stream.scrollHeight;
+            }, 60);
         };
 
-        // Decoy Fake Actions that Spew Hollywood Warnings!
-        window.triggerDecoyAction = (action) => {
-            playHackerBeep(250, 'sawtooth', 0.25);
-            if (action === 'OVERRIDE_FIREWALL') {
-                alert("CRITICAL ALARM: KERNEL REJECTION\n\nUnauthorized signature detected. Firewall lockout initiated. Network packet mirrored to security daemon.");
-                appendDecoyLog("ALERT: Intrusion signature logged in sandbox memory.");
-            } else if (action === 'PURGE_DATABASE') {
-                alert("ACCESS DENIED: CRYPTOGRAPHIC LOCK\n\nDatabase sector destruction requires dual-key root authorization. Action aborted.");
-                appendDecoyLog("SECURITY_PANIC: Attempt to purge repositories was blocked by Honeypot Trap.");
-            } else if (action === 'DECRYPT_ALL') {
-                alert("CIPHER MISMATCH: 0x889FA\n\nDecryption failed. Quantum key entropy invalid.");
-                appendDecoyLog("WARN: Decryption attempt failed. RSA cipher intact.");
-            } else if (action === 'EMERGENCY_LOCKDOWN') {
-                alert("LOCKDOWN SIMULATION ACTIVATED\n\nLocal ports isolated. Beacon active.");
-                appendDecoyLog("SYS: Sandbox simulated lockdown sequence.");
+        window.dismissPrank = () => {
+            isPrankActive = false;
+            document.body.classList.remove('prank-shaking');
+            document.getElementById('trojanPrankOverlay').classList.add('hidden');
+            stopPrankAlarmSound();
+            clearInterval(prankTimerInterval);
+            clearInterval(prankLogInterval);
+        };
+
+        window.copyPrankBtc = () => {
+            const btc = document.getElementById('prankBtcAddress').textContent.trim();
+            navigator.clipboard.writeText(btc);
+            const msg = document.getElementById('prankActionMsg');
+            msg.textContent = "WALLET ADDRESS COPIED TO CLIPBOARD! COUNTDOWN CONTINUES...";
+            msg.className = "text-[11px] text-yellow-300 font-bold block";
+            playSynthBeep(700, 'square', 0.1);
+        };
+
+        window.verifyPrankPayment = () => {
+            const msg = document.getElementById('prankActionMsg');
+            const btn = document.getElementById('verifyPaymentBtn');
+            btn.innerHTML = 'SCANNING MEMPOOL...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '[ VERIFY MEMPOOL ]';
+                btn.disabled = false;
+                
+                // Subtract 45 seconds from the timer as a terrifying penalty!
+                prankSecondsLeft = Math.max(10, prankSecondsLeft - 45);
+                msg.textContent = "ERROR: 0 CONFIRMATIONS DETECTED ON BITCOIN BLOCKCHAIN! PENALTY: 45 SECONDS DEDUCTED!";
+                msg.className = "text-[11px] text-red-400 font-bold block animate-bounce";
+                playSynthBeep(250, 'sawtooth', 0.3);
+            }, 1200);
+        };
+
+        window.submitRescueKey = () => {
+            const keyInput = document.getElementById('rescueKeyInput');
+            const val = keyInput.value.trim().toLowerCase();
+            keyInput.value = '';
+
+            // Cryptographic vector validation
+            const _authorizedSignatures = ['altmvgr', 'root', 'unlock', 'disarm', '1337', 'matrix', 'admin'];
+            if (_authorizedSignatures.includes(val)) {
+                dismissPrank();
+                _elevateRootSession();
+                alert("MASTER CRYPTOGRAPHIC SIGNATURE CONFIRMED.\n\nAll encrypted sectors restored. Enclave elevation verified.");
+            } else {
+                playSynthBeep(200, 'sawtooth', 0.4);
+                alert("CHECKSUM FAILURE: 0x88F09\n\nInvalid private key hash! Cryptographic mismatch detected. Purge sequence accelerated.");
+                prankSecondsLeft = Math.max(10, prankSecondsLeft - 30);
             }
         };
 
-        function appendDecoyLog(text) {
-            const stream = document.getElementById('decoyLogStream');
+        function appendEnclaveLog(text) {
+            const stream = document.getElementById('enclaveLogStream');
             const now = new Date().toTimeString().split(' ')[0];
             const div = document.createElement('div');
-            div.className = "text-term-red text-[10px]";
+            div.className = "text-slate-400 text-[10px]";
             div.textContent = `[${now}] ${text}`;
             stream.appendChild(div);
             stream.scrollTop = stream.scrollHeight;
         }
 
-        // Fill initial decoy log stream
-        const initialDecoyLogs = [
-            "[TRAP_DAEMON] Initialized on IP: 192.168.1.104",
-            "[SANDBOX] Honeypot containment protocol version 4.2 armed.",
-            "[NET_SNIFFER] 42 honeypot socket connections listening.",
-            "[SECURITY] Ready for intruder entrapment."
+        const initialEnclaveLogs = [
+            "[ENCLAVE_INIT] Hardware security module synchronized on port 443.",
+            "[SYSCALL_FILTER] Zero-trust ingress proxy initialized (10.244.0.1).",
+            "[SOCKET_DAEMON] 4 live threat intercept channels listening.",
+            "[TELEMETRY] Cryptographic key handshake established."
         ];
-        initialDecoyLogs.forEach(l => appendDecoyLog(l));
+        initialEnclaveLogs.forEach(l => appendEnclaveLog(l));
 
         // ==================== REAL FIREBASE DATABASE PIPELINE ====================
         window.createNewUser = async () => {
@@ -954,7 +1243,7 @@
                     total++;
                     if(u.isBlocked) blocked++;
 
-                    const isSelf = uid === currentUser.uid;
+                    const isSelf = uid === currentUser?.uid;
                     const statusBadge = u.isBlocked 
                         ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-red/20 text-term-red border border-term-red/40">BLOCKED</span>`
                         : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-green/20 text-term-green border border-term-green/40">AUTHORIZED</span>`;
@@ -1008,12 +1297,12 @@
             } catch (e) {
                 console.error(e);
             }
-        }
+        };
 
         window.setBlock = async (uid, state) => {
             await updateDoc(doc(db, "users", uid), { isBlocked: state });
             loadUsers();
-        }
+        };
 
         window.deleteUserDoc = async (uid) => {
             if(confirm("PERMANENTLY PURGE OPERATOR FROM DATABASE?")) {
@@ -1024,7 +1313,7 @@
                     alert("Error deleting user: " + e.message);
                 }
             }
-        }
+        };
 
         window.currentResetEmail = null;
         window.resetUserPassword = (email) => {
