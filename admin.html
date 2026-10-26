@@ -96,7 +96,7 @@
             animation: alarm-pulse 0.8s infinite;
         }
 
-        /* Screen Shake for Ransomware / Trojan Panic */
+        /* Screen Shake for Security Lockout Alert */
         @keyframes screen-glitch-shake {
             0% { transform: translate(0, 0) scale(1); }
             10% { transform: translate(-3px, 2px) scale(1.002); }
@@ -114,13 +114,13 @@
             animation: screen-glitch-shake 0.22s infinite;
         }
 
-        /* Strobe flash for prank */
-        @keyframes blood-strobe {
+        /* Strobe flash for alert */
+        @keyframes alert-strobe {
             0%, 100% { background-color: rgba(15, 0, 4, 0.98); }
-            50% { background-color: rgba(50, 0, 10, 0.98); }
+            50% { background-color: rgba(45, 0, 10, 0.98); }
         }
-        .trojan-backdrop {
-            animation: blood-strobe 1.2s infinite;
+        .defense-backdrop {
+            animation: alert-strobe 1.2s infinite;
         }
 
         /* Text Glow */
@@ -279,7 +279,7 @@
                 </div>
             </div>
 
-            <!-- Interactive Threat Controls (Triggers Ransomware / Trojan Prank if tampered with!) -->
+            <!-- Interactive Threat Controls (Triggers Security Containment if tampered with!) -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left (7 Cols): Administrative Subroutines -->
                 <div class="lg:col-span-7 term-card p-5 rounded space-y-4">
@@ -295,7 +295,7 @@
                     </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 font-mono text-xs">
-                        <button onclick="triggerTrojanPrank('FIREWALL_PURGE')" class="p-3 bg-term-void border border-term-amber/50 hover:bg-term-amber/10 text-term-amber font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerSecurityLockout('FIREWALL_PURGE')" class="p-3 bg-term-void border border-term-amber/50 hover:bg-term-amber/10 text-term-amber font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> FLUSH KERNEL FIREWALL</div>
                                 <div class="text-[10px] text-slate-500 font-normal">Purges iptables & routing tables</div>
@@ -303,7 +303,7 @@
                             <span class="text-base group-hover:scale-125 transition">⚠️</span>
                         </button>
 
-                        <button onclick="triggerTrojanPrank('PURGE_ALL_DATA')" class="p-3 bg-term-void border border-term-red/50 hover:bg-term-red/10 text-term-red font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerSecurityLockout('PURGE_ALL_DATA')" class="p-3 bg-term-void border border-term-red/50 hover:bg-term-red/10 text-term-red font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> PURGE ALL REPOSITORIES</div>
                                 <div class="text-[10px] text-slate-500 font-normal">Deconstructs database sectors</div>
@@ -311,7 +311,7 @@
                             <span class="text-base group-hover:scale-125 transition">☠</span>
                         </button>
 
-                        <button onclick="triggerTrojanPrank('EXFIL_KEYS')" class="p-3 bg-term-void border border-term-cyan/50 hover:bg-term-cyan/10 text-term-cyan font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerSecurityLockout('EXFIL_KEYS')" class="p-3 bg-term-void border border-term-cyan/50 hover:bg-term-cyan/10 text-term-cyan font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> EXFILTRATE CIPHER KEYS</div>
                                 <div class="text-[10px] text-slate-500 font-normal">Dumps memory allocation buffer</div>
@@ -319,7 +319,7 @@
                             <span class="text-base group-hover:scale-125 transition">🔓</span>
                         </button>
 
-                        <button onclick="triggerTrojanPrank('ZERO_DAY_DEPLOY')" class="p-3 bg-term-void border border-term-green/50 hover:bg-term-green/10 text-term-green font-bold rounded text-left transition flex items-center justify-between group">
+                        <button onclick="triggerSecurityLockout('ZERO_DAY_DEPLOY')" class="p-3 bg-term-void border border-term-green/50 hover:bg-term-green/10 text-term-green font-bold rounded text-left transition flex items-center justify-between group">
                             <div>
                                 <div class="group-hover:translate-x-1 transition">>> DECRYPT API GATEWAY VAULT</div>
                                 <div class="text-[10px] text-slate-500 font-normal">Bypasses RSA payload wrapping</div>
@@ -335,11 +335,11 @@
                             <span class="text-term-amber">AES-GCM WRAPPED</span>
                         </div>
                         <div class="space-y-1.5 font-mono text-xs">
-                            <div onclick="triggerTrojanPrank('CLUSTER_INSPECT')" class="p-2.5 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400 cursor-pointer hover:border-term-red transition">
+                            <div onclick="triggerSecurityLockout('CLUSTER_INSPECT')" class="p-2.5 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400 cursor-pointer hover:border-term-red transition">
                                 <span>CORE 0: [LOCKED] 0x48FA_TITAN_LLM_GATEWAY</span>
                                 <span class="text-term-red">SYSCALL BLOCKED</span>
                             </div>
-                            <div onclick="triggerTrojanPrank('CLUSTER_INSPECT')" class="p-2.5 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400 cursor-pointer hover:border-term-red transition">
+                            <div onclick="triggerSecurityLockout('CLUSTER_INSPECT')" class="p-2.5 rounded bg-term-void border border-slate-800 flex justify-between text-slate-400 cursor-pointer hover:border-term-red transition">
                                 <span>CORE 1: [LOCKED] 0x992B_NEURAL_ROUTING_SOCKET</span>
                                 <span class="text-term-amber">WAITING AUTH</span>
                             </div>
@@ -616,40 +616,40 @@
     </main>
 
     <!-- ========================================================================= -->
-    <!-- RANSOMWARE / TROJAN PRANK MODAL (HOLLYWOOD HACKER PANIC OVERLAY)          -->
+    <!-- DEFCON 1 SECURITY CONTAINMENT OVERLAY (HOLLYWOOD CYBER DEFENSE LOCKDOWN) -->
     <!-- ========================================================================= -->
-    <div id="trojanPrankOverlay" class="fixed inset-0 z-[99999] hidden flex flex-col justify-between p-4 sm:p-8 trojan-backdrop text-red-500 font-mono select-none overflow-hidden">
+    <div id="securityLockoutOverlay" class="fixed inset-0 z-[99999] hidden flex flex-col justify-between p-4 sm:p-8 defense-backdrop text-red-500 font-mono select-none overflow-hidden">
         
-        <!-- Prank Scanline Overlay -->
-        <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/40 via-black/80 to-black z-0"></div>
+        <!-- Scanline Overlay -->
+        <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/40 via-black/85 to-black z-0"></div>
 
-        <!-- Top Header: Biohazard & Threat Alert -->
+        <!-- Top Header: Defense & Containment Alert -->
         <div class="relative z-10 border-b-2 border-red-600 pb-3 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <span class="text-4xl animate-bounce">☠️</span>
+                <span class="text-4xl animate-bounce">⚠️</span>
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-black font-hud tracking-widest text-red-500 glow-red uppercase">
-                        CRITICAL SYSTEM LOCKOUT // TROJAN.WIN64.LOCKBIT.ZERO-DAY
+                        CRITICAL SECURITY INTERCEPT // DEFENSE PROTOCOL TITAN-C2
                     </h1>
                     <p class="text-xs text-red-400/90 font-mono">
-                        HOST MACHINE COMPROMISED. ALL LOCAL DRIVES, BROWSER SESSIONS & MASTER IDENTIFIERS ARE ENCRYPTED.
+                        UNAUTHORIZED ACCESS SIGNATURE LOGGED. HARDWARE ENCLAVE AIR-GAP ISOLATION ENGAGED.
                     </p>
                 </div>
             </div>
             <div class="text-right font-mono">
-                <div class="text-xs text-red-400">CIPHER: <strong class="text-white">AES-256 + RSA-4096</strong></div>
-                <div class="text-[10px] text-red-600">VIOLATION ID: #0x992B-EXPLOIT-CAUGHT</div>
+                <div class="text-xs text-red-400">CONTAINMENT: <strong class="text-white">AIR-GAP RESTRICTED</strong></div>
+                <div class="text-[10px] text-red-600">INCIDENT ID: #0x992B-SECURITY-AUDIT</div>
             </div>
         </div>
 
-        <!-- Center Stage: Big Giant Countdown & Live File Encryption Stream -->
+        <!-- Center Stage: Big Giant Countdown & Live Security Event Stream -->
         <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto py-4">
             
-            <!-- Left (5 Cols): Countdown Clock & Ransom Demand -->
+            <!-- Left (5 Cols): Countdown Clock & Defense Controls -->
             <div class="lg:col-span-5 bg-black/90 border-2 border-red-600/80 p-5 rounded shadow-[0_0_50px_rgba(255,0,60,0.4)] flex flex-col justify-between space-y-4">
                 <div>
                     <div class="text-xs text-red-400 uppercase tracking-widest flex items-center justify-between">
-                        <span>TIME REMAINING BEFORE ZERO-FILL PURGE:</span>
+                        <span>TIME REMAINING BEFORE INCIDENT DISPATCH:</span>
                         <span class="animate-ping w-2 h-2 rounded-full bg-red-500"></span>
                     </div>
                     
@@ -659,59 +659,58 @@
                     </div>
                     
                     <p class="text-[11px] text-slate-300 leading-relaxed font-mono">
-                        Your private files, documents, passwords, system registry, and browser keystrokes have been encrypted. 
-                        If the countdown hits zero, or if you reboot the machine, the private decryption key will be permanently destroyed.
+                        Unauthorized access attempt detected by network anomaly filters. Upstream cluster gateway disconnected. Forensic telemetry snapshot scheduled for transmission to central security repository.
                     </p>
                 </div>
 
-                <!-- Ransom Bitcoin Wallet -->
+                <!-- Interactive Diagnostic Sandbox -->
                 <div class="bg-red-950/40 border border-red-500/50 p-3 rounded space-y-2">
                     <div class="text-[11px] text-red-300 uppercase font-bold flex justify-between">
-                        <span>DECRYPTION RANSOM DEMAND:</span>
-                        <span class="text-white font-bold">1.85 BTC ($128,400 USD)</span>
+                        <span>CONTAINMENT ACTION:</span>
+                        <span class="text-white font-bold">ZERO-TRUST AIR-GAP</span>
                     </div>
-                    <div class="p-2 bg-black/80 border border-red-800 rounded text-center text-xs text-red-400 font-bold select-all break-all" id="prankBtcAddress">
-                        bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq
+                    <div class="p-2 bg-black/80 border border-red-800 rounded text-center text-xs text-red-400 font-bold font-mono">
+                        STATUS: ENCLAVE LOCKOUT ACTIVE // PORT 443 ISOLATED
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="copyPrankBtc()" id="copyBtcBtn" class="flex-1 py-1.5 bg-red-900/60 hover:bg-red-800 border border-red-500 text-white font-bold text-xs rounded transition uppercase">
-                            [ COPY WALLET ADDRESS ]
+                        <button onclick="dispatchAuditTelemetry()" id="dispatchAuditBtn" class="flex-1 py-1.5 bg-red-900/60 hover:bg-red-800 border border-red-500 text-white font-bold text-xs rounded transition uppercase">
+                            [ DISPATCH LOG ]
                         </button>
-                        <button onclick="verifyPrankPayment()" id="verifyPaymentBtn" class="flex-1 py-1.5 bg-yellow-950/60 hover:bg-yellow-900 border border-yellow-500 text-yellow-400 font-bold text-xs rounded transition uppercase">
-                            [ VERIFY MEMPOOL ]
+                        <button onclick="verifyProtocolSync()" id="verifySyncBtn" class="flex-1 py-1.5 bg-yellow-950/60 hover:bg-yellow-900 border border-yellow-500 text-yellow-400 font-bold text-xs rounded transition uppercase">
+                            [ VERIFY RE-SYNC ]
                         </button>
                     </div>
                     <div id="prankActionMsg" class="hidden text-[10px] text-center text-yellow-300 font-bold"></div>
                 </div>
 
-                <!-- Decryption Ingress Port -->
+                <!-- Clearance Token Ingress (Your Secret Bypass!) -->
                 <div class="pt-2 border-t border-red-900/60 space-y-2">
-                    <label class="block text-[10px] text-red-400 uppercase">ENTER 64-CHAR RSA RESCUE TOKEN:</label>
+                    <label class="block text-[10px] text-red-400 uppercase">ENTER 64-CHAR CLEARANCE TOKEN:</label>
                     <div class="flex gap-2">
-                        <input type="text" id="rescueKeyInput" placeholder="Paste emergency private key..." class="flex-1 bg-black border border-red-700 p-2 text-xs text-red-400 outline-none focus:border-red-500 font-mono">
-                        <button onclick="submitRescueKey()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-black font-bold text-xs rounded transition uppercase">
-                            DECRYPT
+                        <input type="text" id="rescueKeyInput" placeholder="Enter clearance signature..." class="flex-1 bg-black border border-red-700 p-2 text-xs text-red-400 outline-none focus:border-red-500 font-mono">
+                        <button onclick="submitClearanceToken()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-black font-bold text-xs rounded transition uppercase">
+                            VALIDATE
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Right (7 Cols): High-Speed File Encryption Terminal Stream -->
+            <!-- Right (7 Cols): High-Speed Containment Event Stream -->
             <div class="lg:col-span-7 bg-black/90 border border-red-600/60 p-4 rounded flex flex-col h-[400px] shadow-[inset_0_0_20px_rgba(255,0,0,0.2)]">
                 <div class="flex items-center justify-between pb-2 border-b border-red-900 mb-2">
                     <span class="text-xs font-bold text-red-400 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> LIVE SECTOR ENCRYPTION LOG
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> LIVE CONTAINMENT EVENT STREAM
                     </span>
-                    <span class="text-[10px] text-slate-500">THREADS: 32 EXPLOIT WORKERS</span>
+                    <span class="text-[10px] text-slate-500">THREADS: 32 DEFENSE CORES</span>
                 </div>
 
                 <div id="prankFileStream" class="flex-1 overflow-y-auto space-y-1 text-[11px] font-mono text-red-400/90 pr-1">
-                    <!-- High speed logs injected by JS -->
+                    <!-- High speed containment logs injected by JS -->
                 </div>
 
                 <div class="pt-2 border-t border-red-950 text-[10px] text-red-600 flex justify-between">
-                    <span>HOST IP: <span id="prankVictimIp">192.168.1.104</span> EXFILTRATED</span>
-                    <span class="text-red-400 font-bold">HARDWARE LOCKED</span>
+                    <span>HOST IP: <span id="prankVictimIp">192.168.1.104</span> QUARANTINED</span>
+                    <span class="text-red-400 font-bold">SYSCALL INTERCEPTED</span>
                 </div>
             </div>
 
@@ -719,7 +718,7 @@
 
         <!-- Prank Footer -->
         <div class="relative z-10 text-center text-[11px] text-red-600/70 border-t border-red-900/60 pt-2 font-mono">
-            <span>DO NOT CLOSE BROWSER OR TERMINATE PROCESSES. MEMORY CIPHER DESTABILIZATION WILL CAUSE IRREVERSIBLE DATA LOSS.</span>
+            <span>TERMINAL ISOLATION ACTIVE. ALL COMMAND INVOCATIONS ARE LOGGED TO LOCAL AIR-GAPPED SECURITY AUDIT REGISTRY.</span>
         </div>
     </div>
 
@@ -847,7 +846,7 @@
             } catch(e){}
         }
 
-        // Air-Raid / Klaxon Pulsing Siren for Trojan Prank
+        // Air-Raid / Klaxon Pulsing Siren for Security Alert
         function startPrankAlarmSound() {
             if (!sfxEnabled || !audioCtx) return;
             try {
@@ -970,9 +969,9 @@
             } else if (cmd === 'matrix') {
                 toggleMatrixRain();
                 appendEnclaveLog(`SYS: Matrix data waterfall ${matrixActive ? 'ACTIVATED' : 'MUTED'}.`);
-            } else if (['sudo', 'hack', 'override', 'passwd', 'rm', 'format', 'wipe', 'trojan', 'exploit', 'inject'].some(t => cmd.includes(t))) {
-                // If they try unauthorized aggressive commands, fire the Trojan Prank!
-                triggerTrojanPrank('UNAUTHORIZED_CLI_SYSCALL: ' + cmd);
+            } else if (['sudo', 'hack', 'override', 'passwd', 'rm', 'format', 'wipe', 'breach', 'exploit', 'inject'].some(t => cmd.includes(t))) {
+                // If unauthorized aggressive commands are invoked, fire security lockout!
+                triggerSecurityLockout('UNAUTHORIZED_CLI_SYSCALL: ' + cmd);
             } else {
                 appendEnclaveLog(`WARN: daemon command '${cmd}' rejected by enclave sandbox.`);
             }
@@ -1029,32 +1028,31 @@
             }
         }
 
-        // ==================== EPIC RANSOMWARE / TROJAN PRANK CONTROLLER ====================
+        // ==================== SECURITY CONTAINMENT & DEFENSE OVERLAY CONTROLLER ====================
         let isPrankActive = false;
         let prankSecondsLeft = 299; // 04:59
         let prankTimerInterval = null;
         let prankLogInterval = null;
 
-        const fakeVictimFiles = [
-            "C:\\Windows\\System32\\drivers\\etc\\hosts -> [LOCKED WITH RSA-4096]",
-            "C:\\Users\\Admin\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> [EXFILTRATED]",
-            "C:\\TitanSecurity\\Enclave\\api_credentials.vault -> [ENCRYPTED: .LOCKBIT]",
-            "C:\\Windows\\System32\\config\\SAM -> [SECURITY ACCOUNT REGISTRY ENCRYPTED]",
-            "~/.ssh/id_rsa & known_hosts -> [DISPATCHED TO DARKNET RELAY]",
-            "Discord / Telegram Session Auth Tokens -> [LEAKED 185.220.101.5:443]",
-            "Crypto Wallets (MetaMask, Phantom, Ledger) -> [PRIVATE KEYS HARVESTED]",
-            "C:\\Users\\Admin\\Documents\\passwords.kdbx -> [CORRUPTED: ZERO-FILL OVERWRITE]",
-            "Kernel Memory Allocation Buffer 0x00FF88 -> [DUMPING TO ONION STREAM]",
-            "Hardware Master Boot Record (MBR) Sector 0 -> [RSA PAYLOAD INJECTED]",
-            "Drive C:\\ Sectors 1048576 - 4194304 -> [ENCRYPTION ROUND 3/3 FINISHED]"
+        const fakeContainmentEvents = [
+            "Ingress socket 192.168.1.104 flagged by neural anomaly filter -> [QUARANTINED]",
+            "Local network socket disconnected from upstream cluster gateway -> [ISOLATED]",
+            "Unauthorized memory allocation attempt intercepted on Core 0 -> [BLOCKED]",
+            "TCP socket 8080 redirected to honeynet sandbox sinkhole -> [REROUTED]",
+            "Dispatching connection metadata to incident dispatch registry -> [LOGGED]",
+            "Subsystem routing locked to loopback pseudo-interface -> [LOCKED]",
+            "Cryptographic hardware keys sequestered behind dual-key barrier -> [SECURED]",
+            "Forensic RAM snapshot committed to air-gapped containment block -> [SYNCED]",
+            "Firewall rule 42-A applied: inbound packets dropped with zero ACK -> [ENFORCED]",
+            "Terminal command stream mirrored to internal forensic recorder -> [ACTIVE]"
         ];
 
-        window.triggerTrojanPrank = (triggerReason = 'UNAUTHORIZED_ACCESS') => {
+        window.triggerSecurityLockout = (triggerReason = 'UNAUTHORIZED_ACCESS') => {
             isPrankActive = true;
             escapePressCount = 0;
             document.body.classList.add('prank-shaking');
             
-            const overlay = document.getElementById('trojanPrankOverlay');
+            const overlay = document.getElementById('securityLockoutOverlay');
             overlay.classList.remove('hidden');
             
             startPrankAlarmSound();
@@ -1070,7 +1068,7 @@
                 if (prankSecondsLeft <= 0) {
                     prankSecondsLeft = 0;
                     clearInterval(prankTimerInterval);
-                    document.getElementById('prankCountdown').textContent = "00:00.00 [PURGED]";
+                    document.getElementById('prankCountdown').textContent = "00:00.00 [DISPATCHED]";
                 } else {
                     const mins = Math.floor(prankSecondsLeft / 60);
                     const secs = Math.floor(prankSecondsLeft % 60);
@@ -1080,57 +1078,55 @@
                 }
             }, 100);
 
-            // Fast Supersonic File Encryption Stream
+            // Fast Telemetry Event Stream
             const stream = document.getElementById('prankFileStream');
             stream.innerHTML = '';
             clearInterval(prankLogInterval);
             prankLogInterval = setInterval(() => {
-                const randomFile = fakeVictimFiles[Math.floor(Math.random() * fakeVictimFiles.length)];
+                const randomEvent = fakeContainmentEvents[Math.floor(Math.random() * fakeContainmentEvents.length)];
                 const div = document.createElement('div');
                 div.className = "text-[11px] font-mono leading-tight flex justify-between";
-                div.innerHTML = `<span class="text-red-400">⚡ ${randomFile}</span><span class="text-white font-bold ml-2">[DONE]</span>`;
+                div.innerHTML = `<span class="text-red-400">⚡ ${randomEvent}</span><span class="text-white font-bold ml-2">[ACTIVE]</span>`;
                 stream.appendChild(div);
                 stream.scrollTop = stream.scrollHeight;
             }, 60);
         };
 
-        window.dismissPrank = () => {
+        window.dismissSecurityLockout = () => {
             isPrankActive = false;
             document.body.classList.remove('prank-shaking');
-            document.getElementById('trojanPrankOverlay').classList.add('hidden');
+            document.getElementById('securityLockoutOverlay').classList.add('hidden');
             stopPrankAlarmSound();
             clearInterval(prankTimerInterval);
             clearInterval(prankLogInterval);
         };
+        window.dismissPrank = window.dismissSecurityLockout; // alias
 
-        window.copyPrankBtc = () => {
-            const btc = document.getElementById('prankBtcAddress').textContent.trim();
-            navigator.clipboard.writeText(btc);
+        window.dispatchAuditTelemetry = () => {
             const msg = document.getElementById('prankActionMsg');
-            msg.textContent = "WALLET ADDRESS COPIED TO CLIPBOARD! COUNTDOWN CONTINUES...";
+            msg.textContent = "INCIDENT AUDIT DISPATCHED TO CENTRAL SECURITY LOGGER!";
             msg.className = "text-[11px] text-yellow-300 font-bold block";
             playSynthBeep(700, 'square', 0.1);
         };
 
-        window.verifyPrankPayment = () => {
+        window.verifyProtocolSync = () => {
             const msg = document.getElementById('prankActionMsg');
-            const btn = document.getElementById('verifyPaymentBtn');
-            btn.innerHTML = 'SCANNING MEMPOOL...';
+            const btn = document.getElementById('verifySyncBtn');
+            btn.innerHTML = 'VERIFYING SYNC...';
             btn.disabled = true;
 
             setTimeout(() => {
-                btn.innerHTML = '[ VERIFY MEMPOOL ]';
+                btn.innerHTML = '[ VERIFY RE-SYNC ]';
                 btn.disabled = false;
                 
-                // Subtract 45 seconds from the timer as a terrifying penalty!
                 prankSecondsLeft = Math.max(10, prankSecondsLeft - 45);
-                msg.textContent = "ERROR: 0 CONFIRMATIONS DETECTED ON BITCOIN BLOCKCHAIN! PENALTY: 45 SECONDS DEDUCTED!";
+                msg.textContent = "ALERT: RE-SYNC SIGNATURE REJECTED! PENALTY: 45 SECONDS DEDUCTED!";
                 msg.className = "text-[11px] text-red-400 font-bold block animate-bounce";
                 playSynthBeep(250, 'sawtooth', 0.3);
             }, 1200);
         };
 
-        window.submitRescueKey = () => {
+        window.submitClearanceToken = () => {
             const keyInput = document.getElementById('rescueKeyInput');
             const val = keyInput.value.trim().toLowerCase();
             keyInput.value = '';
@@ -1138,15 +1134,16 @@
             // Cryptographic vector validation
             const _authorizedSignatures = ['altmvgr', 'root', 'unlock', 'disarm', '1337', 'admin'];
             if (_authorizedSignatures.includes(val)) {
-                dismissPrank();
+                dismissSecurityLockout();
                 _elevateRootSession();
-                alert("MASTER CRYPTOGRAPHIC SIGNATURE CONFIRMED.\n\nAll encrypted sectors restored. Enclave elevation verified.");
+                alert("CLEARANCE SIGNATURE VALIDATED.\n\nHardware enclave unlocked. Superuser root session elevated.");
             } else {
                 playSynthBeep(200, 'sawtooth', 0.4);
-                alert("CHECKSUM FAILURE: 0x88F09\n\nInvalid private key hash! Cryptographic mismatch detected. Purge sequence accelerated.");
+                alert("ACCESS DENIED: 0x88F09\n\nInvalid clearance signature! Anomaly logged. Incident countdown penalized.");
                 prankSecondsLeft = Math.max(10, prankSecondsLeft - 30);
             }
         };
+        window.submitRescueKey = window.submitClearanceToken; // alias
 
         function appendEnclaveLog(text) {
             const stream = document.getElementById('enclaveLogStream');
