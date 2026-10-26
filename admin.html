@@ -20,15 +20,15 @@
             theme: {
                 extend: {
                     colors: {
-                        'term-void': '#040608',
-                        'term-surface': '#080c12',
-                        'term-panel': '#0c121c',
+                        'term-void': '#0a1019',
+                        'term-surface': '#111b2b',
+                        'term-panel': '#162338',
                         'term-green': '#00ff66',
-                        'term-green-dim': 'rgba(0, 255, 102, 0.15)',
+                        'term-green-dim': 'rgba(0, 255, 102, 0.18)',
                         'term-cyan': '#00e5ff',
                         'term-amber': '#ffb000',
                         'term-red': '#ff003c',
-                        'term-border': 'rgba(0, 255, 102, 0.25)',
+                        'term-border': 'rgba(0, 255, 102, 0.32)',
                     },
                     fontFamily: {
                         mono: ['"Share Tech Mono"', '"Fira Code"', 'monospace'],
@@ -49,8 +49,9 @@
         }
 
         body {
-            background-color: #040608;
-            color: #bbf7d0;
+            background: radial-gradient(circle at 50% 18%, #141f30 0%, #0a111c 65%, #060a12 100%);
+            background-color: #0a111c;
+            color: #c7f9cc;
             font-family: 'Share Tech Mono', monospace;
             overflow-x: hidden;
             min-height: 100vh;
@@ -61,29 +62,29 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.18) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
             background-size: 100% 3px, 6px 100%;
             z-index: 990;
-            opacity: 0.6;
+            opacity: 0.25;
         }
 
         /* CRT Screen Vignette */
         .crt-glow {
-            box-shadow: inset 0 0 100px rgba(0, 255, 102, 0.06);
+            box-shadow: inset 0 0 120px rgba(0, 255, 102, 0.09);
         }
 
         /* Hacker Term Card */
         .term-card {
-            background: rgba(10, 16, 24, 0.94);
-            border: 1px solid rgba(0, 255, 102, 0.22);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(0, 255, 102, 0.03);
+            background: rgba(14, 22, 35, 0.94);
+            border: 1px solid rgba(0, 255, 102, 0.28);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(0, 255, 102, 0.05);
             position: relative;
             transition: all 0.2s ease;
         }
         .term-card:hover {
-            border-color: rgba(0, 255, 102, 0.45);
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.12), inset 0 0 16px rgba(0, 255, 102, 0.05);
+            border-color: rgba(0, 255, 102, 0.55);
+            box-shadow: 0 0 22px rgba(0, 255, 102, 0.16), inset 0 0 18px rgba(0, 255, 102, 0.08);
         }
 
         /* Alert Flasher */
@@ -149,7 +150,7 @@
             width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.12;
+            opacity: 0.30;
         }
 
         /* Custom Scrollbar */
@@ -1581,10 +1582,10 @@
 
         function drawMatrix() {
             if (!matrixActive) return;
-            ctx.fillStyle = 'rgba(4, 6, 8, 0.08)';
+            ctx.fillStyle = 'rgba(10, 17, 28, 0.10)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = '#00ff66';
+            ctx.fillStyle = '#00ff77';
             ctx.font = `${fontSize}px monospace`;
 
             for (let i = 0; i < drops.length; i++) {
