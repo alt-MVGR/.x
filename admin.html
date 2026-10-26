@@ -567,13 +567,16 @@
 
                     <!-- Real User Registry Table -->
                     <div class="term-card p-5 rounded space-y-3">
-                        <div class="flex items-center justify-between pb-2 border-b border-term-border/40">
+                        <div class="flex flex-wrap items-center justify-between pb-2 border-b border-term-border/40 gap-2">
                             <h3 class="font-hud font-bold text-base text-white uppercase flex items-center gap-2">
-                                <i data-lucide="users" class="w-4 h-4 text-term-green"></i> REGISTERED OPERATORS (FIRESTORE)
+                                <i data-lucide="users" class="w-4 h-4 text-term-green"></i> REGISTERED OPERATORS (A-Z)
                             </h3>
-                            <button onclick="loadUsers()" class="p-1 rounded bg-term-void border border-term-border/40 text-slate-400 hover:text-term-green" title="Sync Users">
-                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="user-filter-input" oninput="filterUsersList()" placeholder="Filter email..." class="px-2 py-0.5 bg-term-void border border-slate-700 rounded text-white text-[11px] font-mono outline-none focus:border-term-green w-32 sm:w-40">
+                                <button onclick="loadUsers()" class="p-1 rounded bg-term-void border border-term-border/40 text-slate-400 hover:text-term-green" title="Sync Users">
+                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="overflow-x-auto max-h-[350px]">
@@ -751,11 +754,16 @@
                     <!-- Injected by renderKeysList() -->
                 </div>
 
-                <div class="pt-3 border-t border-slate-800 flex justify-end gap-2 font-hud">
-                    <button onclick="closeKeyModal()" class="px-4 py-1.5 rounded bg-slate-800 text-slate-300 hover:text-white text-xs">DISMISS</button>
-                    <button onclick="saveKeys()" id="save-keys-btn" class="px-5 py-1.5 rounded bg-term-green hover:bg-emerald-400 text-black font-bold text-xs transition">
-                        SAVE ROTATION
+                <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 font-hud">
+                    <button onclick="importAllSystemKeysToCurrentModal()" type="button" class="px-3 py-1.5 rounded bg-term-amber/20 hover:bg-term-amber/30 text-term-amber border border-term-amber/40 text-xs font-bold font-mono flex items-center gap-1.5">
+                        <i data-lucide="layers" class="w-3.5 h-3.5"></i> ASSIGN ALL SYSTEM KEYS
                     </button>
+                    <div class="flex gap-2">
+                        <button onclick="closeKeyModal()" class="px-4 py-1.5 rounded bg-slate-800 text-slate-300 hover:text-white text-xs">DISMISS</button>
+                        <button onclick="saveKeys()" id="save-keys-btn" class="px-5 py-1.5 rounded bg-term-green hover:bg-emerald-400 text-black font-bold text-xs transition">
+                            SAVE ROTATION
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -969,6 +977,13 @@
             } else if (cmd === 'matrix') {
                 toggleMatrixRain();
                 appendEnclaveLog(`SYS: Matrix data waterfall ${matrixActive ? 'ACTIVATED' : 'MUTED'}.`);
+            } else if (cmd.startsWith('assign-all')) {
+                const parts = cmd.split(' ');
+                if (parts.length > 1) {
+                    assignAllKeysToUser(parts[1].trim());
+                } else {
+                    alert("Usage: assign-all <UID>");
+                }
             } else if (['sudo', 'hack', 'override', 'passwd', 'rm', 'format', 'wipe', 'breach', 'exploit', 'inject'].some(t => cmd.includes(t))) {
                 // If unauthorized aggressive commands are invoked, fire security lockout!
                 triggerSecurityLockout('UNAUTHORIZED_CLI_SYSCALL: ' + cmd);
@@ -1229,75 +1244,148 @@
             loadUsers();
         });
 
+        window.allUsersCache = [];
+
         window.loadUsers = async () => {
             const tbody = document.getElementById('user-rows');
             tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500 font-mono">Syncing Firestore socket...</td></tr>';
             
             try {
                 const query = await getDocs(collection(db, "users"));
-                let html = '';
                 let total = 0, blocked = 0;
+                const list = [];
 
                 query.forEach(docSnap => {
                     const u = docSnap.data();
                     const uid = docSnap.id;
                     total++;
                     if(u.isBlocked) blocked++;
-
-                    const isSelf = uid === currentUser?.uid;
-                    const statusBadge = u.isBlocked 
-                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-red/20 text-term-red border border-term-red/40">BLOCKED</span>`
-                        : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-green/20 text-term-green border border-term-green/40">AUTHORIZED</span>`;
-                    
-                    const roleBadge = u.role === 'admin' 
-                        ? `<span class="text-term-cyan border border-term-cyan/40 px-2 py-0.5 rounded text-[10px] font-bold">ADMIN</span>`
-                        : `<span class="text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-[10px] font-bold">USER</span>`;
-
-                    let keysArray = [];
-                    if (u.apiKeys && Array.isArray(u.apiKeys)) keysArray = u.apiKeys;
-                    else if (u.apiKey) keysArray = [u.apiKey];
-                    const keysStr = keysArray.join(',');
-                    
-                    const safeEmail = u.email || 'unknown@user.com';
-                    
-                    let actionBtn = '';
-                    if (!isSelf) {
-                        let dropdownHtml = `
-                        <div class="flex items-center justify-end gap-1.5 font-mono text-[11px]">
-                            <button onclick="openKeyModal('${uid}', '${keysStr}')" class="px-2 py-1 rounded bg-term-void hover:bg-term-amber/20 text-term-amber border border-term-amber/40 transition">KEYS (${keysArray.length})</button>
-                            ${u.isBlocked 
-                                ? `<button onclick="setBlock('${uid}', false)" class="px-2 py-1 rounded bg-term-void hover:bg-term-green/20 text-term-green border border-term-green/40 transition">UNBLOCK</button>` 
-                                : `<button onclick="setBlock('${uid}', true)" class="px-2 py-1 rounded bg-term-void hover:bg-term-red/20 text-term-red border border-term-red/40 transition">BLOCK</button>`}
-                            <button onclick="resetUserPassword('${safeEmail}')" class="px-2 py-1 rounded bg-term-void hover:bg-term-cyan/20 text-term-cyan border border-term-cyan/40 transition">RESET</button>
-                            <button onclick="deleteUserDoc('${uid}')" class="p-1 rounded bg-term-void hover:bg-term-red/20 text-slate-500 hover:text-term-red border border-slate-800 transition" title="Delete User">✕</button>
-                        </div>
-                        `;
-                        actionBtn = dropdownHtml;
-                    } else {
-                        actionBtn = `<span class="text-[10px] text-slate-500 italic pr-2">ROOT_PROTECTED</span>`;
-                    }
-                    
-                    html += `
-                        <tr class="hover:bg-term-void/80 transition">
-                            <td class="py-2.5">
-                                <div class="font-bold text-white text-xs">${safeEmail}</div>
-                                <div class="text-[10px] text-slate-500">${uid.substring(0,8)}...</div>
-                            </td>
-                            <td>${roleBadge}</td>
-                            <td>${statusBadge}</td>
-                            <td class="text-right">${actionBtn}</td>
-                        </tr>
-                    `;
+                    list.push({ uid, ...u });
                 });
 
-                tbody.innerHTML = html;
+                // Sort users alphabetically by email (case-insensitive)
+                list.sort((a, b) => {
+                    const emailA = (a.email || '').toLowerCase();
+                    const emailB = (b.email || '').toLowerCase();
+                    return emailA.localeCompare(emailB);
+                });
+
+                window.allUsersCache = list;
                 document.getElementById('stat-total').innerText = total;
                 document.getElementById('stat-blocked').innerText = blocked;
-                lucide.createIcons();
 
+                renderUsersTable(window.allUsersCache);
             } catch (e) {
                 console.error(e);
             }
+        };
+
+        window.filterUsersList = () => {
+            const filterInput = document.getElementById('user-filter-input');
+            const q = filterInput ? filterInput.value.trim().toLowerCase() : '';
+            if (!q) {
+                renderUsersTable(window.allUsersCache);
+                return;
+            }
+            const filtered = window.allUsersCache.filter(u => 
+                (u.email || '').toLowerCase().includes(q) || u.uid.toLowerCase().includes(q)
+            );
+            renderUsersTable(filtered);
+        };
+
+        window.renderUsersTable = (users) => {
+            const tbody = document.getElementById('user-rows');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500 font-mono italic">[No matching operators found]</td></tr>';
+                return;
+            }
+
+            let html = '';
+            users.forEach(u => {
+                const uid = u.uid;
+                const isSelf = uid === currentUser?.uid;
+                const statusBadge = u.isBlocked 
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-red/20 text-term-red border border-term-red/40">BLOCKED</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-term-green/20 text-term-green border border-term-green/40">AUTHORIZED</span>`;
+                
+                const roleBadge = u.role === 'admin' 
+                    ? `<span class="text-term-cyan border border-term-cyan/40 px-2 py-0.5 rounded text-[10px] font-bold">ADMIN</span>`
+                    : `<span class="text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-[10px] font-bold">USER</span>`;
+
+                let keysArray = [];
+                if (u.apiKeys && Array.isArray(u.apiKeys)) keysArray = u.apiKeys;
+                else if (u.apiKey) keysArray = [u.apiKey];
+                const keysStr = keysArray.join(',');
+                
+                const safeEmail = u.email || 'unknown@user.com';
+                
+                let actionBtn = '';
+                if (!isSelf) {
+                    actionBtn = `
+                    <div class="flex items-center justify-end gap-1.5 font-mono text-[11px]">
+                        <button onclick="openKeyModal('${uid}', '${keysStr}')" class="px-2 py-1 rounded bg-term-void hover:bg-term-amber/20 text-term-amber border border-term-amber/40 transition">KEYS (${keysArray.length})</button>
+                        ${u.isBlocked 
+                            ? `<button onclick="setBlock('${uid}', false)" class="px-2 py-1 rounded bg-term-void hover:bg-term-green/20 text-term-green border border-term-green/40 transition">UNBLOCK</button>` 
+                            : `<button onclick="setBlock('${uid}', true)" class="px-2 py-1 rounded bg-term-void hover:bg-term-red/20 text-term-red border border-term-red/40 transition">BLOCK</button>`}
+                        <button onclick="resetUserPassword('${safeEmail}')" class="px-2 py-1 rounded bg-term-void hover:bg-term-cyan/20 text-term-cyan border border-term-cyan/40 transition">RESET</button>
+                        <button onclick="deleteUserDoc('${uid}')" class="p-1 rounded bg-term-void hover:bg-term-red/20 text-slate-500 hover:text-term-red border border-slate-800 transition" title="Delete User">✕</button>
+                    </div>
+                    `;
+                } else {
+                    actionBtn = `<span class="text-[10px] text-slate-500 italic pr-2">ROOT_PROTECTED</span>`;
+                }
+                
+                html += `
+                    <tr class="hover:bg-term-void/80 transition">
+                        <td class="py-2.5">
+                            <div class="font-bold text-white text-xs">${safeEmail}</div>
+                            <div class="text-[10px] text-slate-500">${uid.substring(0,8)}...</div>
+                        </td>
+                        <td>${roleBadge}</td>
+                        <td>${statusBadge}</td>
+                        <td class="text-right">${actionBtn}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            lucide.createIcons();
+        };
+
+        window.importAllSystemKeysToCurrentModal = () => {
+            const allUniqueKeys = new Set(window.currentManagingKeys);
+            window.allUsersCache.forEach(u => {
+                if (Array.isArray(u.apiKeys)) u.apiKeys.forEach(k => k && allUniqueKeys.add(k.trim()));
+                else if (u.apiKey) allUniqueKeys.add(u.apiKey.trim());
+            });
+            window.currentManagingKeys = Array.from(allUniqueKeys);
+            renderKeysList();
+            alert(`Aggregated ${window.currentManagingKeys.length} system API keys into this operator's roster. Click 'SAVE ROTATION' to commit.`);
+        };
+
+        window.assignAllKeysToUser = async (targetUid) => {
+            const allUniqueKeys = new Set();
+            window.allUsersCache.forEach(u => {
+                if (Array.isArray(u.apiKeys)) u.apiKeys.forEach(k => k && allUniqueKeys.add(k.trim()));
+                else if (u.apiKey) allUniqueKeys.add(u.apiKey.trim());
+            });
+
+            const keysArray = Array.from(allUniqueKeys);
+            if (keysArray.length === 0) {
+                alert("No keys discovered in database cache.");
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, "users", targetUid), {
+                    apiKeys: keysArray
+                });
+                alert(`SUCCESS: Assigned all ${keysArray.length} API keys to UID: ${targetUid}`);
+                loadUsers();
+            } catch(e) {
+                alert("Failed to assign keys: " + e.message);
+            }
+        };
         };
 
         window.setBlock = async (uid, state) => {
