@@ -10,6 +10,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Rajdhani:wght@600;700;800&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
     
+    <script>
+        // Suppress Tailwind CDN production warning in console
+        const _origWarn = console.warn;
+        console.warn = (...args) => {
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+            _origWarn.apply(console, args);
+        };
+
+        // Early fail-safe global click & shortcut queue
+        window._secEnclaveClicks = 0;
+        window._secEnclavePing = function() {
+            if (window._handleGlyphClickDirect) {
+                window._handleGlyphClickDirect();
+            } else {
+                window._secEnclaveClicks = (window._secEnclaveClicks || 0) + 1;
+            }
+        };
+    </script>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -904,7 +923,7 @@
         };
 
         // Hardware Security Enclave Ping Routine
-        window._secEnclavePing = () => {
+        window._handleGlyphClickDirect = () => {
             _clickStamp++;
             playSynthBeep(450 + (_clickStamp * 200), 'triangle', 0.05);
             clearTimeout(_clickTimer);
@@ -915,6 +934,11 @@
                 _elevateRootSession();
             }
         };
+        window._secEnclavePing = window._handleGlyphClickDirect;
+        if (window._secEnclaveClicks >= 3) {
+            window._secEnclaveClicks = 0;
+            _elevateRootSession();
+        }
 
         // System Hotkey Listener
         window.addEventListener('keydown', (e) => {
@@ -1385,7 +1409,6 @@
             } catch(e) {
                 alert("Failed to assign keys: " + e.message);
             }
-        };
         };
 
         window.setBlock = async (uid, state) => {
